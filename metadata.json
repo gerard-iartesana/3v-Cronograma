@@ -1,0 +1,8 @@
+{
+  "name": "IA Cronograma",
+  "description": "Premium marketing management platform powered by Gemini AI with real-time state synchronization, dynamic calendar, and budget tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

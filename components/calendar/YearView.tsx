@@ -1,0 +1,158 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MarketingEvent } from '../../types';
+import { parseDurationToHours, formatDuration, parseDurationToMinutes, mixColors } from '../../utils/cost';
+
+interface YearViewProps {
+    viewDate: Date;
+    filteredEvents: MarketingEvent[];
+    tagColors?: Record<string, string>;
+    onSelectDate: (date: Date) => void;
+}
+
+const monthsOfYear = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+export const YearView: React.FC<YearViewProps> = ({
+    viewDate,
+    filteredEvents,
+    tagColors,
+    onSelectDate
+}) => {
+    const [hoveredDay, setHoveredDay] = useState<{ date: Date, events: MarketingEvent[] } | null>(null);
+    const [tooltipPos, setTooltipPos] = useState<{ x: number, y: number } | null>(null);
+
+    const year = viewDate.getFullYear();
+    const startMonth = Math.floor(viewDate.getMonth() / 3) * 3;
+    const months = [startMonth, startMonth + 1, startMonth + 2];
+
+    const isSameDay = (d1: Date, d2: Date) =>
+        d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+
+    const getEventColor = (event: MarketingEvent) => {
+        const colorTags = event.tags.filter(t => tagColors?.[t]);
+        if (colorTags.length > 0) return mixColors(colorTags.map(t => tagColors![t]));
+        return event.completed ? '#32FF7E' : '#00E5FF';
+    };
+
+    return (
+        <div className="relative">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {months.map(monthIdx => {
+                    const monthDate = new Date(year, monthIdx, 1);
+                    const firstDayOfMonth = new Date(year, monthIdx, 1);
+                    const startingDay = firstDayOfMonth.getDay();
+                    const adjustedStartingDay = startingDay === 0 ? 6 : startingDay - 1;
+                    const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+
+                    return (
+                        <div key={monthIdx} className="bg-white border border-gray-200 p-6 rounded-[2.5rem] flex flex-col h-full min-h-[300px] transition-all hover:border-gray-300 hover:bg-gray-50 group/month shadow-xl">
+                            <h4 className="text-[14px] font-black uppercase tracking-[0.4em] text-gray-900 mb-6 text-center border-b border-gray-100 pb-4 group-hover/month:text-[#dc0014] transition-colors">
+                                {monthsOfYear[monthIdx]}
+                            </h4>
+                            <div className="grid grid-cols-7 gap-2 flex-1 content-start">
+                                {Array.from({ length: adjustedStartingDay }).map((_, i) => (
+                                    <div key={`empty-${i}`} className="aspect-square" />
+                                ))}
+                                {Array.from({ length: daysInMonth }).map((_, i) => {
+                                    const day = i + 1;
+                                    const date = new Date(year, monthIdx, day);
+                                    const dayEvents = filteredEvents.filter(e => isSameDay(new Date(e.date), date));
+                                    const totalHours = dayEvents.reduce((acc, e) => acc + parseDurationToHours(e.duration), 0);
+
+                                    if (dayEvents.length === 0) {
+                                        return (
+                                            <div
+                                                key={day}
+                                                className="aspect-square rounded-[6px] bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
+                                                onClick={() => onSelectDate(date)}
+                                            />
+                                        );
+                                    }
+
+                                    const dayColors = dayEvents.map(e => getEventColor(e));
+                                    const mixedDayColor = mixColors(dayColors);
+                                    const opacityScale = Math.min(1, Math.max(0.3, totalHours / 8));
+                                    const opacityHex = Math.round(opacityScale * 255).toString(16).padStart(2, '0');
+
+                                    return (
+                                        <motion.div
+                                            key={day}
+                                            whileHover={{ scale: 1.4, zIndex: 50 }}
+                                            className="aspect-square rounded-[6px] cursor-pointer transition-all border border-black/5 relative"
+                                            style={{
+                                                backgroundColor: `${mixedDayColor}${opacityHex}`,
+                                                borderColor: `${mixedDayColor}66`,
+                                                boxShadow: totalHours >= 4 ? `0 0 15px ${mixedDayColor}44` : 'none'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                const rect = e.currentTarget.getBoundingClientRect();
+                                                setTooltipPos({ x: rect.left + rect.width / 2, y: rect.top });
+                                                setHoveredDay({ date, events: dayEvents });
+                                            }}
+                                            onMouseLeave={() => {
+                                                setHoveredDay(null);
+                                                setTooltipPos(null);
+                                            }}
+                                            onClick={() => onSelectDate(date)}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <AnimatePresence>
+                {hoveredDay && tooltipPos && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                        animate={{ opacity: 1, scale: 1, y: -10 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                        className="fixed z-[1000] bg-white/95 backdrop-blur-xl border border-gray-200 p-5 rounded-[2rem] shadow-2xl pointer-events-none min-w-[250px]"
+                        style={{
+                            left: tooltipPos.x,
+                            top: tooltipPos.y,
+                            transform: 'translate(-50%, -100%)'
+                        }}
+                    >
+                        <div className="text-[11px] font-black text-gray-500 uppercase tracking-[0.25em] mb-4 border-b border-gray-100 pb-3 flex justify-between items-center">
+                            <span>{hoveredDay.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>
+                            <span className="text-[#dc0014] bg-[#dc0014]/10 px-2.5 py-1 rounded-full">{formatDuration(hoveredDay.events.reduce((acc, e) => acc + parseDurationToMinutes(e.duration), 0))}</span>
+                        </div>
+                        <div className="space-y-3">
+                            {hoveredDay.events.slice(0, 6).map(e => (
+                                <div key={e.id} className="text-[13px] font-bold text-gray-900 flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <div className="w-2 h-2 rounded-full flex-shrink-0 shadow-[0_0_8px_currentColor]" style={{ backgroundColor: getEventColor(e), color: getEventColor(e) }} />
+                                        <span className="truncate">{e.title}</span>
+                                    </div>
+                                    <div className="flex gap-1 flex-shrink-0">
+                                        {e.tags.filter(t => tagColors?.[t]).map(t => (
+                                            <span
+                                                key={t}
+                                                className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full border border-black/5"
+                                                style={{
+                                                    color: tagColors![t],
+                                                    backgroundColor: `${tagColors![t]}1a`,
+                                                    borderColor: `${tagColors![t]}33`
+                                                }}
+                                            >
+                                                {t}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                            {hoveredDay.events.length > 6 && (
+                                <div className="text-[10px] text-gray-400 font-black uppercase mt-3 pt-3 border-t border-gray-100 flex justify-center">
+                                    +{hoveredDay.events.length - 6} actividades adicionales
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
