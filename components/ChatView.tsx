@@ -85,7 +85,7 @@ export const ChatView: React.FC = () => {
                 <div className="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-red-100">
                   <MessageCircle className="text-[#dc0014]" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700">¿Cómo empezamos?</h3>
+                <h3 className="text-xl font-bold text-gray-700">Soy tu Asistente de 3villas</h3>
                 <p className="text-gray-500 text-sm mt-2">Prueba una de estas frases para ver de qué es capaz la IA de 3V</p>
               </div>
 

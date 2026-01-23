@@ -305,32 +305,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   {!isTemplate && (
                     <div className="space-y-4">
                       <div className="space-y-3">
-                        {/* Bloque Estimado */}
-                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-3xl space-y-3">
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Estimado</h4>
-                          <div className="space-y-3">
+                        {/* Bloque Estimado y Real Simplificado */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="p-4 bg-gray-50 border border-gray-200 rounded-3xl space-y-3">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Estimación</h4>
                             <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Horas Estimadas (Volumen)</label>
-                              <NumberInput
-                                value={editForm.budgetedHours || 0}
-                                onChange={val => {
-                                  const hours = Math.max(0, val);
-                                  setEditForm({ ...editForm, budgetedHours: hours, budgetedCost: hours * (budget.hourlyRate || 80) });
-                                }}
-                                suffix="h"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Valor de Mercado (€)</label>
-                              <NumberInput
-                                value={editForm.budgetedValue || editForm.globalValue || 0}
-                                onChange={val => setEditForm({ ...editForm, budgetedValue: Math.max(0, val), globalValue: Math.max(0, val) })}
-                                step={50}
-                                suffix="€"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Ejecución (€ auto-calc)</label>
+                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
                               <NumberInput
                                 value={editForm.budgetedCost || 0}
                                 onChange={val => setEditForm({ ...editForm, budgetedCost: Math.max(0, val) })}
@@ -339,26 +319,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                               />
                             </div>
                           </div>
-                        </div>
 
-                        {/* Bloque Real */}
-                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-3xl space-y-3">
-                          <div className="flex justify-between items-center">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Real</h4>
-                            <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Suma de actividades</span>
-                          </div>
-                          <div className="space-y-3">
+                          <div className="p-4 bg-gray-50 border border-gray-200 rounded-3xl space-y-3">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Realidad</h4>
                             <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Valor Realizado (€)</label>
-                              <NumberInput
-                                value={editForm.realValue || 0}
-                                onChange={val => setEditForm({ ...editForm, realValue: Math.max(0, val) })}
-                                step={50}
-                                suffix="€"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Realizado (€)</label>
+                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Real (€)</label>
                               <NumberInput
                                 value={editForm.realCost || projectCost.realCost || 0}
                                 onChange={val => setEditForm({ ...editForm, realCost: Math.max(0, val) })}
@@ -435,10 +400,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   {!isTemplate && (
                     <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                       <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <Clock size={14} className="text-[#dc0014]/50" /> <span className="text-black">{projectCost.hoursSpent.toFixed(1)}h <span className="opacity-30">/ {projectCost.hoursTotal.toFixed(1)}h</span></span>
+                        <span className="text-black font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
+                      </span>
+                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
+                        <span className="text-[#dc0014] font-bold">{(project.realCost || projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
                       </span>
                       {project.deadline && (
-                        <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
+                        <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none ml-auto">
                           <Calendar size={14} className="text-red-500/50" />
                           <span className="text-black">{new Date(project.deadline).toLocaleDateString()}</span>
                         </span>
