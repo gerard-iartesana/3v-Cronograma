@@ -1,5 +1,6 @@
 {
     "hosting": {
+        "site": "3villas-cronograma",
         "public": "dist",
         "ignore": [
             "firebase.json",
