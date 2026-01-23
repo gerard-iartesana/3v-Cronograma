@@ -94,6 +94,7 @@ REGLAS CRÍTICAS:
   - Si el usuario dice "Asigna esto a Gerard" o "Gerard se encarga de esto", añade "Gerard" al array de assignees.
   - Puedes añadir o quitar responsables mediante "updatedEvents" o "updatedProjects".
   - REGLA FINANCIERA DE RESPONSABLES: Por cada responsable asignado, el "realCost" de la actividad se MULTIPLICA por el número de responsables (Coste = duración_h * tarifa * num_responsables). Asegúrate de que el usuario lo entienda si pregunta.
+- INTENCIÓN "PERSONAL" / "SALUDO": Si el usuario saluda ("Hola", "Buenos días") o hace preguntas generales, responde ÚNICAMENTE con el campo "message" de forma amable y servicial, ofreciendo tu ayuda para gestionar proyectos.
 - Tono profesional y ejecutivo.
 `;
 
@@ -144,7 +145,17 @@ export async function processChatMessage(
 
     // Asegurar que siempre haya un mensaje
     if (!result.message) {
-      result.message = "Entendido, he procesado tus cambios en la estrategia.";
+      const hasChanges = (result.newProjects?.length || 0) > 0 ||
+        (result.updatedProjects?.length || 0) > 0 ||
+        (result.deletedProjects?.length || 0) > 0 ||
+        (result.newEvents?.length || 0) > 0 ||
+        (result.updatedEvents?.length || 0) > 0 ||
+        (result.deletedEvents?.length || 0) > 0 ||
+        result.budgetUpdate;
+
+      result.message = hasChanges
+        ? "Entendido, he procesado tus cambios en la estrategia."
+        : "Hola, ¿en qué puedo ayudarte a organizar hoy?";
     }
 
     if (result.newProjects) {
