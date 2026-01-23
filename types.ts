@@ -35,6 +35,12 @@ export interface MarketingEvent {
   recurrence?: RecurrenceConfig;
   masterId?: string; // If this is an expanded instance, this points to the master definition
   notifications?: NotificationConfig[];
+  createdBy?: {
+    uid: string;
+    displayName: string;
+    photoURL?: string;
+  };
+  createdAt?: string; // ISO format
 }
 
 export interface ChecklistItem {
@@ -74,6 +80,22 @@ export interface ChatMessage {
   timestamp: number;
 }
 
+export interface ActivityLogEntry {
+  id: string;
+  userId: string;
+  userName: string;
+  action: string; // e.g., "created_event", "updated_project", "completed_task"
+  details: string;
+  timestamp: string; // ISO format
+}
+
+export interface User {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+}
+
 export interface AppState {
   events: MarketingEvent[];
   projects: Project[];
@@ -84,6 +106,7 @@ export interface AppState {
   assigneeColors?: Record<string, string>;
   sentNotifications?: Record<string, boolean>;
   fcmToken?: string;
+  activityLog?: ActivityLogEntry[];
 }
 
 export interface AIStateUpdate {

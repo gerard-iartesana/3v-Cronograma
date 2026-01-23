@@ -5,6 +5,7 @@ import { db, messaging, getToken, onMessage, functions } from '../services/fireb
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { expandRecurringEvents } from '../utils/recurrence';
+import { useAuth } from './AuthContext';
 
 interface AppContextType extends AppState {
   currentSection: AppSection;
@@ -25,6 +26,7 @@ interface AppContextType extends AppState {
   isLoading: boolean;
   enableNotifications: () => Promise<boolean>;
   fcmToken?: string;
+  logActivity: (action: string, details: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -40,7 +42,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [assigneeColors, setAssigneeColors] = useState<Record<string, string>>({});
   const [sentNotifications, setSentNotifications] = useState<Record<string, boolean>>({});
   const [fcmToken, setFcmToken] = useState<string | undefined>(undefined);
+  const [activityLog, setActivityLog] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { user } = useAuth();
 
 
   // Firebase Sync Effect (Restored)
@@ -59,6 +64,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setAssigneeColors(data.assigneeColors || {});
         setSentNotifications(data.sentNotifications || {});
         setFcmToken(data.fcmToken);
+        setActivityLog(data.activityLog || []);
       }
       setIsLoading(false);
     }, (error) => {
@@ -180,7 +186,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return false;
     }
     return false;
-  }, [messaging, persistState]);
+  }, [messaging]);
+
+  const logActivity = useCallback((action: string, details: string) => {
+    if (!user) return;
+    const newEntry = {
+      id: crypto.randomUUID(),
+      userId: user.uid,
+      userName: user.displayName || user.email || 'Usuario',
+      action,
+      details,
+      timestamp: new Date().toISOString()
+    };
+    setActivityLog(prev => {
+      const next = [newEntry, ...prev].slice(0, 100); // Keep last 100
+      persistState({ activityLog: next });
+      return next;
+    });
+  }, [user, persistState]);
 
   const addChatMessage = useCallback((msg: ChatMessage) => {
     setChatHistory(prev => {
@@ -202,6 +225,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const toDelete = new Set(update.deletedEvents);
         next = next.filter(ev => !toDelete.has(ev.id));
       }
+
+      // Add metadata to NEW events
+      if (update.newEvents && user) {
+        const eventIds = new Set(update.newEvents.map(e => e.id));
+        next = next.map(ev => {
+          if (eventIds.has(ev.id) && !ev.createdBy) {
+            return {
+              ...ev,
+              createdBy: { uid: user.uid, displayName: user.displayName || 'IA Assistant', photoURL: user.photoURL || undefined },
+              createdAt: new Date().toISOString()
+            };
+          }
+          return ev;
+        });
+      }
+
       if (JSON.stringify(prev) !== JSON.stringify(next)) persistState({ events: next });
       return next;
     });
@@ -277,7 +316,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       persistState({ events: next });
       return next;
     });
-  }, [persistState]);
+    logActivity('task_toggled', `Tarea actualizada en evento`);
+  }, [persistState, logActivity]);
 
   const updateEvent = useCallback((eventId: string, updates: Partial<MarketingEvent>) => {
     setEvents(prev => {
@@ -285,7 +325,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       persistState({ events: next });
       return next;
     });
-  }, [persistState]);
+    const updatedEv = events.find(e => e.id === eventId);
+    logActivity('updated_event', `Evento actualizado: ${updatedEv?.title || eventId}`);
+  }, [persistState, events, logActivity]);
 
   const deleteEvent = useCallback((eventId: string) => {
     setEvents(prev => {
@@ -293,15 +335,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       persistState({ events: next });
       return next;
     });
-  }, [persistState]);
+    logActivity('deleted_event', `Evento eliminado: ${eventId}`);
+  }, [persistState, logActivity]);
 
   const addProject = useCallback((project: Project) => {
+    const projectWithMeta = user ? {
+      ...project,
+      createdBy: { uid: user.uid, displayName: user.displayName || 'Usuario' },
+      createdAt: new Date().toISOString()
+    } : project;
+
     setProjects(prev => {
-      const next = [...prev, project];
+      const next = [...prev, projectWithMeta];
       persistState({ projects: next });
       return next;
     });
-  }, [persistState]);
+    logActivity('created_project', `Proyecto creado: ${project.title}`);
+  }, [persistState, user, logActivity]);
 
   const updateProject = useCallback((projectId: string, updates: Partial<Project>) => {
     setProjects(prev => {
@@ -389,9 +439,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   return (
     <AppContext.Provider value={{
       currentSection, setCurrentSection,
-      events, projects, budget, chatHistory, documents, tagColors, assigneeColors, sentNotifications,
+      events, projects, budget, chatHistory, documents, tagColors, assigneeColors, sentNotifications, activityLog,
       addChatMessage, applyStateUpdate, toggleProjectItem, toggleEventTask, updateEvent, deleteEvent, updateProject, deleteProject, addProject, addDocument, setTagColor, setAssigneeColor, clearChat,
-      isLoading, enableNotifications, fcmToken
+      isLoading, enableNotifications, fcmToken, logActivity
     }}>
       {children}
     </AppContext.Provider>

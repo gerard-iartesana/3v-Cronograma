@@ -12,7 +12,7 @@ import { expandRecurringEvents } from '../utils/recurrence';
 import { parseDurationToHours, calculateReactiveCost } from '../utils/cost';
 
 export const ProfileView: React.FC = () => {
-  const { budget, documents, addDocument, events, applyStateUpdate, projects, tagColors, setTagColor, assigneeColors, setAssigneeColor, chatHistory, enableNotifications, fcmToken } = useApp();
+  const { budget, documents, addDocument, events, applyStateUpdate, projects, tagColors, setTagColor, assigneeColors, setAssigneeColor, chatHistory, enableNotifications, fcmToken, activityLog } = useApp();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
@@ -954,6 +954,51 @@ export const ProfileView: React.FC = () => {
             >
               <Trash2 size={14} /> Borrar todo
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Activity Log Section */}
+      <div className="p-4 md:px-8 pb-12">
+        <div className="bg-white border border-gray-200 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-gray-700 font-bold text-2xl tracking-tighter mb-2">Log de Actividad</h3>
+              <p className="text-gray-500 font-bold text-[10px] tracking-[0.4em]">Historial de acciones recientes</p>
+            </div>
+            <div className="p-3 bg-red-50 text-red-600 rounded-xl">
+              <Clock size={20} />
+            </div>
+          </div>
+
+          <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            {activityLog && activityLog.length > 0 ? (
+              activityLog.map((log) => (
+                <div key={log.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-red-100 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                    <span className="text-[10px] font-black text-red-600">{log.userName.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-black text-gray-900 truncate uppercase tracking-wider">{log.userName}</span>
+                      <span className="text-[9px] font-bold text-gray-400 whitespace-nowrap">
+                        {new Date(log.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">
+                      <span className="font-bold text-red-600 uppercase text-[10px] mr-2">
+                        {log.action.replace('_', ' ')}
+                      </span>
+                      {log.details}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 text-gray-400 text-[10px] tracking-[0.4em] font-bold uppercase">
+                No hay actividad registrada
+              </div>
+            )}
           </div>
         </div>
       </div>

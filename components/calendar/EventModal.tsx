@@ -423,6 +423,30 @@ export const EventModal: React.FC<EventModalProps> = ({
                     )}
                 </div>
 
+                {event.createdBy && (
+                    <div className="px-8 md:px-10 pb-10">
+                        <div className="flex items-center gap-3 p-4 bg-[#050505] border border-[#111] rounded-[1.5rem] shadow-inner opacity-80">
+                            {event.createdBy.photoURL ? (
+                                <img src={event.createdBy.photoURL} alt={event.createdBy.displayName} className="w-8 h-8 rounded-full border border-white/10" />
+                            ) : (
+                                <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white text-[10px] font-black uppercase">
+                                    {event.createdBy.displayName.charAt(0)}
+                                </div>
+                            )}
+                            <div className="flex-1">
+                                <p className="text-[9px] text-gray-600 font-bold uppercase tracking-[0.2em] mb-0.5">Creado por</p>
+                                <p className="text-xs text-white font-black uppercase tracking-wider">{event.createdBy.displayName}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[9px] text-gray-600 font-bold uppercase tracking-[0.2em] mb-0.5">Fecha alta</p>
+                                <p className="text-xs text-gray-400 font-bold">
+                                    {event.createdAt ? new Date(event.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : '--'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="p-4 border-t border-[#111] flex items-center justify-end gap-3 bg-[#050505]/50">
                     {isEditing ? (
                         <>

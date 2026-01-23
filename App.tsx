@@ -1,23 +1,32 @@
 
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Layout } from './components/Layout';
 import { ChatView } from './components/ChatView';
 import { CalendarView } from './components/CalendarView';
 import { ProjectListView } from './components/ProjectListView';
 import { ProfileView } from './components/ProfileView';
+import { LoginView } from './components/LoginView';
 import { Loader2 } from 'lucide-react';
 
 const ContentSwitcher: React.FC = () => {
   const { currentSection, isLoading } = useApp();
+  const { user, loading: authLoading } = useAuth();
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-black gap-4">
-        <Loader2 className="animate-spin text-[#00E5FF]" size={48} />
-        <p className="text-gray-500 uppercase tracking-[0.3em] text-xs font-bold">Sincronizando Hub...</p>
+      <div className="flex flex-col items-center justify-center h-full bg-white gap-4">
+        <Loader2 className="animate-spin text-[#dc0014]" size={48} />
+        <p className="text-gray-400 tracking-wider text-xs font-medium">
+          {authLoading ? 'Verificando sesión...' : 'Sincronizando hub...'}
+        </p>
       </div>
     );
+  }
+
+  if (!user) {
+    return <LoginView />;
   }
 
   switch (currentSection) {
@@ -36,11 +45,13 @@ const ContentSwitcher: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AppProvider>
-      <Layout>
-        <ContentSwitcher />
-      </Layout>
-    </AppProvider>
+    <AuthProvider>
+      <AppProvider>
+        <Layout>
+          <ContentSwitcher />
+        </Layout>
+      </AppProvider>
+    </AuthProvider>
   );
 };
 

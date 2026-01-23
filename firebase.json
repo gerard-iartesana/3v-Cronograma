@@ -1,6 +1,5 @@
 {
     "hosting": {
-        "site": "3v-cronograma",
         "public": "dist",
         "ignore": [
             "firebase.json",
