@@ -1,17 +1,19 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { GlassHeader } from './GlassHeader';
 import {
   BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, YAxis, Legend,
   PieChart, Pie
 } from 'recharts';
-import { TrendingUp, TrendingDown, Clock, Filter, ChevronLeft, ChevronRight, Calendar, Calculator, Sparkles, Download, Upload, Trash2, Settings, Bell, Palette, X, Info, ChevronDown, CheckCircle2, Circle, Users, Plus, FileText } from 'lucide-react';
+import { TrendingUp, TrendingDown, Clock, Filter, ChevronLeft, ChevronRight, Calendar, Calculator, Sparkles, Download, Upload, Trash2, Settings, Bell, Palette, X, Info, ChevronDown, CheckCircle2, Circle, Users, Plus, FileText, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { expandRecurringEvents } from '../utils/recurrence';
 import { parseDurationToHours, calculateReactiveCost } from '../utils/cost';
 
 export const ProfileView: React.FC = () => {
+  const { user, logout } = useAuth();
   const { budget, documents, addDocument, events, applyStateUpdate, projects, tagColors, setTagColor, assigneeColors, setAssigneeColor, chatHistory, enableNotifications, fcmToken, activityLog } = useApp();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -312,8 +314,23 @@ export const ProfileView: React.FC = () => {
     };
   }, [activeHandle]);
   return (
-    <div className="flex flex-col min-h-full bg-gray-50 select-none">
+    <div className="flex flex-col min-h-full bg-gray-50 select-none relative">
       <GlassHeader title="Rendimiento" underlineColor="#dc0014" />
+
+      {/* User Info & Logout - Absolute top right (desktop) or stacked (mobile) */}
+      <div className="absolute top-6 right-6 z-[110] flex items-center gap-3">
+        <div className="hidden md:flex flex-col items-end">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Conectado como</span>
+          <span className="text-xs font-bold text-gray-700">{user?.email}</span>
+        </div>
+        <button
+          onClick={() => logout()}
+          className="p-2 bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl border border-gray-200 transition-all shadow-sm"
+          title="Cerrar sesión"
+        >
+          <LogOut size={16} />
+        </button>
+      </div>
 
       {/* Tags Filter Section - Updated with Palette */}
       <div className="flex justify-center items-center gap-2 px-4 pt-2 pb-0 relative z-50">
@@ -721,7 +738,7 @@ export const ProfileView: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {(budget.expenses || []).map(exp => (
             <div key={exp.id} className="group relative bg-gray-50 border border-gray-200 p-3 rounded-2xl hover:border-black/20 transition-all flex flex-col gap-2">
               <div className="flex items-center justify-between">
