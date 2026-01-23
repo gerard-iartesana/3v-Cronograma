@@ -21,10 +21,11 @@ const SidebarIcon: React.FC<{ icon: React.ElementType, active: boolean, color: s
         size={24}
         className={`transition-all duration-300 ${active ? glowClass : ''} ${!active ? 'group-hover:text-black/60' : ''}`}
         style={{ color: active ? '#dc0014' : '#9ca3af' }}
+        strokeWidth={active ? 2.5 : 2}
       />
     </div>
     <div
-      className="absolute right-0 h-8 w-[3px] rounded-l-full transition-all duration-500 shadow-[0_0_12px_#dc0014]"
+      className="absolute right-0 h-8 w-[3px] rounded-l-full transition-all duration-500"
       style={{
         backgroundColor: active ? '#dc0014' : 'transparent',
         opacity: active ? 1 : 0,
