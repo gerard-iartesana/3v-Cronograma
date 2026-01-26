@@ -632,146 +632,146 @@ export const ProfileView: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
 
-      {/* Expenses Section moved here */ }
-  <div className="bg-white border border-gray-200 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden mb-6">
-    <div className="flex items-center justify-between mb-8">
-      <div>
-        <h3 className="text-gray-700 font-bold text-2xl tracking-tighter mb-2">Gastos fijos anuales</h3>
-        <p className="text-gray-500 font-bold text-[10px] tracking-[0.4em]">Estructura de costes (Prorrateado: {((timeRange.end - timeRange.start) + 1)} meses)</p>
-      </div>
-      <div className="flex flex-col items-end mr-4">
-        <span className="text-[10px] font-black tracking-widest text-gray-500">Total periodo</span>
-        <span className="text-4xl font-bold text-gray-700">
-          {(metrics.proratedExpenses || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}€
-        </span>
-      </div>
-      <button
-        onClick={() => {
-          const newExp = { id: Date.now().toString(), title: 'Nuevo Gasto', amount: 0 };
-          applyStateUpdate({ message: 'Añadir nuevo gasto fijo', budgetUpdate: { expenses: [...(budget.expenses || []), newExp] } });
-        }}
-        className="p-3 bg-gray-100 hover:bg-black hover:text-white hover:scale-110 active:scale-95 transition-all rounded-xl text-gray-600 border border-gray-200"
-      >
-        <Plus size={16} />
-      </button>
-    </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {(budget.expenses || []).map(exp => (
-        <div key={exp.id} className="group relative bg-gray-50 border border-gray-200 p-3 rounded-2xl hover:border-black/20 transition-all flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <input
-              type="text"
-              value={exp.title}
-              onChange={(e) => {
-                const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, title: e.target.value } : x);
-                applyStateUpdate({ message: 'Actualizar nombre de gasto', budgetUpdate: { expenses: next } });
-              }}
-              className="bg-transparent text-sm font-bold text-black outline-none w-full mr-2 hover:text-green-600 transition-colors"
-            />
-            <button
-              onClick={() => {
-                const next = (budget.expenses || []).filter(x => x.id !== exp.id);
-                applyStateUpdate({ message: 'Eliminar gasto fijo', budgetUpdate: { expenses: next } });
-              }}
-              className="text-gray-400 group-hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-            >
-              <TrendingUp size={14} className="rotate-180" /> {/* Just an icon, using trash is better but let's re-use imported if possible or import Trash */}
-            </button>
+      {/* Expenses Section moved here */}
+      <div className="bg-white border border-gray-200 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden mb-6">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h3 className="text-gray-700 font-bold text-2xl tracking-tighter mb-2">Gastos fijos anuales</h3>
+            <p className="text-gray-500 font-bold text-[10px] tracking-[0.4em]">Estructura de costes (Prorrateado: {((timeRange.end - timeRange.start) + 1)} meses)</p>
           </div>
-          <div className="flex items-center gap-1">
-            {/* Prorated Amount (Big) */}
-            <span className="text-3xl font-black text-black w-full">
-              {(exp.amount / 12 * ((timeRange.end - timeRange.start) + 1)).toLocaleString(undefined, { maximumFractionDigits: 0 })}€
+          <div className="flex flex-col items-end mr-4">
+            <span className="text-[10px] font-black tracking-widest text-gray-500">Total periodo</span>
+            <span className="text-4xl font-bold text-gray-700">
+              {(metrics.proratedExpenses || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}€
             </span>
           </div>
+          <button
+            onClick={() => {
+              const newExp = { id: Date.now().toString(), title: 'Nuevo Gasto', amount: 0 };
+              applyStateUpdate({ message: 'Añadir nuevo gasto fijo', budgetUpdate: { expenses: [...(budget.expenses || []), newExp] } });
+            }}
+            className="p-3 bg-gray-100 hover:bg-black hover:text-white hover:scale-110 active:scale-95 transition-all rounded-xl text-gray-600 border border-gray-200"
+          >
+            <Plus size={16} />
+          </button>
+        </div>
 
-          {/* Annual Amount (Small/Secondary) */}
-          <div className="pt-2 border-t border-gray-200 mt-1 flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-1">
-              <span className="text-[9px] text-gray-500 tracking-widest font-bold">Anual:</span>
-
-              <div className="flex items-center bg-white rounded-md border border-gray-200 overflow-hidden">
-                <button
-                  onClick={() => {
-                    const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, amount: Math.max(0, x.amount - 10) } : x);
-                    applyStateUpdate({ message: 'Reducir importe de gasto', budgetUpdate: { expenses: next } });
-                  }}
-                  className="px-1.5 py-0.5 text-gray-400 hover:text-black hover:bg-gray-100 transition-colors"
-                >
-                  <ChevronLeft size={10} />
-                </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {(budget.expenses || []).map(exp => (
+            <div key={exp.id} className="group relative bg-gray-50 border border-gray-200 p-3 rounded-2xl hover:border-black/20 transition-all flex flex-col gap-2">
+              <div className="flex items-center justify-between">
                 <input
-                  type="number"
-                  value={exp.amount}
+                  type="text"
+                  value={exp.title}
                   onChange={(e) => {
-                    const val = parseFloat(e.target.value) || 0;
-                    const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, amount: val } : x);
-                    applyStateUpdate({ message: 'Actualizar importe de gasto', budgetUpdate: { expenses: next } });
+                    const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, title: e.target.value } : x);
+                    applyStateUpdate({ message: 'Actualizar nombre de gasto', budgetUpdate: { expenses: next } });
                   }}
-                  className="bg-transparent text-[10px] font-bold text-gray-600 outline-none w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:text-black transition-colors"
+                  className="bg-transparent text-sm font-bold text-black outline-none w-full mr-2 hover:text-green-600 transition-colors"
                 />
                 <button
                   onClick={() => {
-                    const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, amount: x.amount + 10 } : x);
-                    applyStateUpdate({ message: 'Aumentar importe de gasto', budgetUpdate: { expenses: next } });
+                    const next = (budget.expenses || []).filter(x => x.id !== exp.id);
+                    applyStateUpdate({ message: 'Eliminar gasto fijo', budgetUpdate: { expenses: next } });
                   }}
-                  className="px-1.5 py-0.5 text-gray-400 hover:text-black hover:bg-gray-100 transition-colors"
+                  className="text-gray-400 group-hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                 >
-                  <ChevronRight size={10} />
+                  <TrendingUp size={14} className="rotate-180" /> {/* Just an icon, using trash is better but let's re-use imported if possible or import Trash */}
                 </button>
               </div>
-              <span className="text-[9px] text-gray-500 font-bold">€</span>
+              <div className="flex items-center gap-1">
+                {/* Prorated Amount (Big) */}
+                <span className="text-3xl font-black text-black w-full">
+                  {(exp.amount / 12 * ((timeRange.end - timeRange.start) + 1)).toLocaleString(undefined, { maximumFractionDigits: 0 })}€
+                </span>
+              </div>
+
+              {/* Annual Amount (Small/Secondary) */}
+              <div className="pt-2 border-t border-gray-200 mt-1 flex items-center justify-between">
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="text-[9px] text-gray-500 tracking-widest font-bold">Anual:</span>
+
+                  <div className="flex items-center bg-white rounded-md border border-gray-200 overflow-hidden">
+                    <button
+                      onClick={() => {
+                        const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, amount: Math.max(0, x.amount - 10) } : x);
+                        applyStateUpdate({ message: 'Reducir importe de gasto', budgetUpdate: { expenses: next } });
+                      }}
+                      className="px-1.5 py-0.5 text-gray-400 hover:text-black hover:bg-gray-100 transition-colors"
+                    >
+                      <ChevronLeft size={10} />
+                    </button>
+                    <input
+                      type="number"
+                      value={exp.amount}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value) || 0;
+                        const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, amount: val } : x);
+                        applyStateUpdate({ message: 'Actualizar importe de gasto', budgetUpdate: { expenses: next } });
+                      }}
+                      className="bg-transparent text-[10px] font-bold text-gray-600 outline-none w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:text-black transition-colors"
+                    />
+                    <button
+                      onClick={() => {
+                        const next = (budget.expenses || []).map(x => x.id === exp.id ? { ...x, amount: x.amount + 10 } : x);
+                        applyStateUpdate({ message: 'Aumentar importe de gasto', budgetUpdate: { expenses: next } });
+                      }}
+                      className="px-1.5 py-0.5 text-gray-400 hover:text-black hover:bg-gray-100 transition-colors"
+                    >
+                      <ChevronRight size={10} />
+                    </button>
+                  </div>
+                  <span className="text-[9px] text-gray-500 font-bold">€</span>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
+          {(budget.expenses || []).length === 0 && (
+            <div className="col-span-full py-8 text-center border border-dashed border-gray-300 rounded-2xl text-gray-400 text-[10px] tracking-widest">
+              No hay gastos registrados
+            </div>
+          )}
         </div>
-      ))}
-      {(budget.expenses || []).length === 0 && (
-        <div className="col-span-full py-8 text-center border border-dashed border-gray-300 rounded-2xl text-gray-400 text-[10px] tracking-widest">
-          No hay gastos registrados
-        </div>
-      )}
-    </div>
-  </div>
-
-  {/* Documents */ }
-  < div className={`bg-white border border-gray-100 rounded-[2.5rem] ${documents.length === 0 ? 'p-6' : 'p-10'} shadow-sm transition-all`} >
-    <div className={`flex items-center justify-between gap-4 ${documents.length === 0 ? 'mb-4' : 'mb-10'}`}>
-      <div>
-        <h3 className={`${documents.length === 0 ? 'text-lg' : 'text-2xl'} font-bold text-gray-700 mb-2 tracking-tighter`}>Archivos de contexto</h3>
-        {documents.length > 0 && <p className="text-gray-500 font-bold text-[10px] tracking-[0.2em]">Base de conocimiento extendida para la IA.</p>}
       </div>
-      <label className={`cursor-pointer flex items-center justify-center gap-3 bg-black hover:bg-gray-800 transition-all text-white font-black ${documents.length === 0 ? 'px-4 py-2 text-[8px]' : 'px-8 py-4 text-[10px]'} rounded-2xl tracking-widest shadow-xl active:scale-95`}>
-        <Upload size={documents.length === 0 ? 12 : 16} />
-        <span>Subir documento</span>
-        <input type="file" className="hidden" accept=".pdf" onChange={input => handleFileUpload(input as any)} />
-      </label>
-    </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {documents.map((doc, idx) => (
-        <div key={idx} className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-gray-50 border border-gray-200 group hover:border-[#dc0014]/20 transition-all cursor-default">
-          <div className="bg-white border border-gray-200 p-4 rounded-xl text-black group-hover:scale-110 group-hover:bg-[#dc0014] group-hover:text-white transition-all">
-            <FileText size={20} />
+      {/* Documents */}
+      < div className={`bg-white border border-gray-100 rounded-[2.5rem] ${documents.length === 0 ? 'p-6' : 'p-10'} shadow-sm transition-all`} >
+        <div className={`flex items-center justify-between gap-4 ${documents.length === 0 ? 'mb-4' : 'mb-10'}`}>
+          <div>
+            <h3 className={`${documents.length === 0 ? 'text-lg' : 'text-2xl'} font-bold text-gray-700 mb-2 tracking-tighter`}>Archivos de contexto</h3>
+            {documents.length > 0 && <p className="text-gray-500 font-bold text-[10px] tracking-[0.2em]">Base de conocimiento extendida para la IA.</p>}
           </div>
-          <div className="flex-1 overflow-hidden">
-            <p className="text-black font-bold text-[12px] truncate mb-0.5">{doc}</p>
-            <p className="text-[8px] text-gray-500 font-black tracking-widest">Documento PDF</p>
-          </div>
+          <label className={`cursor-pointer flex items-center justify-center gap-3 bg-black hover:bg-gray-800 transition-all text-white font-black ${documents.length === 0 ? 'px-4 py-2 text-[8px]' : 'px-8 py-4 text-[10px]'} rounded-2xl tracking-widest shadow-xl active:scale-95`}>
+            <Upload size={documents.length === 0 ? 12 : 16} />
+            <span>Subir documento</span>
+            <input type="file" className="hidden" accept=".pdf" onChange={input => handleFileUpload(input as any)} />
+          </label>
         </div>
-      ))}
-      {documents.length === 0 && (
-        <div className="col-span-full py-6 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-[2.5rem] opacity-40 grayscale">
-          <FileText size={24} className="mb-2" />
-          <p className="text-[10px] font-black tracking-[0.4em]">Repositorio vacío</p>
-        </div>
-      )}
-    </div>
-  </div >
 
-  {/* Notificaciones & Permisos */ }
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {documents.map((doc, idx) => (
+            <div key={idx} className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-gray-50 border border-gray-200 group hover:border-[#dc0014]/20 transition-all cursor-default">
+              <div className="bg-white border border-gray-200 p-4 rounded-xl text-black group-hover:scale-110 group-hover:bg-[#dc0014] group-hover:text-white transition-all">
+                <FileText size={20} />
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-black font-bold text-[12px] truncate mb-0.5">{doc}</p>
+                <p className="text-[8px] text-gray-500 font-black tracking-widest">Documento PDF</p>
+              </div>
+            </div>
+          ))}
+          {documents.length === 0 && (
+            <div className="col-span-full py-6 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-[2.5rem] opacity-40 grayscale">
+              <FileText size={24} className="mb-2" />
+              <p className="text-[10px] font-black tracking-[0.4em]">Repositorio vacío</p>
+            </div>
+          )}
+        </div>
+      </div >
+
+      {/* Notificaciones & Permisos */}
       <div className="bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-[0.02]">
           <Bell size={120} />
@@ -895,50 +895,50 @@ export const ProfileView: React.FC = () => {
         </div>
       </div>
 
-  {/* Activity Log Section */ }
-  <div className="p-4 md:px-8 pb-12">
-    <div className="bg-white border border-gray-200 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h3 className="text-gray-700 font-bold text-2xl tracking-tighter mb-2">Log de Actividad</h3>
-          <p className="text-gray-500 font-bold text-[10px] tracking-[0.4em]">Historial de acciones recientes</p>
-        </div>
-        <div className="p-3 bg-red-50 text-red-600 rounded-xl">
-          <Clock size={20} />
-        </div>
-      </div>
-
-      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-        {activityLog && activityLog.length > 0 ? (
-          activityLog.map((log) => (
-            <div key={log.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-red-100 transition-colors">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0">
-                <span className="text-[10px] font-black text-red-600">{log.userName.charAt(0).toUpperCase()}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-black text-gray-900 truncate uppercase tracking-wider">{log.userName}</span>
-                  <span className="text-[9px] font-bold text-gray-400 whitespace-nowrap">
-                    {new Date(log.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mb-1">
-                  <span className="font-bold text-red-600 uppercase text-[10px] mr-2">
-                    {log.action.replace('_', ' ')}
-                  </span>
-                  {log.details}
-                </p>
-              </div>
+      {/* Activity Log Section */}
+      <div className="p-4 md:px-8 pb-12">
+        <div className="bg-white border border-gray-200 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-gray-700 font-bold text-2xl tracking-tighter mb-2">Log de Actividad</h3>
+              <p className="text-gray-500 font-bold text-[10px] tracking-[0.4em]">Historial de acciones recientes</p>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-12 text-gray-400 text-[10px] tracking-[0.4em] font-bold uppercase">
-            No hay actividad registrada
+            <div className="p-3 bg-red-50 text-red-600 rounded-xl">
+              <Clock size={20} />
+            </div>
           </div>
-        )}
+
+          <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            {activityLog && activityLog.length > 0 ? (
+              activityLog.map((log) => (
+                <div key={log.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-red-100 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                    <span className="text-[10px] font-black text-red-600">{log.userName.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-black text-gray-900 truncate uppercase tracking-wider">{log.userName}</span>
+                      <span className="text-[9px] font-bold text-gray-400 whitespace-nowrap">
+                        {new Date(log.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">
+                      <span className="font-bold text-red-600 uppercase text-[10px] mr-2">
+                        {log.action.replace('_', ' ')}
+                      </span>
+                      {log.details}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 text-gray-400 text-[10px] tracking-[0.4em] font-bold uppercase">
+                No hay actividad registrada
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
     </div >
   );
 };
