@@ -19,7 +19,7 @@ const SidebarIcon: React.FC<{ icon: React.ElementType, active: boolean, color: s
     <div className="flex items-center justify-center w-full">
       <Icon
         size={24}
-        className={`transition-all duration-300 ${active ? glowClass : ''} ${!active ? 'group-hover:text-black/60' : ''}`}
+        className={`transition-all duration-300 ${!active ? 'group-hover:text-black/60' : ''}`}
         style={{ color: active ? '#dc0014' : '#9ca3af' }}
         strokeWidth={active ? 2.5 : 2}
       />
@@ -154,11 +154,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   className="relative flex-1 flex flex-col items-center justify-center transition-all duration-300"
                   style={{ color: active ? color : '#9ca3af' }}
                 >
-                  <Icon size={20} className={active ? getGlowClass(s.id) : ''} />
+                  <Icon size={20} />
                   {active && (
                     <div
                       className="absolute bottom-0 w-8 h-[3px] rounded-t-full"
-                      style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}` }}
+                      style={{ backgroundColor: color }}
                     />
                   )}
                 </button>
