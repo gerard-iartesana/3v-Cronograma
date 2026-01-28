@@ -253,8 +253,11 @@ export const ProfileView: React.FC = () => {
   const chartData = useMemo(() => {
     if (displayMode === 'accumulated') {
       return [
-        { name: 'Estimado', value: metrics.costeEstimado, color: '#9ca3af' },
-        { name: 'Real', value: metrics.valorReal > 0 ? metrics.valorReal : metrics.costeReal, color: '#dc0014' }
+        {
+          name: 'Total',
+          Estimado: metrics.costeEstimado,
+          Real: metrics.valorReal > 0 ? metrics.valorReal : metrics.costeReal
+        }
       ];
     } else {
       return Object.entries(metrics.tagBreakdown as Record<string, { proyVal: number, proyCost: number, realVal: number, realCost: number }>).map(([tag, data]) => ({
@@ -621,18 +624,8 @@ export const ProfileView: React.FC = () => {
                   itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
                   formatter={(value: number) => [`${value.toLocaleString()}€`, '']}
                 />
-                {displayMode === 'accumulated' ? (
-                  <Bar dataKey="value" radius={[12, 12, 0, 0]} barSize={80}>
-                    {chartData.map((entry: any, index: number) => (
-                      <Cell key={`cell-acc-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                ) : (
-                  <>
-                    <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={40} fill="#9ca3af" />
-                    <Bar dataKey="Real" radius={[12, 12, 0, 0]} barSize={40} fill="#dc0014" />
-                  </>
-                )}
+                <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={displayMode === 'accumulated' ? 80 : 40} fill="#9ca3af" />
+                <Bar dataKey="Real" radius={[12, 12, 0, 0]} barSize={displayMode === 'accumulated' ? 80 : 40} fill="#dc0014" />
               </BarChart>
             </ResponsiveContainer>
           </div>
