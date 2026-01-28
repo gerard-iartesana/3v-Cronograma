@@ -3,15 +3,12 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { GlassHeader } from './GlassHeader';
-import {
-  BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, YAxis, Legend,
-  PieChart, Pie
-} from 'recharts';
+
 import { TrendingUp, TrendingDown, Clock, Filter, ChevronLeft, ChevronRight, Calendar, Calculator, Sparkles, Download, Upload, Trash2, Settings, Bell, Palette, X, Info, ChevronDown, CheckCircle2, Circle, Users, Plus, FileText, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { expandRecurringEvents } from '../utils/recurrence';
 import { parseDurationToHours, calculateReactiveCost } from '../utils/cost';
-import { MetricsChart } from './MetricsChart';
+
 
 export const ProfileView: React.FC = () => {
   const { user, logout } = useAuth();
@@ -19,8 +16,7 @@ export const ProfileView: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
-  const [displayMode, setDisplayMode] = useState<'accumulated' | 'detailed'>('accumulated');
-  const [breakdownMetric, setBreakdownMetric] = useState<'valor' | 'coste'>('valor');
+
   const [timeRange, setTimeRange] = useState({ start: 0, end: 11 }); // 0-11 months
   const [paletteOpen, setPaletteOpen] = useState<string | null>(null);
   const [agendaDensity, setAgendaDensity] = useState<number>(1);
@@ -258,23 +254,7 @@ export const ProfileView: React.FC = () => {
     return { valorEstimado, costeEstimado, valorReal, costeReal, productionReal, timeReal, proratedExpenses, tagBreakdown };
   }, [filteredEvents, filteredEventsForRange, projects, timeRange, selectedYear, budget.hourlyRate, budget.expenses, selectedTags, allTags, projectMaps]);
 
-  const chartData = useMemo(() => {
-    if (displayMode === 'accumulated') {
-      return [
-        {
-          name: 'Total',
-          Estimado: metrics.costeEstimado,
-          Real: metrics.valorReal > 0 ? metrics.valorReal : metrics.costeReal
-        }
-      ];
-    } else {
-      return Object.entries(metrics.tagBreakdown as Record<string, { proyVal: number, proyCost: number, realVal: number, realCost: number }>).map(([tag, data]) => ({
-        name: tag,
-        Estimado: breakdownMetric === 'valor' ? data.proyVal : data.proyCost,
-        Real: breakdownMetric === 'valor' ? data.realVal : data.realCost,
-      })).filter(d => (d.Estimado !== undefined && d.Estimado > 0) || (d.Real !== undefined && d.Real > 0));
-    }
-  }, [metrics, displayMode, breakdownMetric]);
+
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
@@ -590,17 +570,8 @@ export const ProfileView: React.FC = () => {
 
 
 
-          {/* Metrics Section */}
-          <div className="relative overflow-visible mt-12 mb-8">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#dc0014]" />
-              <h3 className="text-gray-700 font-bold text-2xl tracking-tighter">Métricas</h3>
-            </div>
-          </div>
 
-          <div className="w-full mx-auto h-[400px]">
-            <MetricsChart data={chartData} displayMode={displayMode} />
-          </div>
+
         </div>
 
         {/* Stats Grid */}
