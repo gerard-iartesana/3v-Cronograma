@@ -11,6 +11,7 @@ import { TrendingUp, TrendingDown, Clock, Filter, ChevronLeft, ChevronRight, Cal
 import { motion, AnimatePresence } from 'framer-motion';
 import { expandRecurringEvents } from '../utils/recurrence';
 import { parseDurationToHours, calculateReactiveCost } from '../utils/cost';
+import { MetricsChart } from './MetricsChart';
 
 export const ProfileView: React.FC = () => {
   const { user, logout } = useAuth();
@@ -88,6 +89,7 @@ export const ProfileView: React.FC = () => {
   }, [filteredEventsForRange, selectedTags, selectedAssignees, projectMaps]);
 
   // Metrics calculation
+  // Metrics calculation
   const metrics = useMemo(() => {
     let valorEstimado = 0;
     let costeEstimado = 0;
@@ -121,7 +123,8 @@ export const ProfileView: React.FC = () => {
     });
 
     // 2. Process Projects (Proportional for Annual, Puntual by Deadline)
-    const monthsSelected = (timeRange.end - timeRange.start) + 1;
+    // Ensure we strictly respect the slider.
+    const monthsSelected = Math.max(1, (timeRange.end - timeRange.start) + 1);
 
     // Helper for Annual Project Logic
     const getProjectFactor = (p: any) => {
@@ -137,6 +140,7 @@ export const ProfileView: React.FC = () => {
         const isCurrentYear = dateIsValid && d.getFullYear() === selectedYear;
 
         // Show if ongoing (regardless of date) OR if it belongs to this year
+        // PRORATION: Always prorate annual projects based on the slider selection (monthsSelected / 12)
         if (p.status === 'ongoing' || isCurrentYear) {
           return { isInRange: true, factor: monthsSelected / 12 };
         }
@@ -166,7 +170,10 @@ export const ProfileView: React.FC = () => {
         const internalRate = budget.hourlyRate || 20;
         const marketRate = 80;
         const pBudgetedHours = p.budgetedHours || 0;
-        const currentProjectedCost = calculateReactiveCost(`${pBudgetedHours}h`, marketRate, p.budgetedCost);
+        // Use safe default for budgetedCost
+        const pBudgetedCost = p.budgetedCost !== undefined ? p.budgetedCost : 0;
+
+        const currentProjectedCost = calculateReactiveCost(`${pBudgetedHours}h`, marketRate, pBudgetedCost);
 
         valorEstimado += (p.budgetedValue || p.globalValue || 0) * factor;
         costeEstimado += currentProjectedCost * factor;
@@ -232,7 +239,8 @@ export const ProfileView: React.FC = () => {
 
           const rate = budget.hourlyRate || 80;
           const pBudgetedHours = p.budgetedHours || 0;
-          const currentProjectedCost = calculateReactiveCost(`${pBudgetedHours}h`, rate, p.budgetedCost);
+          const pBudgetedCost = p.budgetedCost !== undefined ? p.budgetedCost : 0;
+          const currentProjectedCost = calculateReactiveCost(`${pBudgetedHours}h`, rate, pBudgetedCost);
 
           tagBreakdown[t].proyVal += (p.budgetedValue || p.globalValue || 0) * factor;
           tagBreakdown[t].proyCost += currentProjectedCost * factor;
@@ -262,14 +270,8 @@ export const ProfileView: React.FC = () => {
     } else {
       return Object.entries(metrics.tagBreakdown as Record<string, { proyVal: number, proyCost: number, realVal: number, realCost: number }>).map(([tag, data]) => ({
         name: tag,
-        // For detailed view tags, we likely don't map fixed expenses to tags yet.
-        // The original code mapped Proyectado/Real based on breakdownMetric toggle.
-        // Let's preserve original logic but map to new keys.
         Estimado: breakdownMetric === 'valor' ? data.proyVal : data.proyCost,
         Real: breakdownMetric === 'valor' ? data.realVal : data.realCost,
-        // Detailed mode uses different keys in original code (Proyectado/Real vs Valor/Coste in Accum).
-        // The original Chart used conditional dataKey.
-        // Let's just fix Accumulated mode which is where Expenses matter most.
       })).filter(d => (d.Estimado !== undefined && d.Estimado > 0) || (d.Real !== undefined && d.Real > 0));
     }
   }, [metrics, displayMode, breakdownMetric]);
@@ -597,37 +599,7 @@ export const ProfileView: React.FC = () => {
           </div>
 
           <div className="w-full mx-auto h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 60, right: 30, left: 20, bottom: 20 }} barGap={0} barCategoryGap="25%">
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#000', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em' }}
-                  dy={20}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#666', fontSize: 10, fontWeight: 700 }}
-                  tickFormatter={(val) => `${val}€`}
-                />
-                <Tooltip
-                  cursor={{ fill: 'rgba(0,0,0,0.03)' }}
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '20px',
-                    padding: '15px',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                  }}
-                  itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
-                  formatter={(value: number) => [`${value.toLocaleString()}€`, '']}
-                />
-                <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={displayMode === 'accumulated' ? 80 : 40} fill="#9ca3af" />
-                <Bar dataKey="Real" radius={[12, 12, 0, 0]} barSize={displayMode === 'accumulated' ? 80 : 40} fill="#dc0014" />
-              </BarChart>
-            </ResponsiveContainer>
+            <MetricsChart data={chartData} displayMode={displayMode} />
           </div>
         </div>
 
