@@ -132,9 +132,12 @@ export const ProfileView: React.FC = () => {
       let factor = 1;
 
       if (isAnnual) {
-        // Annual projects are counted if they belong to the selected year
+        // Annual/Maintenance projects are active for the whole year of their deadline
+        // OR if they have no deadline and are ongoing.
         const d = p.deadline ? new Date(p.deadline) : null;
-        if (!d || d.getFullYear() === selectedYear) {
+        const dateIsValid = d && !isNaN(d.getTime());
+
+        if (!p.deadline || (dateIsValid && d.getFullYear() === selectedYear)) {
           isInRange = true;
           factor = monthsSelected / 12;
         }
@@ -239,7 +242,8 @@ export const ProfileView: React.FC = () => {
 
       if (isAnnual) {
         const d = p.deadline ? new Date(p.deadline) : null;
-        if (!d || d.getFullYear() === selectedYear) {
+        const dateIsValid = d && !isNaN(d.getTime());
+        if (!p.deadline || (dateIsValid && d.getFullYear() === selectedYear)) {
           isInRange = true;
           factor = monthsSelected / 12;
         }
@@ -282,7 +286,7 @@ export const ProfileView: React.FC = () => {
   const chartData = useMemo(() => {
     if (displayMode === 'accumulated') {
       return [
-        { name: 'Estimado', value: metrics.costeEstimado, color: '#cbd5e1' },
+        { name: 'Estimado', value: metrics.costeEstimado, color: '#94a3b8' },
         { name: 'Real', value: metrics.valorReal > 0 ? metrics.valorReal : metrics.costeReal, color: '#dc0014' }
       ];
     } else {
@@ -658,7 +662,7 @@ export const ProfileView: React.FC = () => {
                   </Bar>
                 ) : (
                   <>
-                    <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={40} fill="#cbd5e1" />
+                    <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={40} fill="#94a3b8" />
                     <Bar dataKey="Real" radius={[12, 12, 0, 0]} barSize={40} fill="#dc0014" />
                   </>
                 )}
