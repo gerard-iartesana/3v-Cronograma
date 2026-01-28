@@ -123,36 +123,40 @@ export const ProfileView: React.FC = () => {
     // 2. Process Projects (Proportional for Annual, Puntual by Deadline)
     const monthsSelected = (timeRange.end - timeRange.start) + 1;
 
-    projects.forEach(p => {
-      const isAnnual = p.tags?.some(t =>
+    // Helper for Annual Project Logic
+    const getProjectFactor = (p: any) => {
+      const isAnnual = p.tags?.some((t: string) =>
         ['anual', 'mantenimiento', 'fee', 'rrss', 'social media', 'recurrente'].some(kw => t.toLowerCase().includes(kw))
       );
 
-      let isInRange = false;
-      let factor = 1;
-
       if (isAnnual) {
-        // Annual/Maintenance projects: Active if ongoing OR completed in current year
+        // Broad definition: If it's ongoing, or if it has a deadline in this year.
+        // Even if deadline is past (e.g. Jan 2026), if we are looking at 2026, it counts.
         const d = p.deadline ? new Date(p.deadline) : null;
         const dateIsValid = d && !isNaN(d.getTime());
         const isCurrentYear = dateIsValid && d.getFullYear() === selectedYear;
 
+        // Show if ongoing (regardless of date) OR if it belongs to this year
         if (p.status === 'ongoing' || isCurrentYear) {
-          isInRange = true;
-          factor = monthsSelected / 12;
+          return { isInRange: true, factor: monthsSelected / 12 };
         }
-      } else {
-        // One-off (Puntual) projects are counted only if their deadline is in the range
-        if (p.deadline) {
-          const d = new Date(p.deadline);
-          const yearMatch = d.getFullYear() === selectedYear;
-          const monthMatch = d.getMonth() >= timeRange.start && d.getMonth() <= timeRange.end;
-          if (yearMatch && monthMatch) {
-            isInRange = true;
-            factor = 1;
-          }
+        return { isInRange: false, factor: 0 };
+      }
+
+      // Non-Annual (One-off)
+      if (p.deadline) {
+        const d = new Date(p.deadline);
+        const yearMatch = d.getFullYear() === selectedYear;
+        const monthMatch = d.getMonth() >= timeRange.start && d.getMonth() <= timeRange.end;
+        if (yearMatch && monthMatch) {
+          return { isInRange: true, factor: 1 };
         }
       }
+      return { isInRange: false, factor: 0 };
+    };
+
+    projects.forEach(p => {
+      const { isInRange, factor } = getProjectFactor(p);
 
       if (isInRange) {
         const tagMatch = selectedTags.length === 0 || p.tags?.some(t => selectedTags.includes(t));
@@ -183,19 +187,6 @@ export const ProfileView: React.FC = () => {
 
     const totalAnnualExpenses = (budget.expenses || []).reduce((acc, exp) => acc + exp.amount, 0);
     const proratedExpenses = (totalAnnualExpenses / 12) * monthsSelected;
-
-    // We can subtract this from "Valor Real" to show "Net" or just return it as separate metric.
-    // User requirement: "recalculate depending on time range".
-    // Let's subtract it from "Valor Real" (Profit) if we treat Valor as Revenue? 
-    // Usually: Profit = Revenue - Cost. 
-    // Here: Project Value ~ Revenue. Project Cost ~ Time Cost. 
-    // Fixed Expenses are extra costs.
-    // Let's add it to "Coste Real" so it reflects total cost?
-    // "Gastos anuales ... se recalcularán ... dividiendo ese gasto anual solo por esos 2 meses"
-
-    // We separate proratedExpenses for the chart, so we DO NOT add it to costeReal here.
-    // costeReal remains pure Time/Activity cost.
-    // costeReal += proratedExpenses;
 
     const tagBreakdown: Record<string, { proyVal: number, proyCost: number, realVal: number, realCost: number }> = {};
 
@@ -233,33 +224,7 @@ export const ProfileView: React.FC = () => {
 
     // Populate tags from projects
     projects.forEach(p => {
-      const isAnnual = p.tags?.some(t =>
-        ['anual', 'mantenimiento', 'fee', 'rrss', 'social media', 'recurrente'].some(kw => t.toLowerCase().includes(kw))
-      );
-
-      let isInRange = false;
-      let factor = 1;
-
-      if (isAnnual) {
-        const d = p.deadline ? new Date(p.deadline) : null;
-        const dateIsValid = d && !isNaN(d.getTime());
-        const isCurrentYear = dateIsValid && d.getFullYear() === selectedYear;
-
-        if (p.status === 'ongoing' || isCurrentYear) {
-          isInRange = true;
-          factor = monthsSelected / 12;
-        }
-      } else {
-        if (p.deadline) {
-          const d = new Date(p.deadline);
-          const yearMatch = d.getFullYear() === selectedYear;
-          const monthMatch = d.getMonth() >= timeRange.start && d.getMonth() <= timeRange.end;
-          if (yearMatch && monthMatch) {
-            isInRange = true;
-            factor = 1;
-          }
-        }
-      }
+      const { isInRange, factor } = getProjectFactor(p);
 
       if (isInRange) {
         p.tags?.forEach(t => {
@@ -288,7 +253,7 @@ export const ProfileView: React.FC = () => {
   const chartData = useMemo(() => {
     if (displayMode === 'accumulated') {
       return [
-        { name: 'Estimado', value: metrics.costeEstimado, color: '#cbd5e1' },
+        { name: 'Estimado', value: metrics.costeEstimado, color: '#9ca3af' },
         { name: 'Real', value: metrics.valorReal > 0 ? metrics.valorReal : metrics.costeReal, color: '#dc0014' }
       ];
     } else {
@@ -664,7 +629,7 @@ export const ProfileView: React.FC = () => {
                   </Bar>
                 ) : (
                   <>
-                    <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={40} fill="#cbd5e1" />
+                    <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={40} fill="#9ca3af" />
                     <Bar dataKey="Real" radius={[12, 12, 0, 0]} barSize={40} fill="#dc0014" />
                   </>
                 )}
