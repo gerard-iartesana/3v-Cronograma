@@ -238,7 +238,7 @@ export const ProfileView: React.FC = () => {
   const chartData = useMemo(() => {
     if (displayMode === 'accumulated') {
       return [
-        { name: 'Estimado', value: metrics.costeEstimado, color: '#000000' },
+        { name: 'Estimado', value: metrics.costeEstimado, color: '#cbd5e1' },
         { name: 'Real', value: metrics.valorReal > 0 ? metrics.valorReal : metrics.costeReal, color: '#dc0014' }
       ];
     } else {
@@ -614,7 +614,7 @@ export const ProfileView: React.FC = () => {
                   </Bar>
                 ) : (
                   <>
-                    <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={40} fill="#000000" />
+                    <Bar dataKey="Estimado" radius={[12, 12, 0, 0]} barSize={40} fill="#cbd5e1" />
                     <Bar dataKey="Real" radius={[12, 12, 0, 0]} barSize={40} fill="#dc0014" />
                   </>
                 )}
@@ -642,11 +642,11 @@ export const ProfileView: React.FC = () => {
             </p>
             <div className="flex gap-4 mt-2 mb-4">
               <div className="flex flex-col">
-                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Producción</span>
+                <span className="text-[8px] font-normal text-gray-400 uppercase tracking-widest">Producción</span>
                 <span className="text-sm font-bold text-gray-600">{metrics.productionReal.toLocaleString()}€</span>
               </div>
               <div className="flex flex-col border-l border-gray-200 pl-4">
-                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Tiempo</span>
+                <span className="text-[8px] font-normal text-gray-400 uppercase tracking-widest">Tiempo</span>
                 <span className="text-sm font-bold text-gray-600">{metrics.timeReal.toLocaleString()}€</span>
               </div>
             </div>

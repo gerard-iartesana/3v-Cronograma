@@ -463,14 +463,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
                         <span className="text-[#dc0014] font-bold">{(projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
                       </span>
-                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <span className="text-black font-bold">{formatDuration(projectCost.hoursSpent * 60)}</span> <span className="opacity-50">Dedicado</span>
-                      </span>
-                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none border-l pl-6 border-gray-100">
-                        <span className="text-gray-400 font-bold">{formatDuration(projectCost.hoursTotal * 60)}</span> <span className="opacity-30">Total</span>
-                      </span>
                       {(project.realProductionCost !== undefined || project.realTimeCost !== undefined) && project.realProductionCost + project.realTimeCost > 0 && (
-                        <div className="flex gap-3 text-[9px] font-black text-gray-400 uppercase tracking-tighter bg-gray-100/50 px-3 py-1 rounded-full border border-gray-100">
+                        <div className="flex gap-3 text-[9px] font-normal text-gray-400 uppercase tracking-tighter bg-gray-100/50 px-3 py-1 rounded-full border border-gray-100">
                           <span>Prod: {project.realProductionCost || 0}€</span>
                           <span>Time: {project.realTimeCost || 0}€</span>
                         </div>
