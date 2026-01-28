@@ -120,14 +120,38 @@ export const ProfileView: React.FC = () => {
       }
     });
 
-    // 2. Process Projects (Deadline in Range)
-    projects.forEach(p => {
-      if (!p.deadline) return;
-      const d = new Date(p.deadline);
-      const yearMatch = d.getFullYear() === selectedYear;
-      const monthMatch = d.getMonth() >= timeRange.start && d.getMonth() <= timeRange.end;
+    // 2. Process Projects (Proportional for Annual, Puntual by Deadline)
+    const monthsSelected = (timeRange.end - timeRange.start) + 1;
 
-      if (yearMatch && monthMatch) {
+    projects.forEach(p => {
+      const isAnnual = p.tags?.some(t =>
+        ['anual', 'mantenimiento', 'fee', 'rrss', 'social media', 'recurrente'].some(kw => t.toLowerCase().includes(kw))
+      );
+
+      let isInRange = false;
+      let factor = 1;
+
+      if (isAnnual) {
+        // Annual projects are counted if they belong to the selected year
+        const d = p.deadline ? new Date(p.deadline) : null;
+        if (!d || d.getFullYear() === selectedYear) {
+          isInRange = true;
+          factor = monthsSelected / 12;
+        }
+      } else {
+        // One-off (Puntual) projects are counted only if their deadline is in the range
+        if (p.deadline) {
+          const d = new Date(p.deadline);
+          const yearMatch = d.getFullYear() === selectedYear;
+          const monthMatch = d.getMonth() >= timeRange.start && d.getMonth() <= timeRange.end;
+          if (yearMatch && monthMatch) {
+            isInRange = true;
+            factor = 1;
+          }
+        }
+      }
+
+      if (isInRange) {
         const tagMatch = selectedTags.length === 0 || p.tags?.some(t => selectedTags.includes(t));
         const assigneeMatch = selectedAssignees.length === 0 || p.assignees?.some(a => selectedAssignees.includes(a));
         if (!tagMatch || !assigneeMatch) return;
@@ -137,28 +161,23 @@ export const ProfileView: React.FC = () => {
         const pBudgetedHours = p.budgetedHours || 0;
         const currentProjectedCost = calculateReactiveCost(`${pBudgetedHours}h`, marketRate, p.budgetedCost);
 
-        valorEstimado += p.budgetedValue || p.globalValue || 0;
-        costeEstimado += currentProjectedCost;
+        valorEstimado += (p.budgetedValue || p.globalValue || 0) * factor;
+        costeEstimado += currentProjectedCost * factor;
 
         if (p.status === 'completed' || p.status === 'ongoing') {
-          // Use breakout costs if available, otherwise fallback to standard calculation
           const pProd = (p.realProductionCost || 0);
           const pCost = p.realCost !== undefined ? p.realCost : (pProd + (p.realTimeCost || 0));
           const pTime = p.realCost !== undefined ? Math.max(0, p.realCost - pProd) : (p.realTimeCost || 0);
 
-          productionReal += pProd;
-          timeReal += pTime;
-          costeReal += pCost;
+          productionReal += pProd * factor;
+          timeReal += pTime * factor;
+          costeReal += pCost * factor;
 
-          valorReal += p.realValue || 0;
+          valorReal += (p.realValue || 0) * factor;
         }
       }
     });
 
-    // 3. Subtract Fixed Expenses (Prorated)
-    // Formula: (AnnualTotal / 12) * (SelectedMonthsCount)
-    // timeRange.end - timeRange.start is the index diff.
-    const monthsSelected = (timeRange.end - timeRange.start) + 1;
     const totalAnnualExpenses = (budget.expenses || []).reduce((acc, exp) => acc + exp.amount, 0);
     const proratedExpenses = (totalAnnualExpenses / 12) * monthsSelected;
 
@@ -211,11 +230,32 @@ export const ProfileView: React.FC = () => {
 
     // Populate tags from projects
     projects.forEach(p => {
-      if (!p.deadline) return;
-      const d = new Date(p.deadline);
-      const yearMatch = d.getFullYear() === selectedYear;
-      const monthMatch = d.getMonth() >= timeRange.start && d.getMonth() <= timeRange.end;
-      if (yearMatch && monthMatch) {
+      const isAnnual = p.tags?.some(t =>
+        ['anual', 'mantenimiento', 'fee', 'rrss', 'social media', 'recurrente'].some(kw => t.toLowerCase().includes(kw))
+      );
+
+      let isInRange = false;
+      let factor = 1;
+
+      if (isAnnual) {
+        const d = p.deadline ? new Date(p.deadline) : null;
+        if (!d || d.getFullYear() === selectedYear) {
+          isInRange = true;
+          factor = monthsSelected / 12;
+        }
+      } else {
+        if (p.deadline) {
+          const d = new Date(p.deadline);
+          const yearMatch = d.getFullYear() === selectedYear;
+          const monthMatch = d.getMonth() >= timeRange.start && d.getMonth() <= timeRange.end;
+          if (yearMatch && monthMatch) {
+            isInRange = true;
+            factor = 1;
+          }
+        }
+      }
+
+      if (isInRange) {
         p.tags?.forEach(t => {
           if (!tagBreakdown[t]) return;
 
@@ -223,10 +263,14 @@ export const ProfileView: React.FC = () => {
           const pBudgetedHours = p.budgetedHours || 0;
           const currentProjectedCost = calculateReactiveCost(`${pBudgetedHours}h`, rate, p.budgetedCost);
 
-          tagBreakdown[t].proyVal += p.budgetedValue || p.globalValue || 0;
-          tagBreakdown[t].proyCost += currentProjectedCost;
+          tagBreakdown[t].proyVal += (p.budgetedValue || p.globalValue || 0) * factor;
+          tagBreakdown[t].proyCost += currentProjectedCost * factor;
+
           if (p.status === 'completed' || p.status === 'ongoing') {
-            tagBreakdown[t].realVal += p.realValue || 0;
+            const pProd = (p.realProductionCost || 0);
+            const pCost = p.realCost !== undefined ? p.realCost : (pProd + (p.realTimeCost || 0));
+            tagBreakdown[t].realVal += (p.realValue || 0) * factor;
+            tagBreakdown[t].realCost += pCost * factor;
           }
         });
       }
