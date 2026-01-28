@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MarketingEvent } from '../../types';
+import { MarketingEvent, Project } from '../../types';
+import { AlertCircle } from 'lucide-react';
 
 interface MonthViewProps {
     viewDate: Date;
@@ -13,6 +14,7 @@ interface MonthViewProps {
     getEventStyle: (event: MarketingEvent) => any;
     onSelectCampaign: (campaign: any) => void;
     selectedCampaignId?: string;
+    projects: Project[];
 }
 
 const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -27,7 +29,8 @@ export const MonthView: React.FC<MonthViewProps> = ({
     onOpenEvent,
     getEventStyle,
     onSelectCampaign,
-    selectedCampaignId
+    selectedCampaignId,
+    projects
 }) => {
     const [isDragging, setIsDragging] = useState(false);
     const year = viewDate.getFullYear();
@@ -71,6 +74,8 @@ export const MonthView: React.FC<MonthViewProps> = ({
 
                     const isToday = isSameDay(new Date(), dateObj);
 
+                    const deadlines = projects.filter(p => p.deadline && isSameDay(new Date(p.deadline), dateObj));
+
                     return (
                         <div
                             key={idx}
@@ -81,7 +86,17 @@ export const MonthView: React.FC<MonthViewProps> = ({
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                                     <span className={`text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-md ${isToday ? 'bg-[#dc0014] text-white shadow-md' : dt.currentMonth ? 'text-gray-900' : 'text-gray-300'}`}>{dt.day}</span>
                                     {holidays.map(h => (
-                                        <span key={h.id} className="text-[9px] font-semibold text-gray-500 uppercase tracking-tight leading-none">{h.title}</span>
+                                        <span key={h.id} title={h.title} className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-tight bg-gray-100/50 px-1 rounded-sm whitespace-normal text-center">
+                                            {h.title}
+                                        </span>
+                                    ))}
+                                    {deadlines.map(p => (
+                                        <div key={p.id} title={p.title} className="flex items-start gap-1 bg-red-50 border border-red-100 px-1.5 py-1 rounded-md shadow-sm mt-0.5 w-full">
+                                            <AlertCircle size={10} className="text-red-500 flex-shrink-0 mt-0.5" />
+                                            <span className="text-[9px] font-black text-red-600 uppercase tracking-tight whitespace-normal leading-tight break-words">
+                                                {p.title}
+                                            </span>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -157,7 +172,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
                                                     </span>
                                                 ))}
                                         </div>
-                                        <span className="text-[10px] font-semibold leading-tight inline-block pb-1 cursor-pointer hover:opacity-80 transition-opacity break-words whitespace-normal pointer-events-none" style={{ color: 'inherit' }}>{event.title}</span>
+                                        <span className="text-[10px] font-semibold leading-tight inline-block pb-1 cursor-pointer hover:opacity-80 transition-opacity break-words whitespace-normal pointer-events-none w-full" style={{ color: 'inherit' }}>{event.title}</span>
                                     </motion.div>
                                 ))}
                             </div>

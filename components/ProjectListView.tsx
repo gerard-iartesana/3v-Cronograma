@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { GlassHeader } from './GlassHeader';
-import { CheckCircle2, Circle, Layout, ClipboardList, Clock, Info, Banknote, Calendar, Plus, Trash2, Edit3, ArrowRight, ChevronRight, ChevronLeft, ChevronDown, Lightbulb, RotateCw, Check, Cog, Palette, X, TrendingUp, TrendingDown, Filter, Calculator, Sparkles, Download, Upload, Settings, Bell, Users, FileText, Edit, Save, Briefcase, Tag, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, Circle, Layout, ClipboardList, Clock, Info, Banknote, Calendar, Plus, Trash2, Edit3, ArrowRight, ChevronRight, ChevronLeft, ChevronDown, Lightbulb, RotateCw, Check, Cog, Palette, X, TrendingUp, TrendingDown, Filter, Calculator, Sparkles, Download, Upload, Settings, Bell, Users, FileText, Edit, Save, Briefcase, Tag, AlertCircle, GripVertical } from 'lucide-react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { Project, MarketingEvent } from '../types';
 import { expandRecurringEvents } from '../utils/recurrence';
-import { parseDurationToHours, calculateReactiveCost } from '../utils/cost';
+import { parseDurationToHours, calculateReactiveCost, formatDuration } from '../utils/cost';
 
 interface ProjectCardProps {
   project: Project;
@@ -43,23 +43,25 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   deleteEvent
 }) => {
   const { budget, tagColors } = useApp();
+  // Move calculation logic inside useEffect to avoid render-time dependency issues
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState(project);
+  const [editForm, setEditForm] = useState<Project>(project);
+
+  React.useEffect(() => {
+    if (isEditing) {
+      // Recalculate cost when entering edit mode to ensure fresh data if not manually set
+      // But do NOT overwrite if user has already edited.
+      // Actually, just syncing initial state when opening edit is enough.
+      // We will do it in the render or a specific effect if needed.
+      // For now, let's keep it simple: initial state is project.
+    }
+  }, [isEditing]);
 
   React.useEffect(() => {
     if (!isExpanded) setIsEditing(false);
   }, [isExpanded]);
 
-  React.useEffect(() => {
-    if (isEditing) {
-      const rate = budget.hourlyRate || 80;
-      const hours = editForm.budgetedHours || 0;
-      setEditForm(prev => ({
-        ...prev,
-        budgetedCost: Math.round(hours * rate)
-      }));
-    }
-  }, [isEditing]);
+
 
 
 
@@ -109,16 +111,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   const isTemplate = project.status === 'template';
 
   const getProjectCost = () => {
-    const activityMetrics = expandedEvents.reduce((acc, ev) => {
-      const rate = budget.hourlyRate || 80;
+    const internalRate = budget.hourlyRate || 20;
+    const marketRate = 80; // Senior market rate
 
+    const activityMetrics = expandedEvents.reduce((acc, ev) => {
       const multiplier = (ev.assignees && ev.assignees.length > 0) ? ev.assignees.length : 1;
-      const bV = ev.budgetedValue !== undefined ? ev.budgetedValue : Math.round(parseDurationToHours(ev.duration) * rate * multiplier);
-      const bC = calculateReactiveCost(ev.duration, rate, ev.budgetedCost, multiplier);
+      const hours = parseDurationToHours(ev.duration);
+
+      const bV = ev.budgetedValue !== undefined ? ev.budgetedValue : Math.round(hours * marketRate * multiplier);
+      const bC = calculateReactiveCost(ev.duration, marketRate, ev.budgetedCost, multiplier);
       const rV = ev.realValue !== undefined ? ev.realValue : 0;
 
       const isPast = new Date(ev.date) < new Date();
-      const rC = isPast ? calculateReactiveCost(ev.duration, rate, ev.realCost, multiplier) : 0;
+      const rC = isPast ? calculateReactiveCost(ev.duration, internalRate, ev.realCost, multiplier) : 0;
 
       return {
         budgetedValue: acc.budgetedValue + bV,
@@ -128,12 +133,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       };
     }, { budgetedValue: 0, budgetedCost: 0, realValue: 0, realCost: 0 });
 
-    const rate = budget.hourlyRate || 80;
-
     // Spent: Past or Completed sessions
     const costSpent = expandedEvents.filter(ev => ev.completed || new Date(ev.date) < new Date()).reduce((acc, ev) => {
       const multiplier = (ev.assignees && ev.assignees.length > 0) ? ev.assignees.length : 1;
-      return acc + calculateReactiveCost(ev.duration, rate, ev.realCost, multiplier);
+      return acc + calculateReactiveCost(ev.duration, internalRate, ev.realCost, multiplier);
     }, 0);
 
     const hoursSpent = expandedEvents.filter(ev => ev.completed || new Date(ev.date) < new Date()).reduce((acc, ev) => acc + parseDurationToHours(ev.duration), 0);
@@ -141,7 +144,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     // Total Budgeted: Manual budgetedHours or all scheduled sessions
     const hoursTotal = project.budgetedHours || totalHours;
     const budgetedValue = project.budgetedValue !== undefined ? project.budgetedValue : (project.globalValue || activityMetrics.budgetedValue);
-    const budgetedCost = project.budgetedCost !== undefined ? project.budgetedCost : Math.round(hoursTotal * rate);
+    const budgetedCost = project.budgetedCost !== undefined ? project.budgetedCost : Math.round(hoursTotal * marketRate); // Use marketRate for budgeted cost
 
     const realValue = project.realValue !== undefined && project.realValue > 0 ? project.realValue : activityMetrics.realValue;
 
@@ -149,14 +152,32 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       budgetedValue,
       budgetedCost,
       realValue,
-      realCost: costSpent,
+      realCost: project.realCost !== undefined ? project.realCost : ((project.realProductionCost || 0) + (project.realTimeCost || 0) || costSpent),
       hoursSpent,
-      hoursTotal,
+      hoursTotal: project.budgetedHours || totalHours,
       isAI: (budgetedValue === 0 && activityMetrics.budgetedValue === 0)
     };
   };
 
   const projectCost = getProjectCost();
+
+  // Sync edit form when project or cost changes, ONLY if not currently editing (to avoid overwriting user typings)
+  // OR: Initialize correctly when entering edit mode.
+  // Let's use a simpler approach: When setIsEditing(true), we update the form.
+
+  const startEditing = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditForm({
+      ...project,
+      budgetedCost: project.budgetedCost || projectCost.budgetedCost,
+      realProductionCost: project.realProductionCost || 0,
+      realTimeCost: project.realTimeCost || projectCost.realCost,
+      realCost: project.realCost || (project.realProductionCost || 0) + (project.realTimeCost || 0) || projectCost.realCost
+    });
+    setIsEditing(true);
+  };
+
+
 
   return (
     <motion.div
@@ -164,8 +185,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       onClick={(e) => { e.stopPropagation(); if (!isEditing) onToggle(); }}
       className={`group relative border ${isExpanded ? 'border-[#dc0014] shadow-md' : isTemplate ? 'border-gray-200' : 'border-gray-200'} ${isTemplate ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'} rounded-[2rem] overflow-hidden transition-all ${isTemplate ? 'mb-1' : 'mb-2'} z-10 hover:z-20 ${isEditing ? '' : 'cursor-pointer'}`}
     >
-      <div className={`${isTemplate ? 'px-4 py-1.5' : 'px-5 pt-2 pb-3'}`}>
-        <div className="flex justify-between items-start">
+      <div className={`${isTemplate ? 'px-4 py-3' : 'px-5 pt-2 pb-3'}`}>
+        <div className={`flex justify-between ${isTemplate ? 'items-center' : 'items-start'}`}>
           <div className="flex-1 flex flex-wrap items-center gap-x-4 gap-y-1">
             <h3
               className={`text-[16px] font-bold ${isTemplate ? 'text-gray-400 hover:text-gray-700' : 'text-gray-700 hover:text-[#dc0014]'} transition-colors leading-tight`}
@@ -189,6 +210,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </div>
             )}
           </div>
+
+          {!isTemplate && project.deadline && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50/50 rounded-lg border border-red-100">
+              <Calendar size={12} className="text-red-500" />
+              <span className="text-[10px] font-black text-red-600">
+                {new Date(project.deadline).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+              </span>
+            </div>
+          )}
 
 
           {isTemplate && (
@@ -233,7 +263,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     <></>
                   )}
                   <button
-                    onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
+                    onClick={startEditing}
                     className="p-1.5 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 hover:text-black transition-all border border-gray-200"
                     title="Editar Proyecto"
                   >
@@ -307,8 +337,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       <div className="space-y-3">
                         {/* Bloque Estimado y Real Simplificado */}
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="p-4 bg-gray-50 border border-gray-200 rounded-3xl space-y-3">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Estimación</h4>
+                          <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Estimación</h4>
                             <div>
                               <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
                               <NumberInput
@@ -320,16 +350,39 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                             </div>
                           </div>
 
-                          <div className="p-4 bg-gray-50 border border-gray-200 rounded-3xl space-y-3">
+                          <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Realidad</h4>
-                            <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Real (€)</label>
-                              <NumberInput
-                                value={editForm.realCost || projectCost.realCost || 0}
-                                onChange={val => setEditForm({ ...editForm, realCost: Math.max(0, val) })}
-                                step={10}
-                                suffix="€"
-                              />
+                            <div className="grid grid-cols-1 gap-2">
+                              <div>
+                                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Producción (€)</label>
+                                <NumberInput
+                                  value={editForm.realProductionCost || 0}
+                                  onChange={val => setEditForm(prev => {
+                                    const nextProd = Math.max(0, val);
+                                    return { ...prev, realProductionCost: nextProd, realCost: nextProd + (prev.realTimeCost || 0) };
+                                  })}
+                                  step={10}
+                                  suffix="€"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Tiempo (€)</label>
+                                <NumberInput
+                                  value={editForm.realTimeCost || 0}
+                                  onChange={val => setEditForm(prev => {
+                                    const nextTime = Math.max(0, val);
+                                    return { ...prev, realTimeCost: nextTime, realCost: (prev.realProductionCost || 0) + nextTime };
+                                  })}
+                                  step={10}
+                                  suffix="€"
+                                />
+                              </div>
+                              <div className="pt-2 border-t border-gray-100 flex justify-between items-center">
+                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">Total Real:</span>
+                                <span className="text-sm font-black text-[#dc0014]">
+                                  {(editForm.realCost !== undefined ? editForm.realCost : ((editForm.realProductionCost || 0) + (editForm.realTimeCost || 0))).toLocaleString()}€
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -359,29 +412,34 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                         + Añadir
                       </button>
                     </div>
-                    {editForm.checklist.map((item, idx) => (
-                      <div key={item.id} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={item.label}
-                          onChange={e => {
-                            const newChecklist = [...editForm.checklist];
-                            newChecklist[idx] = { ...item, label: e.target.value };
-                            setEditForm({ ...editForm, checklist: newChecklist });
-                          }}
-                          className="flex-1 bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-black outline-none focus:border-[#dc0014]"
-                        />
-                        <button
-                          onClick={() => {
-                            const newChecklist = editForm.checklist.filter(i => i.id !== item.id);
-                            setEditForm({ ...editForm, checklist: newChecklist });
-                          }}
-                          className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
-                    ))}
+                    <Reorder.Group axis="y" values={editForm.checklist || []} onReorder={(newOrder) => setEditForm({ ...editForm, checklist: newOrder })} className="space-y-2">
+                      {editForm.checklist.map((item, idx) => (
+                        <Reorder.Item key={item.id} value={item} className="flex items-center gap-2">
+                          <div className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500">
+                            <GripVertical size={14} />
+                          </div>
+                          <input
+                            type="text"
+                            value={item.label}
+                            onChange={e => {
+                              const newChecklist = [...editForm.checklist];
+                              newChecklist[idx] = { ...item, label: e.target.value };
+                              setEditForm({ ...editForm, checklist: newChecklist });
+                            }}
+                            className="flex-1 bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-black outline-none focus:border-[#dc0014]"
+                          />
+                          <button
+                            onClick={() => {
+                              const newChecklist = editForm.checklist.filter(i => i.id !== item.id);
+                              setEditForm({ ...editForm, checklist: newChecklist });
+                            }}
+                            className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </Reorder.Item>
+                      ))}
+                    </Reorder.Group>
                   </div>
                   <button
                     onClick={handleSaveEdit}
@@ -398,13 +456,25 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   </div>
 
                   {!isTemplate && (
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
                       <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
                         <span className="text-black font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
                       </span>
                       <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <span className="text-[#dc0014] font-bold">{(project.realCost || projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
+                        <span className="text-[#dc0014] font-bold">{(projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
                       </span>
+                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
+                        <span className="text-black font-bold">{formatDuration(projectCost.hoursSpent * 60)}</span> <span className="opacity-50">Dedicado</span>
+                      </span>
+                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none border-l pl-6 border-gray-100">
+                        <span className="text-gray-400 font-bold">{formatDuration(projectCost.hoursTotal * 60)}</span> <span className="opacity-30">Total</span>
+                      </span>
+                      {(project.realProductionCost !== undefined || project.realTimeCost !== undefined) && project.realProductionCost + project.realTimeCost > 0 && (
+                        <div className="flex gap-3 text-[9px] font-black text-gray-400 uppercase tracking-tighter bg-gray-100/50 px-3 py-1 rounded-full border border-gray-100">
+                          <span>Prod: {project.realProductionCost || 0}€</span>
+                          <span>Time: {project.realTimeCost || 0}€</span>
+                        </div>
+                      )}
                       {project.deadline && (
                         <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none ml-auto">
                           <Calendar size={14} className="text-red-500/50" />
@@ -708,7 +778,7 @@ export const ProjectListView: React.FC = () => {
           <div
             key={col.status}
             data-status={col.status}
-            className="flex-1 min-w-[300px] max-w-[450px] flex flex-col p-2 rounded-[2.5rem] transition-colors"
+            className="flex-1 min-w-[320px] flex flex-col p-0 rounded-[2.5rem] transition-colors"
           >
             <div className="flex items-center justify-between mb-6 px-2">
               <div className="flex items-center gap-3">

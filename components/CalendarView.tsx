@@ -86,9 +86,8 @@ export const CalendarView: React.FC = () => {
       end = new Date(start);
       end.setDate(start.getDate() + 41);
     } else if (zoomLevel === 'year') {
-      const startMonth = Math.floor(viewDate.getMonth() / 3) * 3;
-      start.setMonth(startMonth, 1);
-      end.setMonth(startMonth + 3, 0);
+      start.setMonth(0, 1);
+      end.setMonth(11, 31);
       end.setHours(23, 59, 59, 999);
     }
 
@@ -99,8 +98,7 @@ export const CalendarView: React.FC = () => {
       if (zoomLevel === 'day') return isSameDay(d, viewDate);
       if (zoomLevel === 'month') return true;
       if (zoomLevel === 'year') {
-        const startMonth = Math.floor(viewDate.getMonth() / 3) * 3;
-        return d.getFullYear() === viewDate.getFullYear() && d.getMonth() >= startMonth && d.getMonth() <= (startMonth + 2);
+        return d.getFullYear() === viewDate.getFullYear();
       }
       if (zoomLevel === 'week') return d >= start && d <= end;
       return true;
@@ -155,7 +153,7 @@ export const CalendarView: React.FC = () => {
   const changeDate = (offset: number) => {
     const newDate = new Date(viewDate);
     if (zoomLevel === 'month') newDate.setMonth(newDate.getMonth() + offset);
-    else if (zoomLevel === 'year') newDate.setMonth(newDate.getMonth() + (offset * 3));
+    else if (zoomLevel === 'year') newDate.setFullYear(newDate.getFullYear() + offset);
     else if (zoomLevel === 'week') newDate.setDate(newDate.getDate() + (offset * 7));
     else if (zoomLevel === 'day') newDate.setDate(newDate.getDate() + offset);
     setViewDate(newDate);
@@ -163,13 +161,17 @@ export const CalendarView: React.FC = () => {
 
   const handleOpenEvent = (event: MarketingEvent) => {
     setSelectedEvent(event);
-    const rate = budget.hourlyRate || 80;
+    const internalRate = budget.hourlyRate || 20;
+    const marketRate = 80;
     const multiplier = (event.assignees && event.assignees.length > 0) ? event.assignees.length : 1;
-    const reactiveCost = calculateReactiveCost(event.duration, rate, undefined, multiplier);
+
+    const estimatedReactiveCost = calculateReactiveCost(event.duration, marketRate, undefined, multiplier);
+    const realReactiveCost = calculateReactiveCost(event.duration, internalRate, undefined, multiplier);
+
     setEditForm({
       ...event,
-      budgetedCost: event.budgetedCost !== undefined ? event.budgetedCost : reactiveCost,
-      realCost: reactiveCost
+      budgetedCost: event.budgetedCost !== undefined ? event.budgetedCost : estimatedReactiveCost,
+      realCost: event.realCost !== undefined ? event.realCost : realReactiveCost
     });
     setIsEditing(false);
   };
@@ -274,6 +276,7 @@ export const CalendarView: React.FC = () => {
             onOpenEvent={handleOpenEvent}
             getEventStyle={getEventStyle}
             onSelectCampaign={setSelectedCampaign}
+            projects={projects}
           />
         );
       case 'year':
@@ -325,6 +328,7 @@ export const CalendarView: React.FC = () => {
                       } : {}}
                     >
                       <button
+                        onClick={() => toggleFilter(tag)}
                         className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${filter.includes(tag) ? 'text-white' : 'text-gray-400 group-hover:text-black'}`}
                       >
                         {tag}
@@ -464,7 +468,7 @@ export const CalendarView: React.FC = () => {
         </div>
       )}
 
-      <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
+      <div className={`w-full mx-auto p-4 md:p-8 ${zoomLevel === 'year' ? 'max-w-[1400px]' : 'px-6 md:px-12'}`}>
         <div className="flex flex-col gap-4 mb-4">
           <div className="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
             <div className="order-1 flex flex-wrap justify-center items-center gap-4">
@@ -473,9 +477,9 @@ export const CalendarView: React.FC = () => {
                 <button onClick={() => setViewMode('agenda')} className={`p-2 rounded-lg transition-all ${viewMode === 'agenda' ? 'bg-gray-100 text-[#dc0014]' : 'text-gray-400 hover:text-black'}`}><CalendarIcon size={18} /></button>
               </div>
               <div className="flex items-center bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
-                <button onClick={() => handleZoom('in')} disabled={viewMode === 'agenda' ? agendaDensity >= 1 : zoomLevel === 'day'} className="p-2 text-gray-400 hover:text-[#dc0014]"><ZoomIn size={18} /></button>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#dc0014] px-2 min-w-[80px] text-center">{viewMode === 'agenda' ? (agendaDensity === 0 ? 'Compacto' : 'Estándar') : zoomLabels[zoomLevel]}</span>
-                <button onClick={() => handleZoom('out')} disabled={viewMode === 'agenda' ? agendaDensity <= 0 : zoomLevel === 'year'} className="p-2 text-gray-400 hover:text-[#dc0014]"><ZoomOut size={18} /></button>
+                <button onClick={() => handleZoom('in')} disabled={viewMode === 'agenda' ? agendaDensity >= 1 : zoomLevel === 'day'} className="p-2 text-gray-400 hover:text-black"><ZoomIn size={18} /></button>
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-black px-4 min-w-[120px] text-center">{viewMode === 'agenda' ? (agendaDensity === 0 ? 'Compacto' : 'Estándar') : zoomLabels[zoomLevel]}</span>
+                <button onClick={() => handleZoom('out')} disabled={viewMode === 'agenda' ? agendaDensity <= 0 : zoomLevel === 'year'} className="p-2 text-gray-400 hover:text-black"><ZoomOut size={18} /></button>
               </div>
             </div>
             {zoomLevel === 'week' && (
@@ -490,7 +494,7 @@ export const CalendarView: React.FC = () => {
             <div className="order-2 flex items-center gap-4 bg-white border border-gray-200 px-5 py-1.5 rounded-2xl shadow-sm">
               <button onClick={() => changeDate(-1)} className="p-1.5 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronLeft size={18} /></button>
               <span className="text-sm font-black uppercase tracking-[0.2em] text-black min-w-[150px] md:min-w-[200px] text-center">
-                {zoomLevel === 'year' ? `${viewDate.getFullYear()} - Trimestre ${Math.floor(viewDate.getMonth() / 3) + 1}` : zoomLevel === 'day' ? viewDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+                {zoomLevel === 'year' ? `${viewDate.getFullYear()}` : zoomLevel === 'day' ? viewDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
               </span>
               <button onClick={() => changeDate(1)} className="p-1.5 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronRight size={18} /></button>
             </div>
@@ -530,10 +534,10 @@ export const CalendarView: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
-              className="fixed z-[200] bg-white border p-4 rounded-xl shadow-2xl min-w-[200px]"
+              className="fixed z-[200] bg-white border p-6 rounded-[2rem] shadow-2xl min-w-[320px] max-w-[450px]"
               style={{
                 borderColor: selectedCampaign.color,
-                left: Math.min(window.innerWidth - 220, Math.max(20, selectedCampaign.x - 100)),
+                left: Math.min(window.innerWidth - 340, Math.max(20, selectedCampaign.x - 160)),
                 top: selectedCampaign.y + 20
               }}
             >

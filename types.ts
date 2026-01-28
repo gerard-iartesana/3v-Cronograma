@@ -31,6 +31,8 @@ export interface MarketingEvent {
   budgetedCost?: number;
   realValue?: number;
   realCost?: number;
+  realProductionCost?: number;
+  realTimeCost?: number;
   projectId?: string; // Link to a project
   recurrence?: RecurrenceConfig;
   masterId?: string; // If this is an expanded instance, this points to the master definition
@@ -61,6 +63,8 @@ export interface Project {
   budgetedHours?: number;
   realValue?: number;
   realCost?: number;
+  realProductionCost?: number;
+  realTimeCost?: number;
   deadline?: string;
   checklist: ChecklistItem[];
   status: 'ongoing' | 'template' | 'completed';
@@ -107,6 +111,7 @@ export interface AppState {
   sentNotifications?: Record<string, boolean>;
   fcmToken?: string;
   activityLog?: ActivityLogEntry[];
+  knowledgeBase?: string;
 }
 
 export interface AIStateUpdate {
@@ -118,4 +123,5 @@ export interface AIStateUpdate {
   updatedProjects?: Project[];
   deletedProjects?: string[]; // IDs of projects to delete
   budgetUpdate?: Partial<Budget>;
+  knowledgeBaseUpdate?: string;
 }

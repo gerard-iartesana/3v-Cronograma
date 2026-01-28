@@ -287,7 +287,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                             <span className="font-black uppercase text-xs tracking-[0.2em] text-gray-700">{event.duration || '1h'}</span>
                                         </div>
                                     </div>
-                                    <h2 className="text-4xl font-semibold text-gray-900 mt-2 leading-tight">{event.title}</h2>
+                                    <h2 className="text-4xl font-bold text-gray-900 mt-2 leading-tight">{event.title}</h2>
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {event.assignees && event.assignees.length > 0 && (
                                             <div className="flex items-center gap-2 px-2 py-1 bg-white rounded-md border border-gray-200">
@@ -370,7 +370,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                         <div>
                                             <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Estimado</p>
                                             <div className="space-y-1">
-                                                <div className="flex justify-between"><span className="text-xs text-gray-400 font-medium">Coste</span> <span className="text-gray-700 font-bold text-lg">{event.budgetedCost || 0}€</span></div>
+                                                <div className="flex justify-between"><span className="text-xs text-gray-400 font-medium">Coste</span> <span className="text-black font-bold text-lg">{event.budgetedCost !== undefined ? event.budgetedCost : calculateReactiveCost(event.duration, 80, undefined, (event.assignees?.length || 1))}€</span></div>
                                             </div>
                                         </div>
                                         <div>
@@ -378,8 +378,8 @@ export const EventModal: React.FC<EventModalProps> = ({
                                             <div className="space-y-1">
                                                 <div className="flex justify-between">
                                                     <span className="text-xs text-gray-400 font-medium">Coste</span>
-                                                    <span className="text-gray-900 font-black text-lg">
-                                                        {event.realCost || calculateReactiveCost(event.duration, budget.hourlyRate || 80, event.realCost, (event.assignees?.length || 1))}€
+                                                    <span className="text-[#dc0014] font-bold text-lg">
+                                                        {event.realCost || calculateReactiveCost(event.duration, budget.hourlyRate || 20, event.realCost, (event.assignees?.length || 1))}€
                                                     </span>
                                                 </div>
                                             </div>

@@ -22,8 +22,7 @@ export const YearView: React.FC<YearViewProps> = ({
     const [tooltipPos, setTooltipPos] = useState<{ x: number, y: number } | null>(null);
 
     const year = viewDate.getFullYear();
-    const startMonth = Math.floor(viewDate.getMonth() / 3) * 3;
-    const months = [startMonth, startMonth + 1, startMonth + 2];
+    const months = Array.from({ length: 12 }, (_, i) => i);
 
     const isSameDay = (d1: Date, d2: Date) =>
         d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
@@ -36,7 +35,7 @@ export const YearView: React.FC<YearViewProps> = ({
 
     return (
         <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {months.map(monthIdx => {
                     const monthDate = new Date(year, monthIdx, 1);
                     const firstDayOfMonth = new Date(year, monthIdx, 1);
@@ -45,8 +44,8 @@ export const YearView: React.FC<YearViewProps> = ({
                     const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
 
                     return (
-                        <div key={monthIdx} className="bg-white border border-gray-200 p-6 rounded-[2.5rem] flex flex-col h-full min-h-[300px] transition-all hover:border-gray-300 hover:bg-gray-50 group/month shadow-xl">
-                            <h4 className="text-[14px] font-black uppercase tracking-[0.4em] text-gray-900 mb-6 text-center border-b border-gray-100 pb-4 group-hover/month:text-[#dc0014] transition-colors">
+                        <div key={monthIdx} className="bg-white border border-gray-200 p-4 rounded-[2rem] flex flex-col h-full min-h-[200px] transition-all hover:border-gray-300 hover:bg-gray-50 group/month shadow-md">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-900 mb-4 text-center border-b border-gray-100 pb-2 group-hover/month:text-[#dc0014] transition-colors">
                                 {monthsOfYear[monthIdx]}
                             </h4>
                             <div className="grid grid-cols-7 gap-2 flex-1 content-start">
@@ -109,7 +108,7 @@ export const YearView: React.FC<YearViewProps> = ({
                         initial={{ opacity: 0, scale: 0.9, y: -10 }}
                         animate={{ opacity: 1, scale: 1, y: -10 }}
                         exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                        className="fixed z-[1000] bg-white/95 backdrop-blur-xl border border-gray-200 p-5 rounded-[2rem] shadow-2xl pointer-events-none min-w-[250px]"
+                        className="fixed z-[1000] bg-white/95 backdrop-blur-xl border border-gray-200 p-5 rounded-[2rem] shadow-2xl pointer-events-none min-w-[300px] max-w-[400px]"
                         style={{
                             left: tooltipPos.x,
                             top: tooltipPos.y,
@@ -120,14 +119,14 @@ export const YearView: React.FC<YearViewProps> = ({
                             <span>{hoveredDay.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>
                             <span className="text-[#dc0014] bg-[#dc0014]/10 px-2.5 py-1 rounded-full">{formatDuration(hoveredDay.events.reduce((acc, e) => acc + parseDurationToMinutes(e.duration), 0))}</span>
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {hoveredDay.events.slice(0, 6).map(e => (
-                                <div key={e.id} className="text-[13px] font-bold text-gray-900 flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-2.5 min-w-0">
-                                        <div className="w-2 h-2 rounded-full flex-shrink-0 shadow-[0_0_8px_currentColor]" style={{ backgroundColor: getEventColor(e), color: getEventColor(e) }} />
-                                        <span className="truncate">{e.title}</span>
+                                <div key={e.id} className="text-[13px] font-bold text-gray-900 flex items-start justify-between gap-3">
+                                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                        <div className="w-2 h-2 rounded-full flex-shrink-0 shadow-[0_0_8px_currentColor] mt-1.5" style={{ backgroundColor: getEventColor(e), color: getEventColor(e) }} />
+                                        <span className="leading-tight">{e.title}</span>
                                     </div>
-                                    <div className="flex gap-1 flex-shrink-0">
+                                    <div className="flex gap-1 flex-shrink-0 mt-0.5">
                                         {e.tags.filter(t => tagColors?.[t]).map(t => (
                                             <span
                                                 key={t}

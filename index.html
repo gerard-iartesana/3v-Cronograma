@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3Villas Cronograma</title>
-    <link rel="icon" type="image/png" href="/logo-3v.png">
-    <link rel="apple-touch-icon" href="/logo-3v.png">
-    <meta name="apple-mobile-web-app-title" content="3V">
+    <title>3villas Cronograma</title>
+    <link rel="icon" type="image/png" href="/icon-desktop.png">
+    <link rel="apple-touch-icon" href="/icon-mobile.png">
+    <meta name="apple-mobile-web-app-title" content="3villas">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json?v=20260127_v7">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -115,6 +115,13 @@
 
 <body>
     <div id="root"></div>
+    <script id="sw-reg">
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
     <script type="module" src="/index.tsx"></script>
 </body>
 

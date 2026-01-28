@@ -19,7 +19,7 @@ interface AppContextType extends AppState {
   deleteEvent: (eventId: string) => void;
   deleteProject: (projectId: string) => void;
   addProject: (project: Project) => void;
-  addDocument: (name: string) => void;
+  addDocument: (name: string, content?: string) => void;
   setTagColor: (tag: string, color: string) => void;
   setAssigneeColor: (assignee: string, color: string) => void;
   clearChat: () => void;
@@ -35,7 +35,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentSection, setCurrentSection] = useState<AppSection>('chat');
   const [events, setEvents] = useState<MarketingEvent[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [budget, setBudget] = useState<Budget>({ assigned: 10000, estimated: 0 });
+  const [budget, setBudget] = useState<Budget>({ assigned: 10000, estimated: 0, hourlyRate: 20 });
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [documents, setDocuments] = useState<string[]>([]);
   const [tagColors, setTagColors] = useState<Record<string, string>>({});
@@ -43,6 +43,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [sentNotifications, setSentNotifications] = useState<Record<string, boolean>>({});
   const [fcmToken, setFcmToken] = useState<string | undefined>(undefined);
   const [activityLog, setActivityLog] = useState<any[]>([]);
+  const [knowledgeBase, setKnowledgeBase] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
   const { user } = useAuth();
@@ -56,7 +57,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const data = snapshot.data() as AppState;
         setEvents(data.events || []);
         setProjects(data.projects || []);
-        setBudget(data.budget || { assigned: 10000, estimated: 0 });
+        setBudget(data.budget || { assigned: 10000, estimated: 0, hourlyRate: 20 });
         setChatHistory(data.chatHistory || []);
         setDocuments(data.documents || []);
         setDocuments(data.documents || []);
@@ -65,6 +66,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setSentNotifications(data.sentNotifications || {});
         setFcmToken(data.fcmToken);
         setActivityLog(data.activityLog || []);
+        setKnowledgeBase(data.knowledgeBase);
       }
       setIsLoading(false);
     }, (error) => {
@@ -269,6 +271,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return next;
       });
     }
+
+    if (update.knowledgeBaseUpdate) {
+      setKnowledgeBase(update.knowledgeBaseUpdate);
+      persistState({ knowledgeBase: update.knowledgeBaseUpdate });
+    }
   }, [persistState]);
 
   const deleteProject = useCallback((projectId: string) => {
@@ -366,10 +373,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     persistState({ chatHistory: [] });
   }, [persistState]);
 
-  const addDocument = useCallback((name: string) => {
+  const addDocument = useCallback((name: string, content?: string) => {
     setDocuments(prev => {
       const next = [...prev, name];
-      persistState({ documents: next });
+      const updates: Partial<AppState> = { documents: next };
+      if (content) {
+        setKnowledgeBase(content);
+        updates.knowledgeBase = content;
+      }
+      persistState(updates);
       return next;
     });
   }, [persistState]);
@@ -441,7 +453,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       currentSection, setCurrentSection,
       events, projects, budget, chatHistory, documents, tagColors, assigneeColors, sentNotifications, activityLog,
       addChatMessage, applyStateUpdate, toggleProjectItem, toggleEventTask, updateEvent, deleteEvent, updateProject, deleteProject, addProject, addDocument, setTagColor, setAssigneeColor, clearChat,
-      isLoading, enableNotifications, fcmToken, logActivity
+      isLoading, enableNotifications, fcmToken, logActivity, knowledgeBase
     }}>
       {children}
     </AppContext.Provider>

@@ -12,7 +12,7 @@ export const LoginView: React.FC = () => {
                 <div className="bg-white rounded-[2.5rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100">
                     <div className="flex justify-center mb-6">
                         <img
-                            src="/logo-login.png"
+                            src="/logo-full.jpg"
                             alt="3Villas Logo"
                             className="h-16 w-auto object-contain"
                         />

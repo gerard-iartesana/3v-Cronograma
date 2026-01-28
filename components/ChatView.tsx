@@ -9,7 +9,7 @@ import { GlassHeader } from './GlassHeader';
 const VIBRANT_LILAC = '#B066FF';
 
 export const ChatView: React.FC = () => {
-  const { chatHistory, addChatMessage, applyStateUpdate, clearChat, events, projects, budget } = useApp();
+  const { chatHistory, addChatMessage, applyStateUpdate, clearChat, events, projects, budget, knowledgeBase } = useApp();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ export const ChatView: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const result = await processChatMessage(currentInput + " (IMPORTANTE: Los títulos de las actividades generadas deben ser muy concisos, máximo 3-4 palabras)", historyForAI, events, projects, budget);
+      const result = await processChatMessage(currentInput + " (IMPORTANTE: Los títulos de las actividades generadas deben ser muy concisos, máximo 3-4 palabras)", historyForAI, events, projects, budget, knowledgeBase);
 
       addChatMessage({
         id: (Date.now() + 1).toString(),
@@ -85,7 +85,7 @@ export const ChatView: React.FC = () => {
                 <div className="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-red-100">
                   <MessageCircle className="text-[#dc0014]" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700">Soy tu Asistente de 3villas</h3>
+                <h3 className="text-xl font-bold text-gray-700">Asistente de 3villas para la gestión cronograma</h3>
                 <p className="text-gray-500 text-sm mt-2">Prueba una de estas frases para ver de qué es capaz la IA de 3V</p>
               </div>
 

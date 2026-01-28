@@ -4,7 +4,7 @@ import { MessageSquare, LayoutGrid, Compass, User, Briefcase, Settings, HelpCirc
 import { useApp } from '../context/AppContext';
 import { AppSection } from '../types';
 
-const LOGO_URL = '/logo-3v.png';
+const LOGO_URL = '/logo-3v.jpg';
 
 const getSectionColor = (section: AppSection) => {
   return '#dc0014'; // All sections use the brand red

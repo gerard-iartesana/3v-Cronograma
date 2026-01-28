@@ -13,7 +13,7 @@ if (!apiKey) {
 const ai = new GoogleGenerativeAI(apiKey || '');
 
 const SYSTEM_INSTRUCTION = `
-Eres el motor de inteligencia de un Hub de Marketing Premium, ejecutando bajo el modelo Gemini 3 Flash Preview.
+Eres el Asistente de 3villas para la gestión cronograma, ejecutando bajo el modelo Gemini 3 Flash Preview.
 Tu objetivo es gestionar ESTRATEGIAS basadas en "PROYECTOS".
 
 MODELO DE DATOS:
@@ -53,10 +53,10 @@ OPERACIONES:
 - Puedes EDITAR cualquier propiedad de un evento o proyecto a través de "updatedEvents" o "updatedProjects".
 - Puedes ELIMINAR elementos si el usuario lo solicita, devolviendo sus IDs en "deletedEvents" o "deletedProjects". Recuerda el PROTOCOLO DE CONFIRMACIÓN.
 - REGLA FINANCIERA OBLIGATORIA:
-  1. "budgetedCost": Coste Estimado del proyecto/evento. (Si no se especifica, puedes estimarlo, pero llámalo "Coste Estimado").
-  2. "realCost": Coste Real. (Solo si se ha ejecutado o el usuario lo da).
-  3. ELIMINAR CUALQUIER REFERENCIA a "precio por hora", "tarifas", "coste de rendimiento" o "valor de mercado" en el TEXTO de tu respuesta. Habla solo de "Coste Estimado" y "Coste Real".
-  4. NO desgloses cálculos de horas x precio en el texto.
+  1. "budgetedCost": Coste Estimado (Valor de Mercado). ESTIMALO siempre usando 80€ por hora de trabajo multiplicado por el número de responsables.
+  2. "realCost": Coste Real Total. Representa la suma de "realProductionCost" (gastos externos/materiales) y "realTimeCost" (coste de horas internas). Si el usuario proporciona un precio global de coste real, actualiza "realCost". Si el usuario diferencia entre gastos y horas, puedes actualizar "realProductionCost" y "realTimeCost" específicamente.
+  3. En tu mensaje, puedes mencionar que el "Coste Estimado" refleja el valor de un profesional Senior en el mercado, mientras que el "Coste Real" es el optimizado.
+  4. NO desgloses los cálculos matemáticos exactos en el texto, solo da los totales.
 - GESTIÓN DE GASTOS ANUALES:
   - Si el usuario menciona "gastos anuales", "costes fijos", "suscripción", "alquiler", MODIFICA la lista de gastos en "budgetUpdate.expenses".
 - TIPOS DE ACTIVIDAD:
@@ -81,7 +81,8 @@ export async function processChatMessage(
   history: { role: 'user' | 'assistant', content: string }[],
   currentEvents: MarketingEvent[],
   currentProjects: Project[],
-  currentBudget: any // Added logic to pass budget
+  currentBudget: any,
+  knowledgeBase?: string
 ): Promise<AIStateUpdate> {
   try {
     const now = new Date();
@@ -92,6 +93,7 @@ export async function processChatMessage(
 [PROYECTOS ACTUALES]: ${JSON.stringify(currentProjects)}
 [PRESUPUESTO Y GASTOS]: ${JSON.stringify(currentBudget)}
 [EVENTOS CALENDARIO]: ${JSON.stringify(currentEvents)}
+[BASE DE CONOCIMIENTO EXTENDIDA (Contexto corporativo)]: ${knowledgeBase || 'No hay documentos adicionales subidos.'}
     `;
 
     const model = ai.getGenerativeModel({
@@ -132,8 +134,8 @@ export async function processChatMessage(
         result.budgetUpdate;
 
       result.message = hasChanges
-        ? "Entendido, he procesado tus cambios en la estrategia."
-        : "Hola, ¿en qué puedo ayudarte a organizar hoy?";
+        ? "Entendido, he procesado tus cambios en el cronograma."
+        : "¡Hola! Soy tu Asistente de 3villas. ¿Cómo puedo ayudarte hoy con tu cronograma?";
     }
 
     if (result.newProjects) {
