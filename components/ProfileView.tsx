@@ -319,15 +319,15 @@ export const ProfileView: React.FC = () => {
 
         {/* Stats Grid - Bold and Larger Titles */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 hover:border-white/30 shadow-sm transition-all group">
+          <div className="bg-neutral-900 border-l-[6px] border-neutral-600 p-10 md:p-12 hover:border-white/30 shadow-sm transition-all group">
             <h3 className="text-gray-500 font-bold text-xl mb-6 group-hover:text-white">Coste Estimado</h3>
-            <p className="text-5xl font-bold text-white tracking-tight">{metrics.costeEstimado.toLocaleString()}€</p>
+            <p className="text-5xl font-bold text-neutral-500 tracking-tight">{metrics.costeEstimado.toLocaleString()}€</p>
             <div className="flex items-center gap-2 mt-6 text-sm text-gray-400 font-normal">
               <TrendingUp size={14} /> <span>Presupuesto proyectado</span>
             </div>
           </div>
 
-          <div className="bg-neutral-900 border-l-[6px] border-white rounded-[3rem] p-10 md:p-12 shadow-sm group">
+          <div className="bg-neutral-900 border-r-[6px] border-white p-10 md:p-12 shadow-sm group">
             <h3 className="text-white font-bold text-xl mb-6">Coste Real</h3>
             <p className="text-5xl font-bold text-white tracking-tight">{metrics.costeReal.toLocaleString()}€</p>
             <div className="flex gap-10 mt-8">
@@ -344,7 +344,7 @@ export const ProfileView: React.FC = () => {
         </div>
 
         {/* Expenses - Bold titles and regular details */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm">
+        <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h3 className="text-3xl font-bold text-white mb-2">Gastos fijos anuales</h3>
@@ -367,7 +367,7 @@ export const ProfileView: React.FC = () => {
                 </div>
                 <div className="mt-6 pt-6 border-t border-neutral-800 flex items-center gap-3">
                   <span className="text-xs text-gray-500 font-bold uppercase">Anual:</span>
-                  <div className="flex items-center bg-neutral-900 px-4 py-2 rounded-xl border border-neutral-800 focus-within:border-white transition-all">
+                  <div className="flex items-center bg-neutral-900 px-4 py-2 rounded-none border border-neutral-800 focus-within:border-white transition-all">
                     <input type="number" value={exp.amount} onChange={e => { const val = parseFloat(e.target.value) || 0; const next = budget.expenses?.map(x => x.id === exp.id ? { ...x, amount: val } : x); applyStateUpdate({ message: 'Act. importe', budgetUpdate: { expenses: next } }); }} className="bg-transparent text-sm font-bold text-white w-20 outline-none" />
                     <span className="text-sm font-bold text-gray-500 ml-1">€</span>
                   </div>
@@ -378,13 +378,13 @@ export const ProfileView: React.FC = () => {
         </div>
 
         {/* Documents (Single Module) */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm">
+        <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
             <div>
               <h3 className="text-3xl font-bold text-white mb-2">Archivos de contexto</h3>
               <p className="text-sm text-gray-400 font-normal">Base de conocimiento para potenciar tu IA Assistant</p>
             </div>
-            <label className="cursor-pointer bg-white text-black px-10 py-5 rounded-[1.5rem] font-bold text-sm shadow-xl hover:bg-neutral-100 transition-all active:scale-95 flex items-center gap-3">
+            <label className="cursor-pointer bg-white text-black px-10 py-5 font-bold text-sm shadow-xl hover:bg-neutral-100 transition-all active:scale-95 flex items-center gap-3">
               <Upload size={20} /> Subir documento
               <input type="file" className="hidden" accept=".pdf,.txt,.md" onChange={handleFileUpload} />
             </label>
@@ -392,8 +392,8 @@ export const ProfileView: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {documents.map((doc, idx) => (
-              <div key={idx} className="bg-neutral-950 border border-neutral-800 p-8 rounded-[2.5rem] flex items-center gap-5 group hover:border-white/30 transition-all">
-                <div className="p-5 bg-neutral-800 rounded-2xl text-gray-400 group-hover:bg-white group-hover:text-black transition-all shadow-sm">
+              <div key={idx} className="bg-neutral-950 border border-neutral-800 p-8 flex items-center gap-5 group hover:border-white/30 transition-all">
+                <div className="p-5 bg-neutral-800 text-gray-400 group-hover:bg-white group-hover:text-black transition-all shadow-sm">
                   <FileText size={24} />
                 </div>
                 <div className="flex-1 overflow-hidden">
@@ -404,7 +404,7 @@ export const ProfileView: React.FC = () => {
               </div>
             ))}
             {documents.length === 0 && (
-              <div className="col-span-full flex flex-col items-center py-20 bg-neutral-950 rounded-[2.5rem] border-2 border-dashed border-neutral-800">
+              <div className="col-span-full flex flex-col items-center py-20 bg-neutral-950 border-2 border-dashed border-neutral-800">
                 <Sparkles size={48} className="text-white opacity-20 mb-6" />
                 <p className="text-sm font-bold text-gray-400">Tu repositorio de contexto está vacío</p>
               </div>
@@ -415,17 +415,17 @@ export const ProfileView: React.FC = () => {
         {/* Notifications & Data Management (Bottom refined) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Notifications */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm overflow-hidden relative">
+          <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm overflow-hidden relative">
             <div className="absolute top-0 right-0 p-10 opacity-[0.03]"><Bell size={120} /></div>
             <h3 className="text-2xl font-bold text-white mb-4">Alertas inteligentes</h3>
             <p className="text-gray-400 leading-relaxed mb-8 text-sm font-normal">Activa las notificaciones para que la IA de BSC te avise automáticamente de tus próximas actividades y fechas límite.</p>
-            <button onClick={enableNotifications} className={`px-8 py-4 rounded-2xl font-bold text-xs transition-all shadow-md ${fcmToken ? 'bg-white/10 text-white border border-white/20' : 'bg-neutral-800 text-gray-400 hover:bg-white hover:text-black'}`}>
+            <button onClick={enableNotifications} className={`px-8 py-4 rounded-none transition-all shadow-md ${fcmToken ? 'bg-white/10 text-white border border-white/20' : 'bg-neutral-800 text-gray-400 hover:bg-white hover:text-black'}`}>
               {fcmToken ? '✓ Notificaciones activas' : 'Habilitar notificaciones'}
             </button>
           </div>
 
           {/* Activity Log Link/Mini View */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm overflow-hidden relative">
+          <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm overflow-hidden relative">
             <div className="absolute top-0 right-0 p-10 opacity-[0.03]"><Clock size={120} /></div>
             <h3 className="text-2xl font-bold text-white mb-4">Registro reciente</h3>
             <div className="space-y-4">
