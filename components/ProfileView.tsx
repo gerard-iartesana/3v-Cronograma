@@ -237,7 +237,7 @@ export const ProfileView: React.FC = () => {
       {/* Filters (Standardized) */}
       <div className="w-full flex flex-col items-center gap-4 px-6 mt-4 relative z-50">
         <div className="flex flex-wrap gap-2 justify-center">
-          <button onClick={() => setSelectedTags([])} className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.length === 0 ? 'bg-[#dc0014] text-white border-[#dc0014]' : 'bg-neutral-900 text-gray-400 border-neutral-800'}`}>Todos</button>
+          <button onClick={() => setSelectedTags([])} className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.length === 0 ? 'bg-white text-black border-white' : 'bg-neutral-900 text-gray-400 border-neutral-800'}`}>Todos</button>
           {coloredTags.filter(t => t !== 'TODO').map(tag => (
             <div key={tag} className="relative group">
               <button

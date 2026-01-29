@@ -597,9 +597,9 @@ export const ProjectListView: React.FC = () => {
   }, [allTags, tagColors]);
 
   const columns = [
-    { title: 'Propuestas', status: 'template', icon: Lightbulb, color: '#dc0014' },
-    { title: 'En curso', status: 'ongoing', icon: RotateCw, color: '#dc0014' },
-    { title: 'Completados', status: 'completed', icon: Check, color: '#ffffff' }
+    { title: 'Propuestas', status: 'template', icon: Lightbulb, color: '#FFD000' },
+    { title: 'En curso', status: 'ongoing', icon: RotateCw, color: '#FF7D00' },
+    { title: 'Completados', status: 'completed', icon: Check, color: '#dc0014' }
   ];
 
   const filteredProjects = filter.includes('TODO')
@@ -632,7 +632,7 @@ export const ProjectListView: React.FC = () => {
           <button
             onClick={() => setFilter(['TODO'])}
             className={`px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all ${filter.includes('TODO')
-              ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md'
+              ? 'bg-white border-white text-black shadow-md'
               : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:bg-neutral-800 hover:text-white'
               }`}
           >

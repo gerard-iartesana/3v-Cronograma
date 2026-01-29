@@ -84,7 +84,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
                         >
                             <div className="flex justify-between items-start mb-1">
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                    <span className={`text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-md ${isToday ? 'bg-[#dc0014] text-white shadow-md' : dt.currentMonth ? 'text-white' : 'text-gray-600'}`}>{dt.day}</span>
+                                    <span className={`text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-md ${isToday ? 'bg-[#FF7D00] text-black shadow-md' : dt.currentMonth ? 'text-white' : 'text-gray-600'}`}>{dt.day}</span>
                                     {holidays.map(h => (
                                         <span key={h.id} title={h.title} className="text-[8px] font-bold text-gray-500 uppercase tracking-tight leading-tight bg-white/5 px-1 rounded-sm whitespace-normal text-center">
                                             {h.title}

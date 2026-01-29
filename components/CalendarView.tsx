@@ -303,7 +303,7 @@ export const CalendarView: React.FC = () => {
           <button
             onClick={() => setFilter(['TODO'])}
             className={`px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${filter.includes('TODO')
-              ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md'
+              ? 'bg-white border-white text-black shadow-md'
               : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:bg-neutral-800 hover:text-white'
               }`}
           >
@@ -473,8 +473,8 @@ export const CalendarView: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
             <div className="order-1 flex flex-wrap justify-center items-center gap-4">
               <div className="flex bg-neutral-900 border border-neutral-800 p-1 rounded-xl shadow-sm">
-                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-neutral-800 text-[#dc0014]' : 'text-gray-400 hover:text-white'}`}><Grid size={18} /></button>
-                <button onClick={() => setViewMode('agenda')} className={`p-2 rounded-lg transition-all ${viewMode === 'agenda' ? 'bg-neutral-800 text-[#dc0014]' : 'text-gray-400 hover:text-white'}`}><CalendarIcon size={18} /></button>
+                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}><Grid size={18} /></button>
+                <button onClick={() => setViewMode('agenda')} className={`p-2 rounded-lg transition-all ${viewMode === 'agenda' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}><CalendarIcon size={18} /></button>
               </div>
               <div className="flex items-center bg-neutral-900 border border-neutral-800 p-1 rounded-xl shadow-sm">
                 <button onClick={() => handleZoom('in')} disabled={viewMode === 'agenda' ? agendaDensity >= 1 : zoomLevel === 'day'} className="p-2 text-gray-400 hover:text-white"><ZoomIn size={18} /></button>
