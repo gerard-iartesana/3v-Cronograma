@@ -124,4 +124,6 @@ export interface AIStateUpdate {
   deletedProjects?: string[]; // IDs of projects to delete
   budgetUpdate?: Partial<Budget>;
   knowledgeBaseUpdate?: string;
+  documents?: string[];
+  deletedDocuments?: string[];
 }

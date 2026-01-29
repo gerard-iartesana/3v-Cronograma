@@ -276,6 +276,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setKnowledgeBase(update.knowledgeBaseUpdate);
       persistState({ knowledgeBase: update.knowledgeBaseUpdate });
     }
+
+    if (update.documents || update.deletedDocuments) {
+      setDocuments(prev => {
+        let next = [...prev];
+        if (update.documents) next = [...new Set([...next, ...update.documents])];
+        if (update.deletedDocuments) {
+          const toDelete = new Set(update.deletedDocuments);
+          next = next.filter(d => !toDelete.has(d));
+        }
+        persistState({ documents: next });
+        return next;
+      });
+    }
   }, [persistState]);
 
   const deleteProject = useCallback((projectId: string) => {
