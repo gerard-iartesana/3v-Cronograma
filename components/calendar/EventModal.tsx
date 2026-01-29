@@ -59,32 +59,32 @@ export const EventModal: React.FC<EventModalProps> = ({
                         <div className="flex-1 mr-4">
                             {isEditing ? (
                                 <div className="space-y-4">
-                                    <input type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} className="w-full bg-neutral-800 border border-neutral-700 text-white text-3xl font-black rounded-xl px-4 py-3 focus:outline-none focus:border-[#dc0014]" placeholder="Título" />
+                                    <input type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} className="w-full bg-neutral-800 border border-neutral-700 text-white text-3xl font-black rounded-xl px-4 py-3 focus:outline-none focus:border-white" placeholder="Título" />
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="flex-1">
                                             <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Proyecto</label>
-                                            <select value={editForm.projectId || ''} onChange={e => setEditForm({ ...editForm, projectId: e.target.value })} className="w-full bg-neutral-800 border border-neutral-700 text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#dc0014]"><option value="">(Sin asignar)</option>{projects.map(p => (<option key={p.id} value={p.id}>{p.title}</option>))}</select>
+                                            <select value={editForm.projectId || ''} onChange={e => setEditForm({ ...editForm, projectId: e.target.value })} className="w-full bg-neutral-800 border border-neutral-700 text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white"><option value="">(Sin asignar)</option>{projects.map(p => (<option key={p.id} value={p.id}>{p.title}</option>))}</select>
                                         </div>
-                                        <div className="flex-1"><label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Fecha y Hora</label><input type="datetime-local" value={editForm.date ? editForm.date.substring(0, 16) : ''} onChange={e => setEditForm({ ...editForm, date: e.target.value })} className="bg-neutral-800 border border-neutral-700 text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#dc0014] w-full" /></div>
+                                        <div className="flex-1"><label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Fecha y Hora</label><input type="datetime-local" value={editForm.date ? editForm.date.substring(0, 16) : ''} onChange={e => setEditForm({ ...editForm, date: e.target.value })} className="bg-neutral-800 border border-neutral-700 text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white w-full" /></div>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="p-4 bg-neutral-950 border border-neutral-800 rounded-3xl space-y-3">
-                                            <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Estimación</h4>
+                                            <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Estimación</h4>
                                             <div className="space-y-3">
                                                 <div>
                                                     <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
-                                                    <input type="number" value={editForm.budgetedCost || 0} onChange={e => setEditForm((prev: any) => ({ ...prev, budgetedCost: parseInt(e.target.value) || 0 }))} className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#dc0014] w-full" />
+                                                    <input type="number" value={editForm.budgetedCost || 0} onChange={e => setEditForm((prev: any) => ({ ...prev, budgetedCost: parseInt(e.target.value) || 0 }))} className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white w-full" />
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="p-4 bg-neutral-950 border border-neutral-800 rounded-3xl space-y-3">
-                                            <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Realidad</h4>
+                                            <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Realidad</h4>
                                             <div className="space-y-3">
                                                 <div>
                                                     <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Real (€)</label>
-                                                    <input type="number" value={editForm.realCost || 0} onChange={e => setEditForm((prev: any) => ({ ...prev, realCost: parseInt(e.target.value) || 0 }))} className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#dc0014] w-full" />
+                                                    <input type="number" value={editForm.realCost || 0} onChange={e => setEditForm((prev: any) => ({ ...prev, realCost: parseInt(e.target.value) || 0 }))} className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white w-full" />
                                                 </div>
                                             </div>
                                         </div>
@@ -94,7 +94,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                         <div className="flex-1">
                                             <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Duración</label>
                                             <div className="flex gap-2">
-                                                <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg px-2 flex-1 focus-within:border-[#dc0014] transition-colors">
+                                                <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg px-2 flex-1 focus-within:border-white transition-colors">
                                                     <input
                                                         type="number"
                                                         min="0"
@@ -116,7 +116,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                                     />
                                                     <span className="text-[10px] text-gray-500 font-bold">h</span>
                                                 </div>
-                                                <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg px-2 flex-1 focus-within:border-[#dc0014] transition-colors">
+                                                <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg px-2 flex-1 focus-within:border-white transition-colors">
                                                     <input
                                                         type="number"
                                                         min="0"
@@ -174,7 +174,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                         <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold block">Responsables</label>
                                         <div className="flex flex-wrap gap-2 p-3 bg-neutral-900 border border-neutral-800 rounded-xl">
                                             {editForm.assignees?.map(a => (
-                                                <span key={a} className="flex items-center gap-1 px-2 py-1 bg-[#dc0014] text-white text-[10px] font-bold uppercase rounded-md shadow-sm">
+                                                <span key={a} className="flex items-center gap-1 px-2 py-1 bg-white text-black text-[10px] font-bold uppercase rounded-md shadow-sm">
                                                     {a}
                                                     <X size={10} className="cursor-pointer hover:text-white" onClick={() => {
                                                         const newAssignees = editForm.assignees?.filter(asg => asg !== a) || [];
@@ -236,7 +236,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                                         });
                                                     }
                                                 }}
-                                                className="w-full bg-neutral-800 border border-neutral-700 text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#dc0014]"
+                                                className="w-full bg-neutral-800 border border-neutral-700 text-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white"
                                             >
                                                 <option value="none">No se repite</option>
                                                 <option value="daily">Diaria</option>
@@ -254,7 +254,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                                         min="1"
                                                         value={editForm.recurrence.interval}
                                                         onChange={e => setEditForm({ ...editForm, recurrence: { ...editForm.recurrence!, interval: parseInt(e.target.value) || 1 } })}
-                                                        className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#dc0014] w-full"
+                                                        className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white w-full"
                                                     />
                                                 </div>
                                                 <div className="flex-1">
@@ -263,7 +263,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                                         type="date"
                                                         value={editForm.recurrence.endDate?.substring(0, 10) || ''}
                                                         onChange={e => setEditForm({ ...editForm, recurrence: { ...editForm.recurrence!, endDate: e.target.value ? new Date(e.target.value).toISOString() : undefined } })}
-                                                        className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#dc0014] w-full"
+                                                        className="bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white w-full"
                                                     />
                                                 </div>
                                             </>
@@ -275,7 +275,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                     <div className="flex items-center gap-3">
                                         <span className="font-semibold uppercase tracking-[0.3em] text-sm md:text-md text-white">{formatDate(event.date)}</span>
                                         {event.projectId && (
-                                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-gray-200 bg-gray-50 text-gray-600">
+                                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-white bg-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                                                 <Layout size={10} />
                                                 <span className="font-semibold uppercase text-[9px] tracking-widest">
                                                     {projects.find(p => p.id === event.projectId)?.title || 'Proyecto'}
@@ -283,18 +283,18 @@ export const EventModal: React.FC<EventModalProps> = ({
                                             </div>
                                         )}
                                         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-neutral-800 bg-neutral-950">
-                                            <Clock size={12} className="text-[#dc0014]" />
+                                            <Clock size={12} className="text-white" />
                                             <span className="font-black uppercase text-xs tracking-[0.2em] text-gray-300">{event.duration || '1h'}</span>
                                         </div>
                                     </div>
                                     <h2 className="text-4xl font-bold text-white mt-2 leading-tight">{event.title}</h2>
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {event.assignees && event.assignees.length > 0 && (
-                                            <div className="flex items-center gap-2 px-2 py-1 bg-neutral-800 rounded-md border border-neutral-700">
-                                                <Users size={12} className="text-[#dc0014]" />
+                                            <div className="flex items-center gap-2 px-2 py-1 bg-neutral-950 rounded-md border border-neutral-700">
+                                                <Users size={12} className="text-white" />
                                                 <div className="flex gap-1.5">
                                                     {event.assignees.map(a => (
-                                                        <span key={a} className="text-gray-700 text-[10px] font-bold uppercase">{a}</span>
+                                                        <span key={a} className="text-white text-[10px] font-bold uppercase">{a}</span>
                                                     ))}
                                                 </div>
                                             </div>
@@ -331,7 +331,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                         <textarea
                             value={editForm.description}
                             onChange={e => setEditForm((prev: any) => ({ ...prev, description: e.target.value }))}
-                            className="w-full bg-gray-50 border border-gray-200 text-gray-700 text-lg mb-6 leading-relaxed font-medium rounded-xl p-4 h-32 focus:outline-none focus:border-[#dc0014]"
+                            className="w-full bg-gray-50 border border-gray-200 text-gray-700 text-lg mb-6 leading-relaxed font-medium rounded-xl p-4 h-32 focus:outline-none focus:border-white"
                         />
                     ) : (
                         event.description ? (
@@ -343,14 +343,14 @@ export const EventModal: React.FC<EventModalProps> = ({
                         <div className="space-y-6">
                             {event.projectId && (
                                 <div className="mb-6 pt-4 border-t border-gray-100">
-                                    <h4 className="text-gray-800 font-semibold text-sm mb-2 opacity-90">
+                                    <h4 className="text-white font-bold text-sm mb-2 opacity-100 uppercase tracking-widest">
                                         {projects.find(p => p.id === event.projectId)?.title}
                                     </h4>
-                                    <div className="space-y-2 pl-2 border-l border-gray-200">
+                                    <div className="space-y-2 pl-2 border-l border-white/20">
                                         {projects.find(p => p.id === event.projectId)?.checklist.map(item => (
-                                            <div key={item.id} onClick={() => toggleProjectItem(event.projectId!, item.id)} className="flex items-center gap-3 py-1 cursor-pointer group opacity-80 hover:opacity-100 transition-opacity">
-                                                {item.done ? <CheckCircle2 size={12} className="text-[#dc0014]" /> : <Circle size={12} className="text-gray-400 group-hover:text-gray-600" />}
-                                                <span className={`text-xs ${item.done ? 'text-gray-400 line-through' : 'text-gray-500'}`}>{item.label}</span>
+                                            <div key={item.id} onClick={() => toggleProjectItem(event.projectId!, item.id)} className="flex items-center gap-3 py-1 cursor-pointer group opacity-90 hover:opacity-100 transition-opacity">
+                                                {item.done ? <CheckCircle2 size={12} className="text-white" /> : <Circle size={12} className="text-gray-600 group-hover:text-gray-400" />}
+                                                <span className={`text-xs ${item.done ? 'text-gray-500 line-through' : 'text-gray-200 font-medium'}`}>{item.label}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -360,8 +360,8 @@ export const EventModal: React.FC<EventModalProps> = ({
                             <div className="space-y-4">
                                 {event.tasks && event.tasks.length > 0 ? (
                                     event.tasks.map(task => (
-                                        <div key={task.id} onClick={() => toggleEventTask(event.id, task.id)} className="flex items-center gap-5 p-5 rounded-2xl bg-neutral-950 border border-neutral-800 cursor-pointer hover:border-[#dc0014] transition-all group">
-                                            {task.done ? <CheckCircle2 className="text-[#dc0014]" size={26} /> : <Circle className="text-gray-700 group-hover:text-gray-500" size={26} />}
+                                        <div key={task.id} onClick={() => toggleEventTask(event.id, task.id)} className="flex items-center gap-5 p-5 rounded-2xl bg-neutral-950 border border-neutral-800 cursor-pointer hover:border-white transition-all group">
+                                            {task.done ? <CheckCircle2 className="text-white" size={26} /> : <Circle className="text-gray-700 group-hover:text-gray-500" size={26} />}
                                             <span className={`text-lg font-bold ${task.done ? 'text-gray-500 line-through' : 'text-gray-200'}`}>{task.label}</span>
                                         </div>
                                     ))
@@ -370,15 +370,15 @@ export const EventModal: React.FC<EventModalProps> = ({
                                         <div>
                                             <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Estimado</p>
                                             <div className="space-y-1">
-                                                <div className="flex justify-between"><span className="text-xs text-gray-400 font-medium">Coste</span> <span className="text-white font-bold text-lg">{event.budgetedCost !== undefined ? event.budgetedCost : calculateReactiveCost(event.duration, 80, undefined, (event.assignees?.length || 1))}€</span></div>
+                                                <div className="flex justify-between"><span className="text-xs text-gray-400 font-medium">Coste</span> <span className="text-gray-500 font-bold text-lg">{event.budgetedCost !== undefined ? event.budgetedCost : calculateReactiveCost(event.duration, 80, undefined, (event.assignees?.length || 1))}€</span></div>
                                             </div>
                                         </div>
                                         <div>
-                                            <p className="text-[9px] text-[#dc0014] font-bold uppercase tracking-widest mb-2">Real</p>
+                                            <p className="text-[9px] text-white font-bold uppercase tracking-widest mb-2">Real</p>
                                             <div className="space-y-1">
                                                 <div className="flex justify-between">
-                                                    <span className="text-xs text-gray-400 font-medium">Coste</span>
-                                                    <span className="text-[#dc0014] font-bold text-lg">
+                                                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">Coste</span>
+                                                    <span className="text-white font-bold text-lg">
                                                         {event.realCost || calculateReactiveCost(event.duration, budget.hourlyRate || 20, event.realCost, (event.assignees?.length || 1))}€
                                                     </span>
                                                 </div>
@@ -389,7 +389,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                                 <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2 flex items-center gap-2"><Bell size={12} /> Alarmas</p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {event.notifications.map(n => (
-                                                        <span key={n.id} className="text-[10px] font-bold text-white border border-[#dc0014] px-3 py-1 rounded-md bg-[#dc0014]">
+                                                        <span key={n.id} className="text-[10px] font-bold text-black border border-white px-3 py-1 rounded-md bg-white">
                                                             {n.timeBefore} {n.unit === 'minutes' ? 'min' : n.unit === 'hours' ? 'h' : 'd'} antes
                                                         </span>
                                                     ))}
@@ -409,7 +409,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                             {event.createdBy.photoURL ? (
                                 <img src={event.createdBy.photoURL} alt={event.createdBy.displayName} className="w-8 h-8 rounded-full border border-neutral-800" />
                             ) : (
-                                <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white text-[10px] font-black uppercase">
+                                <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white text-[10px] font-black uppercase">
                                     {event.createdBy.displayName.charAt(0)}
                                 </div>
                             )}
@@ -430,12 +430,12 @@ export const EventModal: React.FC<EventModalProps> = ({
                 <div className="p-4 border-t border-neutral-800 flex items-center justify-end gap-3 bg-neutral-950/50 rounded-b-[2.5rem]">
                     {isEditing ? (
                         <>
-                            <button onClick={onSave} className="px-6 py-2 bg-[#dc0014] text-white font-bold uppercase text-xs rounded-xl hover:scale-105 transition-transform flex items-center gap-2 border-none outline-none shadow-lg"><Save size={14} /> Guardar</button>
+                            <button onClick={onSave} className="px-6 py-2 bg-white text-black font-bold uppercase text-xs rounded-xl hover:scale-105 transition-transform flex items-center gap-2 border-none outline-none shadow-lg"><Save size={14} /> Guardar</button>
                             <button onClick={() => setIsEditing(false)} className="px-6 py-2 bg-neutral-900 text-gray-400 font-bold uppercase text-xs rounded-xl border border-neutral-800 hover:bg-neutral-800 transition-colors">Cancelar</button>
-                            <button onClick={() => { if (confirm('\u00bfEliminar esta actividad?')) { deleteEvent(editForm.id || event.id); onClose(); } }} className="p-2 bg-red-900/10 text-red-400 rounded-xl border border-red-900/30 hover:bg-red-500 hover:text-white transition-colors ml-auto"><Trash2 size={16} /></button>
+                            <button onClick={() => { if (confirm('\u00bfEliminar esta actividad?')) { deleteEvent(editForm.id || event.id); onClose(); } }} className="p-2 bg-neutral-800 text-gray-400 rounded-xl border border-neutral-700 hover:bg-neutral-700 hover:text-white transition-colors ml-auto"><Trash2 size={16} /></button>
                         </>
                     ) : (
-                        <button onClick={() => { if (confirm('\u00bfEliminar esta actividad?')) { deleteEvent(event.id); onClose(); } }} className="p-2 text-gray-400 hover:text-red-500 transition-colors ml-auto hover:bg-red-50 rounded-lg" title="Eliminar actividad"><Trash2 size={18} /></button>
+                        <button onClick={() => { if (confirm('\u00bfEliminar esta actividad?')) { deleteEvent(event.id); onClose(); } }} className="p-2 text-gray-500 hover:text-white transition-colors ml-auto hover:bg-neutral-800 rounded-lg" title="Eliminar actividad"><Trash2 size={18} /></button>
                     )}
                 </div>
             </motion.div>

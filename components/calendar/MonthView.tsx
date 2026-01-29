@@ -84,16 +84,16 @@ export const MonthView: React.FC<MonthViewProps> = ({
                         >
                             <div className="flex justify-between items-start mb-1">
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                    <span className={`text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-md ${isToday ? 'bg-[#FF7D00] text-black shadow-md' : dt.currentMonth ? 'text-white' : 'text-gray-600'}`}>{dt.day}</span>
+                                    <span className={`text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-md ${isToday ? 'bg-white text-black border border-white shadow-md' : dt.currentMonth ? 'text-white' : 'text-gray-600'}`}>{dt.day}</span>
                                     {holidays.map(h => (
                                         <span key={h.id} title={h.title} className="text-[8px] font-bold text-gray-500 uppercase tracking-tight leading-tight bg-white/5 px-1 rounded-sm whitespace-normal text-center">
                                             {h.title}
                                         </span>
                                     ))}
                                     {deadlines.map(p => (
-                                        <div key={p.id} title={p.title} className="flex items-start gap-1 bg-red-900/10 border border-red-900/30 px-1.5 py-1 rounded-md shadow-sm mt-0.5 w-full">
-                                            <AlertCircle size={10} className="text-red-400 flex-shrink-0 mt-0.5" />
-                                            <span className="text-[9px] font-black text-red-400 uppercase tracking-tight whitespace-normal leading-tight break-words">
+                                        <div key={p.id} title={p.title} className="flex items-start gap-1 bg-neutral-800 border border-white/20 px-1.5 py-1 rounded-md shadow-sm mt-0.5 w-full">
+                                            <AlertCircle size={10} className="text-white flex-shrink-0 mt-0.5" />
+                                            <span className="text-[9px] font-black text-white uppercase tracking-tight whitespace-normal leading-tight break-words">
                                                 {p.title}
                                             </span>
                                         </div>

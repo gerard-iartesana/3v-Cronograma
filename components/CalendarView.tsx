@@ -188,7 +188,7 @@ export const CalendarView: React.FC = () => {
 
   const getEventStyle = (event: MarketingEvent) => {
     const colorTags = event.tags.filter(t => tagColors?.[t]);
-    let baseColor = event.completed ? '#dc0014' : '#dc0014';
+    let baseColor = '#ffffff';
     if (colorTags.length > 0) baseColor = mixColors(colorTags.map(t => tagColors![t]));
     return {
       backgroundColor: `${baseColor}1a`,
@@ -295,7 +295,7 @@ export const CalendarView: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-full bg-neutral-950">
-      <GlassHeader title="Actividades" underlineColor="#dc0014" />
+      <GlassHeader title="Actividades" underlineColor="#ffffff" />
 
       {/* Tags Filter Section */}
       <div className="flex justify-center items-center gap-2 px-4 pt-2 pb-0 relative z-30">
@@ -318,7 +318,7 @@ export const CalendarView: React.FC = () => {
                   <div key={tag} className="relative group">
                     <div
                       className={`flex items-center rounded-full border transition-all ${filter.includes(tag)
-                        ? 'bg-[#dc0014] border-[#dc0014] shadow-md'
+                        ? 'bg-white border-white shadow-md'
                         : 'bg-neutral-900 border-neutral-800 hover:bg-neutral-800 text-gray-400 hover:text-white'
                         }`}
                       style={filter.includes(tag) && tagColors?.[tag] ? {
@@ -329,7 +329,7 @@ export const CalendarView: React.FC = () => {
                     >
                       <button
                         onClick={() => toggleFilter(tag)}
-                        className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${filter.includes(tag) ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}
+                        className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${filter.includes(tag) ? 'text-black' : 'text-gray-400 group-hover:text-white'}`}
                       >
                         {tag}
                       </button>
@@ -412,7 +412,7 @@ export const CalendarView: React.FC = () => {
                 <button
                   onClick={() => setSelectedAssignees(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a])}
                   className={`group px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${selectedAssignees.includes(a)
-                    ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md'
+                    ? 'bg-white border-white text-black shadow-md'
                     : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:bg-neutral-800 hover:text-white'
                     }`}
                   style={selectedAssignees.includes(a) && assigneeColors?.[a] ? {
@@ -492,11 +492,11 @@ export const CalendarView: React.FC = () => {
               </button>
             )}
             <div className="order-2 flex items-center gap-4 bg-neutral-900 border border-neutral-800 px-5 py-1.5 rounded-2xl shadow-sm">
-              <button onClick={() => changeDate(-1)} className="p-1.5 hover:bg-neutral-800 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronLeft size={18} /></button>
+              <button onClick={() => changeDate(-1)} className="p-1.5 hover:bg-neutral-800 rounded-xl text-gray-400 hover:text-white"><ChevronLeft size={18} /></button>
               <span className="text-sm font-black uppercase tracking-[0.2em] text-white min-w-[150px] md:min-w-[200px] text-center">
                 {zoomLevel === 'year' ? `${viewDate.getFullYear()}` : zoomLevel === 'day' ? viewDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
               </span>
-              <button onClick={() => changeDate(1)} className="p-1.5 hover:bg-neutral-800 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronRight size={18} /></button>
+              <button onClick={() => changeDate(1)} className="p-1.5 hover:bg-neutral-800 rounded-xl text-gray-400 hover:text-white"><ChevronRight size={18} /></button>
             </div>
           </div>
         </div>

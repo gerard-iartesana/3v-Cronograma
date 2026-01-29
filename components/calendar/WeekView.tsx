@@ -51,7 +51,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
                     <div key={idx} data-date={date.toISOString()} className="bg-neutral-900 min-h-[500px] flex flex-col">
                         <div className="p-5 border-b border-neutral-800 bg-neutral-950 text-center">
                             <span className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 mb-2">{daysOfWeekList[hideWeekends ? idx : idx]}</span>
-                            <span className={`text-xl font-black inline-flex items-center justify-center w-10 h-10 rounded-xl ${isToday ? 'bg-[#FF7D00] text-black shadow-md' : 'text-gray-500'}`}>{date.getDate()}</span>
+                            <span className={`text-xl font-black inline-flex items-center justify-center w-10 h-10 rounded-xl ${isToday ? 'bg-white text-black border border-white shadow-md' : 'text-gray-500'}`}>{date.getDate()}</span>
                         </div>
                         <div className="flex-1 p-3 space-y-3">
                             {dayEvents.map(event => {

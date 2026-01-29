@@ -27,6 +27,8 @@ interface AppContextType extends AppState {
   enableNotifications: () => Promise<boolean>;
   fcmToken?: string;
   logActivity: (action: string, details: string) => void;
+  syncStatus: 'synced' | 'saving' | 'error';
+  lastError: string | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -45,48 +47,100 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [activityLog, setActivityLog] = useState<any[]>([]);
   const [knowledgeBase, setKnowledgeBase] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error'>('synced');
+  const [lastError, setLastError] = useState<string | null>(null);
 
   const { user } = useAuth();
 
 
-  // Firebase Sync Effect (Restored)
+  // 1. Firebase Shared Sync Effect
   useEffect(() => {
+    console.log("🔗 Iniciando sincronización compartida (global_state)...");
     const stateDoc = doc(db, "marketing_hub", "global_state");
     const unsubscribe = onSnapshot(stateDoc, (snapshot) => {
       if (snapshot.exists()) {
-        const data = snapshot.data() as AppState;
+        const data = snapshot.data();
+        console.log("📥 [SHARE] Datos recibidos:", Object.keys(data));
         setEvents(data.events || []);
         setProjects(data.projects || []);
         setBudget(data.budget || { assigned: 10000, estimated: 0, hourlyRate: 20 });
-        setChatHistory(data.chatHistory || []);
-        setDocuments(data.documents || []);
         setDocuments(data.documents || []);
         setTagColors(data.tagColors || {});
         setAssigneeColors(data.assigneeColors || {});
-        setSentNotifications(data.sentNotifications || {});
-        setFcmToken(data.fcmToken);
         setActivityLog(data.activityLog || []);
         setKnowledgeBase(data.knowledgeBase);
+      } else {
+        console.log("ℹ️ [SHARE] El documento global_state no existe todavía.");
       }
       setIsLoading(false);
     }, (error) => {
-      console.error("Firebase Sync Error:", error);
+      console.error("❌ [SHARE] Error de sincronización:", error);
       setIsLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-
+  // 2. Firebase Private Sync Effect (Chat History & Notifications)
+  useEffect(() => {
+    if (!user) {
+      setChatHistory([]);
+      return;
+    }
+    const userDoc = doc(db, "users", user.uid, "private_state", "data");
+    const unsubscribe = onSnapshot(userDoc, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setChatHistory(data.chatHistory || []);
+        setSentNotifications(data.sentNotifications || {});
+        setFcmToken(data.fcmToken);
+      }
+    }, (error) => {
+      console.error("Firebase Private Sync Error:", error);
+    });
+    return () => unsubscribe();
+  }, [user]);
 
   const persistState = useCallback(async (updates: Partial<AppState>) => {
-    const stateDoc = doc(db, "marketing_hub", "global_state");
-    try {
-      console.log("Persisting to Firestore:", Object.keys(updates));
-      await setDoc(stateDoc, updates, { merge: true });
-    } catch (e) {
-      console.error("Persistence Error:", e);
+    if (isLoading && !updates.fcmToken) {
+      return;
     }
-  }, []);
+
+    const sharedKeys: (keyof AppState)[] = ['events', 'projects', 'budget', 'documents', 'tagColors', 'assigneeColors', 'activityLog', 'knowledgeBase'];
+    const privateKeys: (keyof AppState)[] = ['chatHistory', 'sentNotifications', 'fcmToken'];
+
+    const sharedUpdates: any = {};
+    const privateUpdates: any = {};
+
+    Object.keys(updates).forEach((key) => {
+      if (sharedKeys.includes(key as keyof AppState)) sharedUpdates[key] = (updates as any)[key];
+      if (privateKeys.includes(key as keyof AppState)) privateUpdates[key] = (updates as any)[key];
+    });
+
+    try {
+      setSyncStatus('saving');
+      setLastError(null);
+
+      if (Object.keys(sharedUpdates).length > 0) {
+        console.log("💾 [SAVE-SHARE] ->", Object.keys(sharedUpdates));
+        const stateDoc = doc(db, "marketing_hub", "global_state");
+        await setDoc(stateDoc, sharedUpdates, { merge: true });
+      }
+      if (user && Object.keys(privateUpdates).length > 0) {
+        console.log("🔒 [SAVE-PRIVATE] ->", Object.keys(privateUpdates));
+        const userDoc = doc(db, "users", user.uid, "private_state", "data");
+        await setDoc(userDoc, privateUpdates, { merge: true });
+      }
+      setSyncStatus('synced');
+    } catch (e: any) {
+      console.error("❌ Error de persistencia:", e);
+      setSyncStatus('error');
+      setLastError(e.message || "Error desconocido al guardar en Firebase");
+      // Global alert for the user to see without console
+      if (e.message?.includes('permission-denied')) {
+        setLastError("Error de permisos en Firebase. Verifica las reglas de Firestore.");
+      }
+    }
+  }, [user, isLoading]);
 
   // Notification Check Effect (Moved here to avoid lint error)
   useEffect(() => {
@@ -170,13 +224,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         vapidKey: 'BCGI4AbSz62vZCAJKeNiOl4314KdBGpha743NeODLAVlaSYvu7N3h2zetGna4w9wb94Qa0RlYjAVcqjbouXwZKs'
       });
 
-      if (token) {
+      if (token && user) {
         console.log("FCM Token obtenido:", token);
         setFcmToken(token);
         // Explicit save to be sure
-        const stateDoc = doc(db, "marketing_hub", "global_state");
-        await setDoc(stateDoc, { fcmToken: token }, { merge: true });
-        console.log("Token guardado en Firestore (explícito)");
+        const userDoc = doc(db, "users", user.uid, "private_state", "data");
+        await setDoc(userDoc, { fcmToken: token }, { merge: true });
+        console.log("Token guardado en Firestore (privado)");
         alert("¡Notificaciones vinculadas con éxito!");
         return true;
       } else {
@@ -201,8 +255,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       timestamp: new Date().toISOString()
     };
     setActivityLog(prev => {
-      const next = [newEntry, ...prev].slice(0, 100); // Keep last 100
-      persistState({ activityLog: next });
+      const next = [newEntry, ...prev].slice(0, 100);
+      setTimeout(() => persistState({ activityLog: next }), 0);
       return next;
     });
   }, [user, persistState]);
@@ -210,42 +264,47 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addChatMessage = useCallback((msg: ChatMessage) => {
     setChatHistory(prev => {
       const next = [...prev, msg];
-      persistState({ chatHistory: next });
+      setTimeout(() => persistState({ chatHistory: next }), 0);
       return next;
     });
   }, [persistState]);
 
   const applyStateUpdate = useCallback((update: AIStateUpdate) => {
-    setEvents(prev => {
-      let next = [...prev];
-      if (update.newEvents) next = [...next, ...update.newEvents];
-      if (update.updatedEvents) {
-        const updateMap = new Map(update.updatedEvents.map(ev => [ev.id, ev]));
-        next = next.map(ev => updateMap.has(ev.id) ? { ...ev, ...updateMap.get(ev.id) } : ev);
-      }
-      if (update.deletedEvents) {
-        const toDelete = new Set(update.deletedEvents);
-        next = next.filter(ev => !toDelete.has(ev.id));
-      }
+    // Log applied update
+    console.log("🤖 Aplicando actualización de IA:", update);
 
-      // Add metadata to NEW events
-      if (update.newEvents && user) {
-        const eventIds = new Set(update.newEvents.map(e => e.id));
-        next = next.map(ev => {
-          if (eventIds.has(ev.id) && !ev.createdBy) {
-            return {
-              ...ev,
-              createdBy: { uid: user.uid, displayName: user.displayName || 'IA Assistant', photoURL: user.photoURL || undefined },
-              createdAt: new Date().toISOString()
-            };
-          }
-          return ev;
-        });
-      }
+    if (update.newEvents || update.updatedEvents || update.deletedEvents) {
+      setEvents(prev => {
+        let next = [...prev];
+        if (update.newEvents) next = [...next, ...update.newEvents];
+        if (update.updatedEvents) {
+          const updateMap = new Map(update.updatedEvents.map(ev => [ev.id, ev]));
+          next = next.map(ev => updateMap.has(ev.id) ? { ...ev, ...updateMap.get(ev.id) } : ev);
+        }
+        if (update.deletedEvents) {
+          const toDelete = new Set(update.deletedEvents);
+          next = next.filter(ev => !toDelete.has(ev.id));
+        }
 
-      if (JSON.stringify(prev) !== JSON.stringify(next)) persistState({ events: next });
-      return next;
-    });
+        // Add metadata to NEW events
+        if (update.newEvents && user) {
+          const eventIds = new Set(update.newEvents.map(e => e.id));
+          next = next.map(ev => {
+            if (eventIds.has(ev.id) && !ev.createdBy) {
+              return {
+                ...ev,
+                createdBy: { uid: user.uid, displayName: user.displayName || 'IA Assistant', photoURL: user.photoURL || undefined },
+                createdAt: new Date().toISOString()
+              };
+            }
+            return ev;
+          });
+        }
+
+        setTimeout(() => persistState({ events: next }), 0);
+        return next;
+      });
+    }
 
     if (update.newProjects || update.updatedProjects || update.deletedProjects) {
       setProjects(prev => {
@@ -259,7 +318,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           const toDelete = new Set(update.deletedProjects);
           next = next.filter(p => !toDelete.has(p.id));
         }
-        persistState({ projects: next });
+        setTimeout(() => persistState({ projects: next }), 0);
         return next;
       });
     }
@@ -267,14 +326,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (update.budgetUpdate) {
       setBudget(prev => {
         const next = { ...prev, ...update.budgetUpdate };
-        persistState({ budget: next });
+        setTimeout(() => persistState({ budget: next }), 0);
         return next;
       });
     }
 
     if (update.knowledgeBaseUpdate) {
-      setKnowledgeBase(update.knowledgeBaseUpdate);
-      persistState({ knowledgeBase: update.knowledgeBaseUpdate });
+      const kb = update.knowledgeBaseUpdate;
+      setKnowledgeBase(kb);
+      setTimeout(() => persistState({ knowledgeBase: kb }), 0);
     }
 
     if (update.documents || update.deletedDocuments) {
@@ -285,23 +345,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           const toDelete = new Set(update.deletedDocuments);
           next = next.filter(d => !toDelete.has(d));
         }
-        persistState({ documents: next });
+        setTimeout(() => persistState({ documents: next }), 0);
         return next;
       });
     }
-  }, [persistState]);
+  }, [user, persistState]);
 
   const deleteProject = useCallback((projectId: string) => {
     // 1. Unlink activities first
     setEvents(prev => {
       const next = prev.map(ev => ev.projectId === projectId ? { ...ev, projectId: undefined } : ev);
-      if (JSON.stringify(prev) !== JSON.stringify(next)) persistState({ events: next });
+      if (JSON.stringify(prev) !== JSON.stringify(next)) setTimeout(() => persistState({ events: next }), 0);
       return next;
     });
     // 2. Delete project
     setProjects(prev => {
       const next = prev.filter(p => p.id !== projectId);
-      persistState({ projects: next });
+      setTimeout(() => persistState({ projects: next }), 0);
       return next;
     });
   }, [persistState]);
@@ -320,7 +380,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           status: (allDone ? 'completed' : p.status === 'completed' ? 'ongoing' : p.status) as Project['status']
         };
       });
-      persistState({ projects: next });
+      setTimeout(() => persistState({ projects: next }), 0);
       return next;
     });
   }, [persistState]);
@@ -333,7 +393,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const allDone = newTasks.length > 0 && newTasks.every(t => t.done);
         return { ...ev, tasks: newTasks, completed: allDone };
       });
-      persistState({ events: next });
+      setTimeout(() => persistState({ events: next }), 0);
       return next;
     });
     logActivity('task_toggled', `Tarea actualizada en evento`);
@@ -342,7 +402,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateEvent = useCallback((eventId: string, updates: Partial<MarketingEvent>) => {
     setEvents(prev => {
       const next = prev.map(ev => ev.id === eventId ? { ...ev, ...updates } : ev);
-      persistState({ events: next });
+      setTimeout(() => persistState({ events: next }), 0);
       return next;
     });
     const updatedEv = events.find(e => e.id === eventId);
@@ -352,7 +412,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const deleteEvent = useCallback((eventId: string) => {
     setEvents(prev => {
       const next = prev.filter(ev => ev.id !== eventId);
-      persistState({ events: next });
+      setTimeout(() => persistState({ events: next }), 0);
       return next;
     });
     logActivity('deleted_event', `Evento eliminado: ${eventId}`);
@@ -367,7 +427,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setProjects(prev => {
       const next = [...prev, projectWithMeta];
-      persistState({ projects: next });
+      setTimeout(() => persistState({ projects: next }), 0);
       return next;
     });
     logActivity('created_project', `Proyecto creado: ${project.title}`);
@@ -376,14 +436,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateProject = useCallback((projectId: string, updates: Partial<Project>) => {
     setProjects(prev => {
       const next = prev.map(p => p.id === projectId ? { ...p, ...updates } : p);
-      persistState({ projects: next });
+      setTimeout(() => persistState({ projects: next }), 0);
       return next;
     });
   }, [persistState]);
 
   const clearChat = useCallback(() => {
     setChatHistory([]);
-    persistState({ chatHistory: [] });
+    setTimeout(() => persistState({ chatHistory: [] }), 0);
   }, [persistState]);
 
   const addDocument = useCallback((name: string, content?: string) => {
@@ -394,7 +454,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setKnowledgeBase(content);
         updates.knowledgeBase = content;
       }
-      persistState(updates);
+      setTimeout(() => persistState(updates), 0);
       return next;
     });
   }, [persistState]);
@@ -402,7 +462,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setTagColor = useCallback((tag: string, color: string) => {
     setTagColors(prev => {
       const next = { ...prev, [tag]: color };
-      persistState({ tagColors: next });
+      setTimeout(() => persistState({ tagColors: next }), 0);
       return next;
     });
   }, [persistState]);
@@ -410,7 +470,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setAssigneeColor = useCallback((assignee: string, color: string) => {
     setAssigneeColors(prev => {
       const next = { ...prev, [assignee]: color };
-      persistState({ assigneeColors: next });
+      setTimeout(() => persistState({ assigneeColors: next }), 0);
       return next;
     });
   }, [persistState]);
@@ -466,7 +526,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       currentSection, setCurrentSection,
       events, projects, budget, chatHistory, documents, tagColors, assigneeColors, sentNotifications, activityLog,
       addChatMessage, applyStateUpdate, toggleProjectItem, toggleEventTask, updateEvent, deleteEvent, updateProject, deleteProject, addProject, addDocument, setTagColor, setAssigneeColor, clearChat,
-      isLoading, enableNotifications, fcmToken, logActivity, knowledgeBase
+      isLoading, enableNotifications, fcmToken, logActivity, knowledgeBase, syncStatus, lastError
     }}>
       {children}
     </AppContext.Provider>

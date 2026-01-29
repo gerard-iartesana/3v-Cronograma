@@ -45,7 +45,7 @@ export const YearView: React.FC<YearViewProps> = ({
 
                     return (
                         <div key={monthIdx} className="bg-neutral-900 border border-neutral-800 p-4 rounded-[2rem] flex flex-col h-full min-h-[200px] transition-all hover:border-neutral-700 hover:bg-neutral-800 group/month shadow-md">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white mb-4 text-center border-b border-neutral-800 pb-2 group-hover/month:text-[#dc0014] transition-colors">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white mb-4 text-center border-b border-neutral-800 pb-2 group-hover/month:text-white transition-colors">
                                 {monthsOfYear[monthIdx]}
                             </h4>
                             <div className="grid grid-cols-7 gap-2 flex-1 content-start">
@@ -117,7 +117,7 @@ export const YearView: React.FC<YearViewProps> = ({
                     >
                         <div className="text-[11px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4 border-b border-neutral-800 pb-3 flex justify-between items-center">
                             <span>{hoveredDay.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>
-                            <span className="text-[#dc0014] bg-[#dc0014]/10 px-2.5 py-1 rounded-full">{formatDuration(hoveredDay.events.reduce((acc, e) => acc + parseDurationToMinutes(e.duration), 0))}</span>
+                            <span className="text-white bg-white/10 px-2.5 py-1 rounded-full">{formatDuration(hoveredDay.events.reduce((acc, e) => acc + parseDurationToMinutes(e.duration), 0))}</span>
                         </div>
                         <div className="space-y-4">
                             {hoveredDay.events.slice(0, 6).map(e => (

@@ -149,7 +149,7 @@ export const DayView: React.FC<DayViewProps> = ({
                                     dragControls.start(e);
                                 }}
                             >
-                                <h4 className="font-bold text-white text-[10px] lg:text-xs truncate leading-none cursor-pointer hover:text-[#dc0014] shrink-0">{event.title}</h4>
+                                <h4 className="font-bold text-white text-[10px] lg:text-xs truncate leading-none cursor-pointer hover:text-white shrink-0">{event.title}</h4>
                                 {duration >= 45 && totalColumns === 1 && event.description && (
                                     <p className="text-[10px] text-gray-400 line-clamp-1 opacity-70 leading-none mt-0.5">{event.description}</p>
                                 )}
