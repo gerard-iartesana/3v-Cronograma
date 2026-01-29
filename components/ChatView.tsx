@@ -65,12 +65,12 @@ export const ChatView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 relative">
+    <div className="flex flex-col h-full bg-neutral-950 relative">
       <div className="relative flex items-center justify-between">
         <GlassHeader title="¿Te ayudo?" underlineColor="#dc0014" />
         <button
           onClick={clearChat}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-[50] flex items-center justify-center bg-white border border-gray-200 w-10 h-10 rounded-full text-gray-400 hover:text-[#dc0014] transition-all shadow-sm"
+          className="absolute right-6 top-1/2 -translate-y-1/2 z-[50] flex items-center justify-center bg-neutral-900 border border-neutral-800 w-10 h-10 rounded-full text-gray-400 hover:text-[#dc0014] transition-all shadow-sm"
           title="Reiniciar chat"
         >
           <RotateCcw size={18} />
@@ -82,11 +82,11 @@ export const ChatView: React.FC = () => {
           <div className="h-full flex flex-col items-center justify-center p-4">
             <div className="max-w-md w-full space-y-4">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-red-100">
+                <div className="w-16 h-16 bg-red-900/20 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-red-900/30">
                   <MessageCircle className="text-[#dc0014]" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700">Asistente de 3villas para la gestión cronograma</h3>
-                <p className="text-gray-500 text-sm mt-2">Prueba una de estas frases para ver de qué es capaz la IA de 3V</p>
+                <h3 className="text-xl font-bold text-gray-200">Asistente de BSC para la gestión cronograma</h3>
+                <p className="text-gray-500 text-sm mt-2">Prueba una de estas frases para ver de qué es capaz la IA de BSC</p>
               </div>
 
               {[
@@ -96,7 +96,7 @@ export const ChatView: React.FC = () => {
               ].map((phrase, i) => (
                 <button
                   key={i}
-                  className="w-full bg-white border border-gray-200 hover:border-red-200 hover:bg-red-50 p-4 rounded-2xl text-center transition-all group shadow-sm"
+                  className="w-full bg-neutral-900 border border-neutral-800 hover:border-red-900/50 hover:bg-red-900/10 p-4 rounded-2xl text-center transition-all group shadow-sm"
                   onClick={() => {
                     setInput(phrase);
                     setTimeout(() => {
@@ -105,7 +105,7 @@ export const ChatView: React.FC = () => {
                     }, 100);
                   }}
                 >
-                  <p className="text-sm text-gray-600 group-hover:text-black leading-relaxed text-center">{phrase}</p>
+                  <p className="text-sm text-gray-400 group-hover:text-white leading-relaxed text-center">{phrase}</p>
                 </button>
               ))}
             </div>
@@ -116,7 +116,7 @@ export const ChatView: React.FC = () => {
               <div className={`max-w-[90%] md:max-w-[75%] rounded-2xl p-3 md:p-5 text-sm md:text-base leading-relaxed shadow-sm
                 ${msg.role === 'user'
                   ? 'bg-[#dc0014] text-white rounded-br-none'
-                  : 'bg-white border border-gray-200 text-gray-700 rounded-bl-none'}`}>
+                  : 'bg-neutral-900 border border-neutral-800 text-gray-300 rounded-bl-none'}`}>
                 <ReactMarkdown
                   components={{
                     p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
@@ -134,7 +134,7 @@ export const ChatView: React.FC = () => {
         )}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-white border border-gray-200 rounded-2xl p-3 flex items-center gap-2 shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3 flex items-center gap-2 shadow-sm">
               <Loader2 className="animate-spin text-[#dc0014]" size={16} />
               <span className="text-gray-500 text-xs font-semibold tracking-widest">Analizando...</span>
             </div>
@@ -150,7 +150,7 @@ export const ChatView: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Escribe aquí..."
-            className="w-full bg-white border border-gray-200 rounded-2xl py-4 px-12 text-black text-sm md:text-base focus:outline-none focus:border-[#dc0014] transition-all placeholder:text-gray-400 shadow-sm"
+            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-12 text-white text-sm md:text-base focus:outline-none focus:border-[#dc0014] transition-all placeholder:text-neutral-500 shadow-sm"
           />
           <button className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors">
             <MessageSquare size={20} />

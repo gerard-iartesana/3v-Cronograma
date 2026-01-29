@@ -1,6 +1,6 @@
 {
-    "short_name": "3villas",
-    "name": "3villas Cronograma",
+    "short_name": "BSC",
+    "name": "BSC Cronograma",
     "icons": [
         {
             "src": "/icon-mobile.png",
@@ -29,7 +29,7 @@
     ],
     "start_url": "/",
     "display": "standalone",
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "background_color": "#000000",
     "id": "/?v=7"
 }

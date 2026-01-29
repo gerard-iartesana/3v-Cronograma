@@ -47,16 +47,16 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={gridClasses}>
             {processedEvents.length === 0 ? (
-                <div className="col-span-full py-20 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-200 rounded-[2rem]">
+                <div className="col-span-full py-20 flex flex-col items-center justify-center text-gray-500 border-2 border-dashed border-neutral-800 rounded-[2rem]">
                     <CalendarIcon size={48} className="mb-4 opacity-30" />
-                    <p className="text-sm font-bold text-gray-500">No hay actividades</p>
+                    <p className="text-sm font-bold text-gray-400">No hay actividades</p>
                 </div>
             ) : (
                 processedEvents.map(event => {
                     if (event.type === 'holiday') {
                         return (
-                            <motion.div key={event.id} className="bg-gray-50 border border-gray-200 rounded-[1.25rem] p-4 flex items-center gap-4 opacity-75 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-                                <div className="flex flex-col items-center justify-center min-w-[3rem] border-r border-gray-200 pr-4">
+                            <motion.div key={event.id} className="bg-neutral-900 border border-neutral-800 rounded-[1.25rem] p-4 flex items-center gap-4 opacity-75 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                                <div className="flex flex-col items-center justify-center min-w-[3rem] border-r border-neutral-800 pr-4">
                                     <span className="text-xl font-bold text-gray-400 leading-none">{new Date(event.date).getDate()}</span>
                                     <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 mt-1">{daysOfWeek[new Date(event.date).getDay() === 0 ? 6 : new Date(event.date).getDay() - 1].substring(0, 3)}</span>
                                 </div>
@@ -69,16 +69,16 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                         const isStart = event._agendaType === 'campaign_start';
                         const color = getEventStyle(event).color;
                         return (
-                            <motion.div key={event.id} className="bg-white border border-gray-200 rounded-[1.25rem] p-4 flex items-center gap-4 group hover:border-gray-300 transition-all border-l-4 shadow-sm" style={{ borderLeftColor: color }}>
-                                <div className="flex flex-col items-center justify-center min-w-[3rem] border-r border-gray-200 pr-4">
-                                    <span className="text-xl font-black text-black leading-none">{new Date(event.date).getDate()}</span>
+                            <motion.div key={event.id} className="bg-neutral-900 border border-neutral-800 rounded-[1.25rem] p-4 flex items-center gap-4 group hover:border-neutral-700 transition-all border-l-4 shadow-sm" style={{ borderLeftColor: color }}>
+                                <div className="flex flex-col items-center justify-center min-w-[3rem] border-r border-neutral-800 pr-4">
+                                    <span className="text-xl font-black text-white leading-none">{new Date(event.date).getDate()}</span>
                                     <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 mt-1">{daysOfWeek[new Date(event.date).getDay() === 0 ? 6 : new Date(event.date).getDay() - 1].substring(0, 3)}</span>
                                 </div>
                                 <div className="flex-1">
                                     <span className="text-[9px] font-black uppercase tracking-widest mb-1 block opacity-70" style={{ color }}>
                                         {isStart ? 'Inicio de Campaña' : 'Fin de Campaña'}
                                     </span>
-                                    <h3 className="text-sm font-bold text-gray-600 leading-tight">{event.title}</h3>
+                                    <h3 className="text-sm font-bold text-gray-300 leading-tight">{event.title}</h3>
                                 </div>
                             </motion.div>
                         );
@@ -89,24 +89,24 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                     return (
                         <motion.div
                             key={event.id}
-                            className={`bg-white border border-gray-200 rounded-[1.25rem] transition-all group hover:border-[#dc0014]/30 shadow-sm ${agendaDensity === 0 ? 'flex items-center gap-4 p-4' : 'flex flex-col h-full pt-4 pb-5 px-5'}`}
-                            style={{ borderColor: `${style.color}33`, backgroundColor: '#ffffff' }}
+                            className={`bg-neutral-900 border border-neutral-800 rounded-[1.25rem] transition-all group hover:border-[#dc0014]/30 shadow-sm ${agendaDensity === 0 ? 'flex items-center gap-4 p-4' : 'flex flex-col h-full pt-4 pb-5 px-5'}`}
+                            style={{ borderColor: `${style.color}33`, backgroundColor: '#171717' }}
                         >
                             {agendaDensity === 0 ? (
                                 <div className="flex items-center gap-4 w-full cursor-pointer" onClick={() => onOpenEvent(event)}>
-                                    <div className="flex flex-col items-center justify-center min-w-[4rem] border-r border-gray-200 pr-4">
-                                        <span className="text-3xl font-bold text-gray-700 leading-none">{new Date(event.date).getDate()}</span>
-                                        <span className="text-[12px] font-black uppercase tracking-wider text-gray-400 mt-1">{daysOfWeek[new Date(event.date).getDay() === 0 ? 6 : new Date(event.date).getDay() - 1].substring(0, 3)}</span>
+                                    <div className="flex flex-col items-center justify-center min-w-[4rem] border-r border-neutral-800 pr-4">
+                                        <span className="text-3xl font-bold text-gray-200 leading-none">{new Date(event.date).getDate()}</span>
+                                        <span className="text-[12px] font-black uppercase tracking-wider text-gray-500 mt-1">{daysOfWeek[new Date(event.date).getDay() === 0 ? 6 : new Date(event.date).getDay() - 1].substring(0, 3)}</span>
                                     </div>
                                     <div className="flex-1">
                                         {event.tags && event.tags.length > 0 && (
                                             <div className="flex flex-wrap gap-1 mb-1">
                                                 {event.tags.filter(t => tagColors?.[t]).map(t => (
-                                                    <span key={t} className="px-1.5 py-0.5 rounded-md border border-gray-200 text-[7px] font-black uppercase tracking-widest bg-gray-50" style={{ color: tagColors![t], borderColor: `${tagColors![t]}33` }}>{t}</span>
+                                                    <span key={t} className="px-1.5 py-0.5 rounded-md border border-neutral-800 text-[7px] font-black uppercase tracking-widest bg-neutral-800" style={{ color: tagColors![t], borderColor: `${tagColors![t]}33` }}>{t}</span>
                                                 ))}
                                             </div>
                                         )}
-                                        <h3 className="text-sm font-bold text-gray-700 leading-tight line-clamp-2 group-hover:text-[#dc0014] transition-colors">{event.title}</h3>
+                                        <h3 className="text-sm font-bold text-gray-200 leading-tight line-clamp-2 group-hover:text-[#dc0014] transition-colors">{event.title}</h3>
                                     </div>
                                 </div>
                             ) : (
@@ -126,13 +126,13 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                                         {event.tags && event.tags.length > 0 && (
                                             <div className="flex flex-wrap gap-1 mb-2">
                                                 {event.tags.filter(t => tagColors?.[t]).map(t => (
-                                                    <span key={t} className="px-1.5 py-0.5 rounded-md border border-gray-200 text-[7px] font-black uppercase tracking-widest bg-gray-50" style={{ color: tagColors![t], borderColor: `${tagColors![t]}33` }}>{t}</span>
+                                                    <span key={t} className="px-1.5 py-0.5 rounded-md border border-neutral-800 text-[7px] font-black uppercase tracking-widest bg-neutral-800" style={{ color: tagColors![t], borderColor: `${tagColors![t]}33` }}>{t}</span>
                                                 ))}
                                             </div>
                                         )}
-                                        <h3 className="text-xl font-bold text-gray-700 mb-2 cursor-pointer hover:text-[#dc0014] transition-all line-clamp-2" onClick={() => onOpenEvent(event)}>{event.title}</h3>
+                                        <h3 className="text-xl font-bold text-white mb-2 cursor-pointer hover:text-[#dc0014] transition-all line-clamp-2" onClick={() => onOpenEvent(event)}>{event.title}</h3>
                                     </div>
-                                    <p className="text-gray-600 text-xs mb-4 font-medium flex-1 line-clamp-3">{event.description}</p>
+                                    <p className="text-gray-400 text-xs mb-4 font-medium flex-1 line-clamp-3">{event.description}</p>
                                 </>
                             )}
                         </motion.div>

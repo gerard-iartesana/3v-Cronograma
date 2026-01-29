@@ -19,23 +19,23 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     dataKey="name"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#000', fontSize: 13, fontWeight: 700, fontFamily: 'Open Sans, sans-serif' }}
+                    tick={{ fill: '#9ca3af', fontSize: 13, fontWeight: 700, fontFamily: 'Open Sans, sans-serif' }}
                     dy={20}
                 />
                 <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#666', fontSize: 10, fontWeight: 700, fontFamily: 'Open Sans, sans-serif' }}
+                    tick={{ fill: '#6b7280', fontSize: 10, fontWeight: 700, fontFamily: 'Open Sans, sans-serif' }}
                     tickFormatter={(val) => `${val}€`}
                 />
                 <Tooltip
-                    cursor={{ fill: 'rgba(0,0,0,0.03)' }}
+                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                     contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: '#171717',
+                        border: '1px solid #262626',
                         borderRadius: '20px',
                         padding: '15px',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
                     }}
                     itemStyle={{ fontSize: '11px', fontWeight: 'bold', fontFamily: 'Open Sans, sans-serif' }}
                     formatter={(value: number) => [`${value.toLocaleString()}€`, '']}
@@ -44,7 +44,7 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     verticalAlign="top"
                     height={36}
                     iconType="circle"
-                    wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif' }}
+                    wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif', color: '#9ca3af' }}
                 />
 
                 {/* Estimado: Red (Brand) */}
@@ -56,23 +56,23 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     fill="#dc0014"
                 />
 
-                {/* Real: Stacked (Gray Shades as requested) */}
-                {/* Production: Dark Base */}
+                {/* Real: Stacked (BSC Colors: Orange & Yellow) */}
+                {/* Production: Orange */}
                 <Bar
                     name="Producción"
                     dataKey="RealProduction"
                     stackId="real"
                     barSize={displayMode === 'accumulated' ? 60 : 30}
-                    fill="#4b5563" // Dark Gray
+                    fill="#FF7D00"
                 />
-                {/* Time: Light Top */}
+                {/* Time: Yellow */}
                 <Bar
                     name="Tiempo"
                     dataKey="RealTime"
                     stackId="real"
                     radius={[12, 12, 0, 0]}
                     barSize={displayMode === 'accumulated' ? 60 : 30}
-                    fill="#9ca3af" // Light Gray
+                    fill="#FFD000"
                 />
             </BarChart>
         </ResponsiveContainer>

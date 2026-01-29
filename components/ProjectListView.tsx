@@ -21,13 +21,13 @@ interface ProjectCardProps {
 
 
 const NumberInput = ({ value, onChange, step = 1, suffix = '' }: { value: number, onChange: (val: number) => void, step?: number, suffix?: string }) => (
-  <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 overflow-hidden w-full h-[46px]">
-    <button type="button" onClick={() => onChange(value - step)} className="h-full px-3 text-gray-400 hover:text-black hover:bg-gray-100 transition-colors flex items-center justify-center"><ChevronLeft size={16} /></button>
+  <div className="flex items-center bg-neutral-900 rounded-xl border border-neutral-800 overflow-hidden w-full h-[46px]">
+    <button type="button" onClick={() => onChange(value - step)} className="h-full px-3 text-gray-400 hover:text-white hover:bg-neutral-800 transition-colors flex items-center justify-center"><ChevronLeft size={16} /></button>
     <div className="flex-1 flex items-center justify-center gap-1 h-full relative">
-      <input type="number" value={Math.round(value * 100) / 100} onChange={e => onChange(parseFloat(e.target.value) || 0)} className="bg-transparent text-black font-bold text-center outline-none w-full h-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+      <input type="number" value={Math.round(value * 100) / 100} onChange={e => onChange(parseFloat(e.target.value) || 0)} className="bg-transparent text-white font-bold text-center outline-none w-full h-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
       {suffix && <span className="absolute right-2 text-[10px] text-gray-500 font-bold pointer-events-none">{suffix}</span>}
     </div>
-    <button type="button" onClick={() => onChange(value + step)} className="h-full px-3 text-gray-400 hover:text-black hover:bg-gray-100 transition-colors flex items-center justify-center"><ChevronRight size={16} /></button>
+    <button type="button" onClick={() => onChange(value + step)} className="h-full px-3 text-gray-400 hover:text-white hover:bg-neutral-800 transition-colors flex items-center justify-center"><ChevronRight size={16} /></button>
   </div>
 );
 
@@ -183,13 +183,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     <motion.div
       layout
       onClick={(e) => { e.stopPropagation(); if (!isEditing) onToggle(); }}
-      className={`group relative border ${isExpanded ? 'border-[#dc0014] shadow-md' : isTemplate ? 'border-gray-200' : 'border-gray-200'} ${isTemplate ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'} rounded-[2rem] overflow-hidden transition-all ${isTemplate ? 'mb-1' : 'mb-2'} z-10 hover:z-20 ${isEditing ? '' : 'cursor-pointer'}`}
+      className={`group relative border ${isExpanded ? 'border-[#dc0014] shadow-md' : isTemplate ? 'border-neutral-800' : 'border-neutral-800'} ${isTemplate ? 'bg-neutral-900 hover:bg-neutral-800' : 'bg-neutral-900 hover:bg-neutral-800'} rounded-[2rem] overflow-hidden transition-all ${isTemplate ? 'mb-1' : 'mb-2'} z-10 hover:z-20 ${isEditing ? '' : 'cursor-pointer'}`}
     >
       <div className={`${isTemplate ? 'px-4 py-3' : 'px-5 pt-2 pb-3'}`}>
         <div className={`flex justify-between ${isTemplate ? 'items-center' : 'items-start'}`}>
           <div className="flex-1 flex flex-wrap items-center gap-x-4 gap-y-1">
             <h3
-              className={`text-[16px] font-bold ${isTemplate ? 'text-gray-400 hover:text-gray-700' : 'text-gray-700 hover:text-[#dc0014]'} transition-colors leading-tight`}
+              className={`text-[16px] font-bold ${isTemplate ? 'text-gray-500 hover:text-gray-300' : 'text-gray-200 hover:text-[#dc0014]'} transition-colors leading-tight`}
             >
               {project.title}
             </h3>
@@ -201,7 +201,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   .map(tag => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded-full border border-gray-200 text-[8px] font-black text-gray-500 uppercase tracking-widest bg-gray-50"
+                      className="px-2 py-0.5 rounded-full border border-neutral-800 text-[8px] font-black text-gray-400 uppercase tracking-widest bg-neutral-900"
                       style={tagColors?.[tag] ? { color: tagColors[tag], borderColor: `${tagColors[tag]}33` } : {}}
                     >
                       {tag}
@@ -212,9 +212,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
 
           {!isTemplate && project.deadline && (
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50/50 rounded-lg border border-red-100">
-              <Calendar size={12} className="text-red-500" />
-              <span className="text-[10px] font-black text-red-600">
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-red-900/10 rounded-lg border border-red-900/30">
+              <Calendar size={12} className="text-red-400" />
+              <span className="text-[10px] font-black text-red-500">
                 {new Date(project.deadline).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
               </span>
             </div>
@@ -225,7 +225,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             <div className="flex items-center h-8">
               <button
                 onClick={handleCreateFromClone}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 shadow-sm hover:border-[#dc0014] hover:text-[#dc0014] transition-all"
+                className="w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-gray-400 shadow-sm hover:border-[#dc0014] hover:text-[#dc0014] transition-all"
                 title="Crear Proyecto"
               >
                 <Plus size={14} strokeWidth={3} />
@@ -237,7 +237,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
       {/* Progress Bar for Preview (Bottom) */}
       {project.checklist.length > 0 && (
-        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100">
+        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-neutral-800">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${(project.checklist.filter(i => i.done).length / project.checklist.length) * 100}%` }}
@@ -252,7 +252,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="border-t border-gray-200 bg-gray-50/50"
+            className="border-t border-neutral-800 bg-neutral-950/50"
           >
             <div className="p-5 space-y-3">
               {!isEditing && (
@@ -264,7 +264,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   )}
                   <button
                     onClick={startEditing}
-                    className="p-1.5 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 hover:text-black transition-all border border-gray-200"
+                    className="p-1.5 bg-neutral-800 text-gray-400 rounded-lg hover:bg-neutral-700 hover:text-white transition-all border border-neutral-700"
                     title="Editar Proyecto"
                   >
                     <Edit3 size={14} />
@@ -276,14 +276,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 <div className="flex items-center justify-end gap-2 -mb-2">
                   <button
                     onClick={(e) => { e.stopPropagation(); setIsEditing(false); }}
-                    className="p-1.5 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 hover:text-black transition-all border border-gray-200"
+                    className="p-1.5 bg-neutral-800 text-gray-400 rounded-lg hover:bg-neutral-700 hover:text-white transition-all border border-neutral-700"
                     title="Cancelar Edición"
                   >
                     <Edit3 size={14} />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); if (confirm('¿Eliminar proyecto?')) deleteProject(project.id); }}
-                    className="p-1.5 bg-red-50 text-red-400 rounded-lg hover:bg-red-100 hover:text-red-500 transition-all border border-red-100"
+                    className="p-1.5 bg-red-900/20 text-red-400 rounded-lg hover:bg-red-900/40 hover:text-red-500 transition-all border border-red-900/30"
                     title="Eliminar Proyecto"
                   >
                     <Trash2 size={14} />
@@ -297,27 +297,27 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     type="text"
                     value={editForm.title}
                     onChange={e => setEditForm({ ...editForm, title: e.target.value })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-5 py-2 text-xl font-black text-black focus:border-[#dc0014] outline-none"
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-5 py-2 text-xl font-black text-white focus:border-[#dc0014] outline-none"
                     placeholder="Título del proyecto"
                   />
                   <textarea
                     value={editForm.description}
                     onChange={e => setEditForm({ ...editForm, description: e.target.value })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-5 py-2 text-sm text-gray-600 h-20 focus:border-[#dc0014] outline-none leading-relaxed"
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-5 py-2 text-sm text-gray-400 h-20 focus:border-[#dc0014] outline-none leading-relaxed"
                     placeholder="Descripción"
                   />
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold block">Etiquetas (Enter para añadir)</label>
-                    <div className="flex flex-wrap gap-2 p-3 bg-white border border-gray-200 rounded-xl">
+                    <div className="flex flex-wrap gap-2 p-3 bg-neutral-900 border border-neutral-800 rounded-xl">
                       {editForm.tags?.map(t => (
-                        <span key={t} className="flex items-center gap-1 px-2 py-1 bg-gray-100 text-black text-[10px] font-bold uppercase rounded-md border border-gray-200">
+                        <span key={t} className="flex items-center gap-1 px-2 py-1 bg-neutral-800 text-gray-200 text-[10px] font-bold uppercase rounded-md border border-neutral-700">
                           {t}
                           <X size={10} className="cursor-pointer hover:text-red-500" onClick={() => setEditForm({ ...editForm, tags: editForm.tags?.filter(tag => tag !== t) })} />
                         </span>
                       ))}
                       <input
                         type="text"
-                        className="bg-transparent border-none text-sm text-black focus:outline-none min-w-[120px]"
+                        className="bg-transparent border-none text-sm text-white focus:outline-none min-w-[120px]"
                         placeholder="Añadir..."
                         onKeyDown={e => {
                           if (e.key === 'Enter' || e.key === ',') {
@@ -337,7 +337,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       <div className="space-y-3">
                         {/* Bloque Estimado y Real Simplificado */}
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
+                          <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-3xl space-y-3">
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Estimación</h4>
                             <div>
                               <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
@@ -350,7 +350,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                             </div>
                           </div>
 
-                          <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
+                          <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-3xl space-y-3">
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Realidad</h4>
                             <div className="grid grid-cols-1 gap-2">
                               <div>
@@ -377,7 +377,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                                   suffix="€"
                                 />
                               </div>
-                              <div className="pt-2 border-t border-gray-100 flex justify-between items-center">
+                              <div className="pt-2 border-t border-neutral-800 flex justify-between items-center">
                                 <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">Total Real:</span>
                                 <span className="text-sm font-black text-[#dc0014]">
                                   {(editForm.realCost !== undefined ? editForm.realCost : ((editForm.realProductionCost || 0) + (editForm.realTimeCost || 0))).toLocaleString()}€
@@ -394,12 +394,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                           type="date"
                           value={editForm.deadline?.substring(0, 10) || ''}
                           onChange={e => setEditForm({ ...editForm, deadline: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm text-black outline-none focus:border-[#dc0014]"
+                          className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-5 py-3 text-sm text-white outline-none focus:border-[#dc0014]"
                         />
                       </div>
                     </div>
                   )}
-                  <div className="space-y-2 pt-2 border-t border-gray-200">
+                  <div className="space-y-2 pt-2 border-t border-neutral-800">
                     <div className="flex justify-between items-center mb-1">
                       <label className="text-[8px] uppercase tracking-widest text-gray-500 font-bold block">Hoja de Ruta (Checklist)</label>
                       <button
@@ -415,7 +415,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     <Reorder.Group axis="y" values={editForm.checklist || []} onReorder={(newOrder) => setEditForm({ ...editForm, checklist: newOrder })} className="space-y-2">
                       {editForm.checklist.map((item, idx) => (
                         <Reorder.Item key={item.id} value={item} className="flex items-center gap-2">
-                          <div className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500">
+                          <div className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-white">
                             <GripVertical size={14} />
                           </div>
                           <input
@@ -426,7 +426,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                               newChecklist[idx] = { ...item, label: e.target.value };
                               setEditForm({ ...editForm, checklist: newChecklist });
                             }}
-                            className="flex-1 bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-black outline-none focus:border-[#dc0014]"
+                            className="flex-1 bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-[#dc0014]"
                           />
                           <button
                             onClick={() => {
@@ -452,19 +452,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 <>
                   <div>
                     <h4 className="text-gray-500 font-bold uppercase text-[8px] tracking-[0.3em] mb-1">Descripción</h4>
-                    <p className="text-gray-600 text-xs leading-relaxed whitespace-pre-wrap">{project.description}</p>
+                    <p className="text-gray-400 text-xs leading-relaxed whitespace-pre-wrap">{project.description}</p>
                   </div>
 
                   {!isTemplate && (
                     <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
                       <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <span className="text-black font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
+                        <span className="text-white font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
                       </span>
                       <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
                         <span className="text-[#dc0014] font-bold">{(projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
                       </span>
                       {(project.realProductionCost !== undefined || project.realTimeCost !== undefined) && project.realProductionCost + project.realTimeCost > 0 && (
-                        <div className="flex gap-3 text-[9px] font-normal text-gray-400 uppercase tracking-tighter bg-gray-100/50 px-3 py-1 rounded-full border border-gray-100">
+                        <div className="flex gap-3 text-[9px] font-normal text-gray-400 uppercase tracking-tighter bg-neutral-800 px-3 py-1 rounded-full border border-neutral-700">
                           <span>Prod: {project.realProductionCost || 0}€</span>
                           <span>Time: {project.realTimeCost || 0}€</span>
                         </div>
@@ -472,7 +472,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       {project.deadline && (
                         <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none ml-auto">
                           <Calendar size={14} className="text-red-500/50" />
-                          <span className="text-black">{new Date(project.deadline).toLocaleDateString()}</span>
+                          <span className="text-gray-200">{new Date(project.deadline).toLocaleDateString()}</span>
                         </span>
                       )}
                     </div>
@@ -487,10 +487,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                         <div
                           key={item.id}
                           onClick={(e) => { e.stopPropagation(); toggleProjectItem(project.id, item.id); }}
-                          className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-200 cursor-pointer hover:border-[#dc0014] transition-all"
+                          className="flex items-center gap-3 p-3 rounded-xl bg-neutral-900 border border-neutral-800 cursor-pointer hover:border-[#dc0014] transition-all"
                         >
                           {item.done ? <CheckCircle2 className="text-[#dc0014]" size={16} /> : <Circle className="text-gray-300" size={16} />}
-                          <span className={`text-xs font-medium ${item.done ? 'text-gray-400 line-through' : 'text-gray-600'}`}>{item.label}</span>
+                          <span className={`text-xs font-medium ${item.done ? 'text-gray-500 line-through' : 'text-gray-200'}`}>{item.label}</span>
                         </div>
                       ))}
                       {project.checklist.length === 0 && <p className="text-gray-400 italic text-[10px]">Lista vacía.</p>}
@@ -503,7 +503,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                             {Math.round((project.checklist.filter(i => i.done).length / project.checklist.length) * 100)}%
                           </span>
                         </div>
-                        <div className="w-full h-1.5 bg-gray-100 border border-gray-200 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-neutral-800 border border-neutral-700 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${(project.checklist.filter(i => i.done).length / project.checklist.length) * 100}%` }}
@@ -519,7 +519,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       <h4 className="text-gray-500 font-bold uppercase text-[8px] tracking-[0.3em] mb-3">Sesiones vinculadas</h4>
                       <div className="flex flex-col gap-2">
                         {dedicatedEvents.length > 0 ? dedicatedEvents.map(e => (
-                          <div key={e.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
+                          <div key={e.id} className="flex items-center justify-between px-3 py-2 bg-neutral-900 rounded-lg border border-neutral-800">
                             <span className="text-[10px] font-bold text-gray-500">
                               {e.title} {e.recurrence ? '(Recurrente)' : ''} ({e.duration || '1h'})
                             </span>
@@ -542,7 +542,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     {project.status === 'completed' && (
                       <button
                         onClick={(e) => handleStatusMove(e, 'ongoing')}
-                        className="flex-1 py-3 bg-white text-black text-[10px] font-black rounded-xl shadow-sm border border-gray-200 hover:scale-[1.02] transition-all"
+                        className="flex-1 py-3 bg-neutral-900 text-white text-[10px] font-black rounded-xl shadow-sm border border-neutral-800 hover:scale-[1.02] transition-all"
                       >
                         Reactivar Proyecto
                       </button>
@@ -560,7 +560,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     {isEditing && (
                       <button
                         onClick={(e) => { e.stopPropagation(); if (confirm('¿Eliminar proyecto y sus datos?')) deleteProject(project.id); }}
-                        className="p-3 bg-white text-red-500 rounded-xl border border-red-200 hover:bg-red-500 hover:text-white transition-colors"
+                        className="p-3 bg-neutral-900 text-red-500 rounded-xl border border-red-900/30 hover:bg-red-900 hover:text-white transition-colors"
                         title="Eliminar Proyecto"
                       >
                         <Trash2 size={16} />
@@ -599,7 +599,7 @@ export const ProjectListView: React.FC = () => {
   const columns = [
     { title: 'Propuestas', status: 'template', icon: Lightbulb, color: '#dc0014' },
     { title: 'En curso', status: 'ongoing', icon: RotateCw, color: '#dc0014' },
-    { title: 'Completados', status: 'completed', icon: Check, color: '#000000' }
+    { title: 'Completados', status: 'completed', icon: Check, color: '#ffffff' }
   ];
 
   const filteredProjects = filter.includes('TODO')
@@ -624,7 +624,7 @@ export const ProjectListView: React.FC = () => {
   }, [filteredProjects, sortBy]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-neutral-950">
       <GlassHeader title="Proyectos" underlineColor="#dc0014" />
 
       <div className="flex flex-col items-center gap-4 px-4 py-4 relative z-50">
@@ -633,7 +633,7 @@ export const ProjectListView: React.FC = () => {
             onClick={() => setFilter(['TODO'])}
             className={`px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all ${filter.includes('TODO')
               ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md'
-              : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-black'
+              : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:bg-neutral-800 hover:text-white'
               }`}
           >
             Todos
@@ -648,7 +648,7 @@ export const ProjectListView: React.FC = () => {
                     <div
                       className={`flex items-center rounded-full border transition-all ${filter.includes(tag)
                         ? 'bg-[#dc0014] border-[#dc0014] shadow-md'
-                        : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-black'
+                        : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:bg-neutral-800 hover:text-white'
                         }`}
                       style={filter.includes(tag) && tagColors?.[tag] ? {
                         backgroundColor: tagColors[tag],
@@ -666,7 +666,7 @@ export const ProjectListView: React.FC = () => {
                             } else return [...filtered, tag];
                           });
                         }}
-                        className={`px-3 py-1.5 text-[10px] font-bold transition-colors ${filter.includes(tag) ? 'text-white' : 'text-gray-500 group-hover:text-black'}`}
+                        className={`px-3 py-1.5 text-[10px] font-bold transition-colors ${filter.includes(tag) ? 'text-white' : 'text-gray-500 group-hover:text-white'}`}
                       >
                         {tag}
                       </button>
@@ -678,7 +678,7 @@ export const ProjectListView: React.FC = () => {
                             e.stopPropagation();
                             setPaletteOpen(paletteOpen === tag ? null : tag);
                           }}
-                          className={`pr-3 pl-1 py-1.5 transition-transform hover:scale-125 ${filter.includes(tag) ? 'text-white/80 hover:text-white' : 'text-gray-400 hover:text-black'}`}
+                          className={`pr-3 pl-1 py-1.5 transition-transform hover:scale-125 ${filter.includes(tag) ? 'text-white/80 hover:text-white' : 'text-gray-400 hover:text-white'}`}
                         >
                           <Palette size={10} />
                         </button>
@@ -696,7 +696,7 @@ export const ProjectListView: React.FC = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                            className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-200 p-2.5 rounded-2xl flex items-center gap-3 z-[100] shadow-2xl"
+                            className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-neutral-900 border border-neutral-800 p-2.5 rounded-2xl flex items-center gap-3 z-[100] shadow-2xl"
                           >
                             <div className="flex items-center gap-2">
                               <span className="text-[9px] font-black text-gray-500 tracking-widest">Color RGB</span>
@@ -727,7 +727,7 @@ export const ProjectListView: React.FC = () => {
                 {uncoloredTags.length > 0 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
-                    className="px-3 py-1.5 rounded-full border border-dashed border-gray-300 text-[10px] font-black tracking-widest text-gray-500 hover:text-black hover:border-gray-400 transition-all flex items-center gap-2"
+                    className="px-3 py-1.5 rounded-full border border-dashed border-neutral-700 text-[10px] font-black tracking-widest text-gray-500 hover:text-white hover:border-neutral-500 transition-all flex items-center gap-2"
                   >
                     {showAllTags ? <Palette size={10} className="rotate-180 transition-transform" /> : <Palette size={10} />}
                     {showAllTags ? 'Menos' : `+${uncoloredTags.length}`}
@@ -739,28 +739,28 @@ export const ProjectListView: React.FC = () => {
         </div>
 
         {/* Sort Buttons */}
-        <div className="flex flex-wrap gap-2 justify-center bg-white border border-gray-200 p-1.5 rounded-[1.5rem] shadow-sm">
+        <div className="flex flex-wrap gap-2 justify-center bg-neutral-900 border border-neutral-800 p-1.5 rounded-[1.5rem] shadow-sm">
           <button
             onClick={() => setSortBy('alpha')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'alpha' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'alpha' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
             Alfabético
           </button>
           <button
             onClick={() => setSortBy('tag')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'tag' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'tag' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
             Por Tag
           </button>
           <button
             onClick={() => setSortBy('percent')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'percent' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'percent' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
             Por %
           </button>
           <button
             onClick={() => setSortBy('deadline')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'deadline' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'deadline' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
             Por Deadline
           </button>
@@ -779,9 +779,9 @@ export const ProjectListView: React.FC = () => {
                 <div className="p-2 rounded-lg" style={{ backgroundColor: `${col.color}11`, color: col.color }}>
                   <col.icon size={18} />
                 </div>
-                <h2 className="text-base font-bold tracking-tight text-gray-700">{col.title}</h2>
+                <h2 className="text-base font-bold tracking-tight text-gray-200">{col.title}</h2>
               </div>
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-full border border-gray-200 text-gray-500 bg-white">
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full border border-neutral-800 text-gray-400 bg-neutral-900">
                 {filteredProjects.filter(p => p.status === col.status).length}
               </span>
             </div>

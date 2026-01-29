@@ -294,7 +294,7 @@ export const CalendarView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-gray-50">
+    <div className="flex flex-col min-h-full bg-neutral-950">
       <GlassHeader title="Actividades" underlineColor="#dc0014" />
 
       {/* Tags Filter Section */}
@@ -304,7 +304,7 @@ export const CalendarView: React.FC = () => {
             onClick={() => setFilter(['TODO'])}
             className={`px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${filter.includes('TODO')
               ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md'
-              : 'bg-white border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-black'
+              : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:bg-neutral-800 hover:text-white'
               }`}
           >
             Todos
@@ -319,7 +319,7 @@ export const CalendarView: React.FC = () => {
                     <div
                       className={`flex items-center rounded-full border transition-all ${filter.includes(tag)
                         ? 'bg-[#dc0014] border-[#dc0014] shadow-md'
-                        : 'bg-white border-gray-200 hover:bg-gray-100'
+                        : 'bg-neutral-900 border-neutral-800 hover:bg-neutral-800 text-gray-400 hover:text-white'
                         }`}
                       style={filter.includes(tag) && tagColors?.[tag] ? {
                         backgroundColor: tagColors[tag],
@@ -329,7 +329,7 @@ export const CalendarView: React.FC = () => {
                     >
                       <button
                         onClick={() => toggleFilter(tag)}
-                        className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${filter.includes(tag) ? 'text-white' : 'text-gray-400 group-hover:text-black'}`}
+                        className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${filter.includes(tag) ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}
                       >
                         {tag}
                       </button>
@@ -341,7 +341,7 @@ export const CalendarView: React.FC = () => {
                             e.stopPropagation();
                             setPaletteOpen(paletteOpen === tag ? null : tag);
                           }}
-                          className={`pr-3 pl-1 py-1.5 transition-transform hover:scale-125 ${filter.includes(tag) ? 'text-white/80 hover:text-white' : 'text-gray-400 hover:text-black'}`}
+                          className={`pr-3 pl-1 py-1.5 transition-transform hover:scale-125 ${filter.includes(tag) ? 'text-white/80 hover:text-white' : 'text-gray-400 hover:text-white'}`}
                         >
                           <Palette size={10} />
                         </button>
@@ -360,7 +360,7 @@ export const CalendarView: React.FC = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                            className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-200 p-2.5 rounded-2xl flex items-center gap-3 z-[100] shadow-2xl"
+                            className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-neutral-900 border border-neutral-800 p-2.5 rounded-2xl flex items-center gap-3 z-[100] shadow-2xl"
                           >
                             <div className="flex items-center gap-2">
                               <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Color RGB</span>
@@ -391,7 +391,7 @@ export const CalendarView: React.FC = () => {
                 {uncoloredTags.length > 0 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
-                    className="px-3 py-1.5 rounded-full border border-dashed border-gray-300 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black hover:border-gray-400 transition-all flex items-center gap-2"
+                    className="px-3 py-1.5 rounded-full border border-dashed border-neutral-700 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:border-neutral-500 transition-all flex items-center gap-2"
                   >
                     {showAllTags ? <Palette size={10} className="rotate-180 transition-transform" /> : <Palette size={10} />}
                     {showAllTags ? 'Menos' : `+${uncoloredTags.length}`}
@@ -413,7 +413,7 @@ export const CalendarView: React.FC = () => {
                   onClick={() => setSelectedAssignees(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a])}
                   className={`group px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${selectedAssignees.includes(a)
                     ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md'
-                    : 'bg-white border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-black'
+                    : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:bg-neutral-800 hover:text-white'
                     }`}
                   style={selectedAssignees.includes(a) && assigneeColors?.[a] ? {
                     backgroundColor: assigneeColors[a],
@@ -444,7 +444,7 @@ export const CalendarView: React.FC = () => {
                       initial={{ opacity: 0, scale: 0.9, y: 10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-200 p-2.5 rounded-2xl flex items-center gap-3 z-[100] shadow-2xl"
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-neutral-900 border border-neutral-800 p-2.5 rounded-2xl flex items-center gap-3 z-[100] shadow-2xl"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Color RGB</span>
@@ -472,31 +472,31 @@ export const CalendarView: React.FC = () => {
         <div className="flex flex-col gap-4 mb-4">
           <div className="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
             <div className="order-1 flex flex-wrap justify-center items-center gap-4">
-              <div className="flex bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
-                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-gray-100 text-[#dc0014]' : 'text-gray-400 hover:text-black'}`}><Grid size={18} /></button>
-                <button onClick={() => setViewMode('agenda')} className={`p-2 rounded-lg transition-all ${viewMode === 'agenda' ? 'bg-gray-100 text-[#dc0014]' : 'text-gray-400 hover:text-black'}`}><CalendarIcon size={18} /></button>
+              <div className="flex bg-neutral-900 border border-neutral-800 p-1 rounded-xl shadow-sm">
+                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-neutral-800 text-[#dc0014]' : 'text-gray-400 hover:text-white'}`}><Grid size={18} /></button>
+                <button onClick={() => setViewMode('agenda')} className={`p-2 rounded-lg transition-all ${viewMode === 'agenda' ? 'bg-neutral-800 text-[#dc0014]' : 'text-gray-400 hover:text-white'}`}><CalendarIcon size={18} /></button>
               </div>
-              <div className="flex items-center bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
-                <button onClick={() => handleZoom('in')} disabled={viewMode === 'agenda' ? agendaDensity >= 1 : zoomLevel === 'day'} className="p-2 text-gray-400 hover:text-black"><ZoomIn size={18} /></button>
-                <span className="text-sm font-black uppercase tracking-[0.2em] text-black px-4 min-w-[120px] text-center">{viewMode === 'agenda' ? (agendaDensity === 0 ? 'Compacto' : 'Estándar') : zoomLabels[zoomLevel]}</span>
-                <button onClick={() => handleZoom('out')} disabled={viewMode === 'agenda' ? agendaDensity <= 0 : zoomLevel === 'year'} className="p-2 text-gray-400 hover:text-black"><ZoomOut size={18} /></button>
+              <div className="flex items-center bg-neutral-900 border border-neutral-800 p-1 rounded-xl shadow-sm">
+                <button onClick={() => handleZoom('in')} disabled={viewMode === 'agenda' ? agendaDensity >= 1 : zoomLevel === 'day'} className="p-2 text-gray-400 hover:text-white"><ZoomIn size={18} /></button>
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-white px-4 min-w-[120px] text-center">{viewMode === 'agenda' ? (agendaDensity === 0 ? 'Compacto' : 'Estándar') : zoomLabels[zoomLevel]}</span>
+                <button onClick={() => handleZoom('out')} disabled={viewMode === 'agenda' ? agendaDensity <= 0 : zoomLevel === 'year'} className="p-2 text-gray-400 hover:text-white"><ZoomOut size={18} /></button>
               </div>
             </div>
             {zoomLevel === 'week' && (
               <button
                 onClick={() => setHideWeekends(!hideWeekends)}
-                className={`px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${hideWeekends ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md' : 'bg-white border-gray-200 text-gray-400 hover:text-black hover:bg-gray-100'}`}
+                className={`px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${hideWeekends ? 'bg-[#dc0014] border-[#dc0014] text-white shadow-md' : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:text-white hover:bg-neutral-800'}`}
                 title={hideWeekends ? 'Mostrar Fines de Semana' : 'Ocultar Fines de Semana'}
               >
                 L-V
               </button>
             )}
-            <div className="order-2 flex items-center gap-4 bg-white border border-gray-200 px-5 py-1.5 rounded-2xl shadow-sm">
-              <button onClick={() => changeDate(-1)} className="p-1.5 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronLeft size={18} /></button>
-              <span className="text-sm font-black uppercase tracking-[0.2em] text-black min-w-[150px] md:min-w-[200px] text-center">
+            <div className="order-2 flex items-center gap-4 bg-neutral-900 border border-neutral-800 px-5 py-1.5 rounded-2xl shadow-sm">
+              <button onClick={() => changeDate(-1)} className="p-1.5 hover:bg-neutral-800 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronLeft size={18} /></button>
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-white min-w-[150px] md:min-w-[200px] text-center">
                 {zoomLevel === 'year' ? `${viewDate.getFullYear()}` : zoomLevel === 'day' ? viewDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
               </span>
-              <button onClick={() => changeDate(1)} className="p-1.5 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronRight size={18} /></button>
+              <button onClick={() => changeDate(1)} className="p-1.5 hover:bg-neutral-800 rounded-xl text-gray-400 hover:text-[#dc0014]"><ChevronRight size={18} /></button>
             </div>
           </div>
         </div>
@@ -534,7 +534,7 @@ export const CalendarView: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
-              className="fixed z-[200] bg-white border p-6 rounded-[2rem] shadow-2xl min-w-[320px] max-w-[450px]"
+              className="fixed z-[200] bg-neutral-900 border p-6 rounded-[2rem] shadow-2xl min-w-[320px] max-w-[450px]"
               style={{
                 borderColor: selectedCampaign.color,
                 left: Math.min(window.innerWidth - 340, Math.max(20, selectedCampaign.x - 160)),
@@ -542,8 +542,8 @@ export const CalendarView: React.FC = () => {
               }}
             >
               <h4 className="font-black uppercase tracking-widest text-xs mb-1" style={{ color: selectedCampaign.color }}>Campaña Activa</h4>
-              <p className="text-black font-bold text-sm mb-2 leading-tight">{selectedCampaign.title}</p>
-              <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider flex items-center gap-2">
+              <p className="text-white font-bold text-sm mb-2 leading-tight">{selectedCampaign.title}</p>
+              <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider flex items-center gap-2">
                 <CalendarIcon size={10} />
                 {new Date(selectedCampaign.start).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} - {new Date(selectedCampaign.end).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
               </div>

@@ -224,12 +224,12 @@ export const ProfileView: React.FC = () => {
   }, [activeHandle]);
 
   return (
-    <div className="flex flex-col min-h-full bg-gray-50 font-['Open_Sans'] select-none relative pb-20">
+    <div className="flex flex-col min-h-full bg-neutral-950 font-['Open_Sans'] select-none relative pb-20">
       <GlassHeader title="Rendimiento" underlineColor="#dc0014" />
 
       {/* Logout */}
       <div className="absolute top-6 right-6 z-[110] flex items-center gap-3">
-        <button onClick={() => logout()} className="p-2 bg-white text-gray-400 hover:text-red-500 rounded-xl border border-gray-200 shadow-sm transition-all">
+        <button onClick={() => logout()} className="p-2 bg-neutral-900 text-gray-400 hover:text-red-500 rounded-xl border border-neutral-800 shadow-sm transition-all">
           <LogOut size={16} />
         </button>
       </div>
@@ -237,12 +237,12 @@ export const ProfileView: React.FC = () => {
       {/* Filters (Standardized) */}
       <div className="w-full flex flex-col items-center gap-4 px-6 mt-4 relative z-50">
         <div className="flex flex-wrap gap-2 justify-center">
-          <button onClick={() => setSelectedTags([])} className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.length === 0 ? 'bg-black text-white' : 'bg-white text-gray-500'}`}>Todos</button>
+          <button onClick={() => setSelectedTags([])} className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.length === 0 ? 'bg-[#dc0014] text-white border-[#dc0014]' : 'bg-neutral-900 text-gray-400 border-neutral-800'}`}>Todos</button>
           {coloredTags.filter(t => t !== 'TODO').map(tag => (
             <div key={tag} className="relative group">
               <button
                 onClick={() => toggleTag(tag)}
-                className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.includes(tag) ? 'text-white' : 'text-gray-500 bg-white'}`}
+                className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.includes(tag) ? 'text-white' : 'text-gray-400 bg-neutral-900 border-neutral-800'}`}
                 style={selectedTags.includes(tag) ? { backgroundColor: tagColors?.[tag], borderColor: tagColors?.[tag] } : {}}
               >
                 {tag}
@@ -259,24 +259,24 @@ export const ProfileView: React.FC = () => {
 
       <div className="w-full mx-auto px-6 md:px-12 space-y-12 mt-10">
         {/* Module 1: Timeline & Chart Card (Premium Styling) */}
-        <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-14 shadow-sm relative overflow-visible">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-14 shadow-sm relative overflow-visible">
           {/* Centered Year Selector & Timeline */}
           <div className="flex flex-col gap-10 relative overflow-visible mb-16">
             <div className="flex justify-center w-full">
-              <div className="flex items-center bg-gray-50 border border-gray-200 p-1 rounded-xl">
-                <button onClick={() => setSelectedYear(selectedYear - 1)} className="p-1.5 text-gray-400 hover:text-black transition-all"><ChevronLeft size={16} /></button>
-                <span className="text-xs font-bold px-4 text-gray-700">{selectedYear}</span>
-                <button onClick={() => setSelectedYear(selectedYear + 1)} className="p-1.5 text-gray-400 hover:text-black transition-all"><ChevronRight size={16} /></button>
+              <div className="flex items-center bg-neutral-800 border border-neutral-700 p-1 rounded-xl">
+                <button onClick={() => setSelectedYear(selectedYear - 1)} className="p-1.5 text-gray-400 hover:text-white transition-all"><ChevronLeft size={16} /></button>
+                <span className="text-xs font-bold px-4 text-gray-200">{selectedYear}</span>
+                <button onClick={() => setSelectedYear(selectedYear + 1)} className="p-1.5 text-gray-400 hover:text-white transition-all"><ChevronRight size={16} /></button>
               </div>
             </div>
 
             <div className="relative h-10">
-              <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 h-1 bg-gray-200 rounded-full touch-none" ref={sliderRef}>
+              <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 h-1 bg-neutral-800 rounded-full touch-none" ref={sliderRef}>
                 <div className="absolute h-full bg-[#dc0014] rounded-full" style={{ left: `${(visualRange.start / 11) * 100}%`, width: `${((visualRange.end - visualRange.start) / 11) * 100}%` }} />
                 {months.map((m, i) => (
                   <div key={m} className="absolute top-1/2 flex flex-col items-center pointer-events-none" style={{ left: `${(i / 11) * 100}%`, transform: 'translateX(-50%)' }}>
-                    <div className={`w-0.5 h-1 rounded-full mb-4 ${i >= visualRange.start && i <= visualRange.end ? 'bg-black/40' : 'bg-gray-300'}`} />
-                    <span className={`text-[10px] md:text-xs font-bold ${i >= Math.round(visualRange.start) && i <= Math.round(visualRange.end) ? 'text-gray-900 opacity-100 scale-110' : 'text-gray-400 opacity-60'}`}>{m}</span>
+                    <div className={`w-0.5 h-1 rounded-full mb-4 ${i >= visualRange.start && i <= visualRange.end ? 'bg-white/40' : 'bg-neutral-700'}`} />
+                    <span className={`text-[10px] md:text-xs font-bold ${i >= Math.round(visualRange.start) && i <= Math.round(visualRange.end) ? 'text-white opacity-100 scale-110' : 'text-gray-500 opacity-60'}`}>{m}</span>
                   </div>
                 ))}
                 <div onPointerDown={() => setActiveHandle('start')} className="absolute top-1/2 w-10 h-10 flex items-center justify-center z-20 cursor-grab active:cursor-grabbing hover:scale-110 transition-transform -translate-x-1/2 -translate-y-1/2 touch-none" style={{ left: `${(visualRange.start / 11) * 100}%` }}>
@@ -296,16 +296,16 @@ export const ProfileView: React.FC = () => {
               <h2 className="text-3xl font-bold text-gray-800">Métricas</h2>
             </div>
 
-            <div className="flex items-center bg-gray-50 border border-gray-200 p-1.5 rounded-2xl self-start md:self-auto">
+            <div className="flex items-center bg-neutral-800 border border-neutral-700 p-1.5 rounded-2xl self-start md:self-auto">
               <button
                 onClick={() => setDisplayMode('accumulated')}
-                className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${displayMode === 'accumulated' ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${displayMode === 'accumulated' ? 'bg-neutral-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}
               >
                 Global
               </button>
               <button
                 onClick={() => setDisplayMode('detailed')}
-                className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${displayMode === 'detailed' ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${displayMode === 'detailed' ? 'bg-neutral-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}
               >
                 Desglose
               </button>
@@ -321,23 +321,23 @@ export const ProfileView: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-12 hover:border-[#dc0014]/30 shadow-sm transition-all group">
             <h3 className="text-gray-500 font-bold text-xl mb-6 group-hover:text-[#dc0014]">Coste Estimado</h3>
-            <p className="text-5xl font-bold text-black tracking-tight">{metrics.costeEstimado.toLocaleString()}€</p>
+            <p className="text-5xl font-bold text-white tracking-tight">{metrics.costeEstimado.toLocaleString()}€</p>
             <div className="flex items-center gap-2 mt-6 text-sm text-gray-400 font-normal">
               <TrendingUp size={14} /> <span>Presupuesto proyectado</span>
             </div>
           </div>
 
-          <div className="bg-gray-50 border-l-[6px] border-[#dc0014] rounded-[3rem] p-10 md:p-12 shadow-sm group">
+          <div className="bg-neutral-900 border-l-[6px] border-[#dc0014] rounded-[3rem] p-10 md:p-12 shadow-sm group">
             <h3 className="text-[#dc0014] font-bold text-xl mb-6">Coste Real</h3>
             <p className="text-5xl font-bold text-[#dc0014] tracking-tight">{metrics.costeReal.toLocaleString()}€</p>
             <div className="flex gap-10 mt-8">
               <div>
-                <p className="text-xs text-gray-400 uppercase font-bold mb-2">Producción</p>
-                <p className="text-2xl font-bold text-gray-700">{metrics.productionReal.toLocaleString()}€</p>
+                <p className="text-xs text-gray-500 uppercase font-bold mb-2">Producción</p>
+                <p className="text-2xl font-bold text-gray-200">{metrics.productionReal.toLocaleString()}€</p>
               </div>
-              <div className="border-l border-gray-200 pl-10">
-                <p className="text-xs text-gray-400 uppercase font-bold mb-2">Tiempo</p>
-                <p className="text-2xl font-bold text-gray-700">{metrics.timeReal.toLocaleString()}€</p>
+              <div className="border-l border-neutral-800 pl-10">
+                <p className="text-xs text-gray-500 uppercase font-bold mb-2">Tiempo</p>
+                <p className="text-2xl font-bold text-gray-200">{metrics.timeReal.toLocaleString()}€</p>
               </div>
             </div>
           </div>
@@ -347,10 +347,10 @@ export const ProfileView: React.FC = () => {
         <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-12 shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h3 className="text-3xl font-bold text-gray-800 mb-2">Gastos fijos anuales</h3>
+              <h3 className="text-3xl font-bold text-white mb-2">Gastos fijos anuales</h3>
               <p className="text-sm text-gray-400 font-normal">Estructura de costes (Prorrateado: {((timeRange.end - timeRange.start) + 1)} meses)</p>
             </div>
-            <button onClick={() => { const newExp = { id: Date.now().toString(), title: 'Nuevo Gasto', amount: 0 }; applyStateUpdate({ message: 'Añadir gasto', budgetUpdate: { expenses: [...(budget.expenses || []), newExp] } }); }} className="p-4 bg-gray-50 hover:bg-black hover:text-white rounded-2xl transition-all shadow-sm">
+            <button onClick={() => { const newExp = { id: Date.now().toString(), title: 'Nuevo Gasto', amount: 0 }; applyStateUpdate({ message: 'Añadir gasto', budgetUpdate: { expenses: [...(budget.expenses || []), newExp] } }); }} className="p-4 bg-neutral-800 text-gray-400 hover:bg-white hover:text-black rounded-2xl transition-all shadow-sm">
               <Plus size={24} />
             </button>
           </div>
@@ -358,18 +358,18 @@ export const ProfileView: React.FC = () => {
             {(budget.expenses || []).map(exp => (
               <div key={exp.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group relative">
                 <div className="flex justify-between items-start mb-6">
-                  <input value={exp.title} onChange={e => { const next = budget.expenses?.map(x => x.id === exp.id ? { ...x, title: e.target.value } : x); applyStateUpdate({ message: 'Act. gasto', budgetUpdate: { expenses: next } }); }} className="bg-transparent font-bold text-xl text-gray-800 outline-none w-full" />
-                  <button onClick={() => { const next = budget.expenses?.filter(x => x.id !== exp.id); applyStateUpdate({ message: 'Borrar gasto', budgetUpdate: { expenses: next } }); }} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><Trash2 size={18} /></button>
+                  <input value={exp.title} onChange={e => { const next = budget.expenses?.map(x => x.id === exp.id ? { ...x, title: e.target.value } : x); applyStateUpdate({ message: 'Act. gasto', budgetUpdate: { expenses: next } }); }} className="bg-transparent font-bold text-xl text-gray-200 outline-none w-full" />
+                  <button onClick={() => { const next = budget.expenses?.filter(x => x.id !== exp.id); applyStateUpdate({ message: 'Borrar gasto', budgetUpdate: { expenses: next } }); }} className="text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><Trash2 size={18} /></button>
                 </div>
                 <div className="flex items-end gap-3">
-                  <span className="text-4xl font-bold text-black">{(exp.amount / 12 * ((timeRange.end - timeRange.start) + 1)).toFixed(0)}€</span>
-                  <span className="text-sm text-gray-400 font-normal mb-1.5">Prorrateado</span>
+                  <span className="text-4xl font-bold text-white">{(exp.amount / 12 * ((timeRange.end - timeRange.start) + 1)).toFixed(0)}€</span>
+                  <span className="text-sm text-gray-500 font-normal mb-1.5">Prorrateado</span>
                 </div>
-                <div className="mt-6 pt-6 border-t border-gray-200 flex items-center gap-3">
-                  <span className="text-xs text-gray-400 font-bold uppercase">Anual:</span>
-                  <div className="flex items-center bg-white px-4 py-2 rounded-xl border border-gray-200 focus-within:border-black transition-all">
-                    <input type="number" value={exp.amount} onChange={e => { const val = parseFloat(e.target.value) || 0; const next = budget.expenses?.map(x => x.id === exp.id ? { ...x, amount: val } : x); applyStateUpdate({ message: 'Act. importe', budgetUpdate: { expenses: next } }); }} className="bg-transparent text-sm font-bold w-20 outline-none" />
-                    <span className="text-sm font-bold text-gray-400 ml-1">€</span>
+                <div className="mt-6 pt-6 border-t border-neutral-800 flex items-center gap-3">
+                  <span className="text-xs text-gray-500 font-bold uppercase">Anual:</span>
+                  <div className="flex items-center bg-neutral-900 px-4 py-2 rounded-xl border border-neutral-800 focus-within:border-[#dc0014] transition-all">
+                    <input type="number" value={exp.amount} onChange={e => { const val = parseFloat(e.target.value) || 0; const next = budget.expenses?.map(x => x.id === exp.id ? { ...x, amount: val } : x); applyStateUpdate({ message: 'Act. importe', budgetUpdate: { expenses: next } }); }} className="bg-transparent text-sm font-bold text-white w-20 outline-none" />
+                    <span className="text-sm font-bold text-gray-500 ml-1">€</span>
                   </div>
                 </div>
               </div>
@@ -381,10 +381,10 @@ export const ProfileView: React.FC = () => {
         <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-12 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
             <div>
-              <h3 className="text-3xl font-bold text-gray-800 mb-2">Archivos de contexto</h3>
+              <h3 className="text-3xl font-bold text-white mb-2">Archivos de contexto</h3>
               <p className="text-sm text-gray-400 font-normal">Base de conocimiento para potenciar tu IA Assistant</p>
             </div>
-            <label className="cursor-pointer bg-black text-white px-10 py-5 rounded-[1.5rem] font-bold text-sm shadow-xl hover:bg-gray-800 transition-all active:scale-95 flex items-center gap-3">
+            <label className="cursor-pointer bg-[#dc0014] text-white px-10 py-5 rounded-[1.5rem] font-bold text-sm shadow-xl hover:bg-white hover:text-black transition-all active:scale-95 flex items-center gap-3">
               <Upload size={20} /> Subir documento
               <input type="file" className="hidden" accept=".pdf,.txt,.md" onChange={handleFileUpload} />
             </label>
@@ -393,11 +393,11 @@ export const ProfileView: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {documents.map((doc, idx) => (
               <div key={idx} className="bg-gray-50 border border-gray-100 p-8 rounded-[2.5rem] flex items-center gap-5 group hover:border-[#dc0014]/30 transition-all">
-                <div className="p-5 bg-white rounded-2xl text-gray-400 group-hover:bg-[#dc0014] group-hover:text-white transition-all shadow-sm">
+                <div className="p-5 bg-neutral-800 rounded-2xl text-gray-400 group-hover:bg-[#dc0014] group-hover:text-white transition-all shadow-sm">
                   <FileText size={24} />
                 </div>
                 <div className="flex-1 overflow-hidden">
-                  <p className="text-sm font-bold text-gray-800 truncate mb-1">{doc}</p>
+                  <p className="text-sm font-bold text-gray-200 truncate mb-1">{doc}</p>
                   <p className="text-[10px] text-[#dc0014] font-bold uppercase tracking-wider">IA Active Context</p>
                 </div>
                 <button onClick={() => applyStateUpdate({ message: 'Eliminar doc', deletedDocuments: [doc] })} className="text-gray-300 hover:text-red-500 transition-all p-2"><Trash2 size={18} /></button>
@@ -415,19 +415,19 @@ export const ProfileView: React.FC = () => {
         {/* Notifications & Data Management (Bottom refined) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Notifications */}
-          <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-12 shadow-sm overflow-hidden relative">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm overflow-hidden relative">
             <div className="absolute top-0 right-0 p-10 opacity-[0.03]"><Bell size={120} /></div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Alertas inteligentes</h3>
-            <p className="text-gray-500 leading-relaxed mb-8 text-sm font-normal">Activa las notificaciones para que la IA de 3V te avise automáticamente de tus próximas actividades y fechas límite.</p>
-            <button onClick={enableNotifications} className={`px-8 py-4 rounded-2xl font-bold text-xs transition-all shadow-md ${fcmToken ? 'bg-[#dc0014]/10 text-[#dc0014] border border-[#dc0014]/20' : 'bg-gray-100 hover:bg-black hover:text-white'}`}>
+            <h3 className="text-2xl font-bold text-white mb-4">Alertas inteligentes</h3>
+            <p className="text-gray-400 leading-relaxed mb-8 text-sm font-normal">Activa las notificaciones para que la IA de BSC te avise automáticamente de tus próximas actividades y fechas límite.</p>
+            <button onClick={enableNotifications} className={`px-8 py-4 rounded-2xl font-bold text-xs transition-all shadow-md ${fcmToken ? 'bg-[#dc0014]/10 text-[#dc0014] border border-[#dc0014]/20' : 'bg-neutral-800 text-gray-400 hover:bg-white hover:text-black'}`}>
               {fcmToken ? '✓ Notificaciones activas' : 'Habilitar notificaciones'}
             </button>
           </div>
 
           {/* Activity Log Link/Mini View */}
-          <div className="bg-gray-100/50 border border-transparent rounded-[3rem] p-10 md:p-12 shadow-sm overflow-hidden relative">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm overflow-hidden relative">
             <div className="absolute top-0 right-0 p-10 opacity-[0.03]"><Clock size={120} /></div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-4">Registro reciente</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">Registro reciente</h3>
             <div className="space-y-4">
               {activityLog && activityLog.slice(0, 3).map((log) => (
                 <div key={log.id} className="flex items-center gap-4 text-xs font-normal text-gray-500">

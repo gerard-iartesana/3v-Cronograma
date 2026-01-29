@@ -44,8 +44,8 @@ export const YearView: React.FC<YearViewProps> = ({
                     const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
 
                     return (
-                        <div key={monthIdx} className="bg-white border border-gray-200 p-4 rounded-[2rem] flex flex-col h-full min-h-[200px] transition-all hover:border-gray-300 hover:bg-gray-50 group/month shadow-md">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-900 mb-4 text-center border-b border-gray-100 pb-2 group-hover/month:text-[#dc0014] transition-colors">
+                        <div key={monthIdx} className="bg-neutral-900 border border-neutral-800 p-4 rounded-[2rem] flex flex-col h-full min-h-[200px] transition-all hover:border-neutral-700 hover:bg-neutral-800 group/month shadow-md">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white mb-4 text-center border-b border-neutral-800 pb-2 group-hover/month:text-[#dc0014] transition-colors">
                                 {monthsOfYear[monthIdx]}
                             </h4>
                             <div className="grid grid-cols-7 gap-2 flex-1 content-start">
@@ -62,7 +62,7 @@ export const YearView: React.FC<YearViewProps> = ({
                                         return (
                                             <div
                                                 key={day}
-                                                className="aspect-square rounded-[6px] bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
+                                                className="aspect-square rounded-[6px] bg-neutral-800 cursor-pointer hover:bg-neutral-700 transition-colors"
                                                 onClick={() => onSelectDate(date)}
                                             />
                                         );
@@ -108,20 +108,20 @@ export const YearView: React.FC<YearViewProps> = ({
                         initial={{ opacity: 0, scale: 0.9, y: -10 }}
                         animate={{ opacity: 1, scale: 1, y: -10 }}
                         exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                        className="fixed z-[1000] bg-white/95 backdrop-blur-xl border border-gray-200 p-5 rounded-[2rem] shadow-2xl pointer-events-none min-w-[300px] max-w-[400px]"
+                        className="fixed z-[1000] bg-neutral-900/95 backdrop-blur-xl border border-neutral-800 p-5 rounded-[2rem] shadow-2xl pointer-events-none min-w-[300px] max-w-[400px]"
                         style={{
                             left: tooltipPos.x,
                             top: tooltipPos.y,
                             transform: 'translate(-50%, -100%)'
                         }}
                     >
-                        <div className="text-[11px] font-black text-gray-500 uppercase tracking-[0.25em] mb-4 border-b border-gray-100 pb-3 flex justify-between items-center">
+                        <div className="text-[11px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4 border-b border-neutral-800 pb-3 flex justify-between items-center">
                             <span>{hoveredDay.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>
                             <span className="text-[#dc0014] bg-[#dc0014]/10 px-2.5 py-1 rounded-full">{formatDuration(hoveredDay.events.reduce((acc, e) => acc + parseDurationToMinutes(e.duration), 0))}</span>
                         </div>
                         <div className="space-y-4">
                             {hoveredDay.events.slice(0, 6).map(e => (
-                                <div key={e.id} className="text-[13px] font-bold text-gray-900 flex items-start justify-between gap-3">
+                                <div key={e.id} className="text-[13px] font-bold text-gray-200 flex items-start justify-between gap-3">
                                     <div className="flex items-start gap-2.5 min-w-0 flex-1">
                                         <div className="w-2 h-2 rounded-full flex-shrink-0 shadow-[0_0_8px_currentColor] mt-1.5" style={{ backgroundColor: getEventColor(e), color: getEventColor(e) }} />
                                         <span className="leading-tight">{e.title}</span>
@@ -144,7 +144,7 @@ export const YearView: React.FC<YearViewProps> = ({
                                 </div>
                             ))}
                             {hoveredDay.events.length > 6 && (
-                                <div className="text-[10px] text-gray-400 font-black uppercase mt-3 pt-3 border-t border-gray-100 flex justify-center">
+                                <div className="text-[10px] text-gray-500 font-black uppercase mt-3 pt-3 border-t border-neutral-800 flex justify-center">
                                     +{hoveredDay.events.length - 6} actividades adicionales
                                 </div>
                             )}

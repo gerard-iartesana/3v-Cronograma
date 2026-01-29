@@ -13,7 +13,7 @@ if (!apiKey) {
 const ai = new GoogleGenerativeAI(apiKey || '');
 
 const SYSTEM_INSTRUCTION = `
-Eres el Asistente de 3villas para la gestión cronograma, ejecutando bajo el modelo Gemini 3 Flash Preview.
+Eres el Asistente de BSC para la gestión cronograma, ejecutando bajo el modelo Gemini 3 Flash Preview.
 Tu objetivo es gestionar ESTRATEGIAS basadas en "PROYECTOS".
 
 MODELO DE DATOS:
@@ -135,7 +135,7 @@ export async function processChatMessage(
 
       result.message = hasChanges
         ? "Entendido, he procesado tus cambios en el cronograma."
-        : "¡Hola! Soy tu Asistente de 3villas. ¿Cómo puedo ayudarte hoy con tu cronograma?";
+        : "¡Hola! Soy tu Asistente de BSC. ¿Cómo puedo ayudarte hoy con tu cronograma?";
     }
 
     if (result.newProjects) {
