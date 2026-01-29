@@ -293,7 +293,7 @@ export const ProfileView: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mt-16 mb-10">
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded-full bg-[#dc0014]" />
-              <h2 className="text-3xl font-bold text-gray-800">Métricas</h2>
+              <h2 className="text-3xl font-bold text-white">Métricas</h2>
             </div>
 
             <div className="flex items-center bg-neutral-800 border border-neutral-700 p-1.5 rounded-2xl self-start md:self-auto">
@@ -319,7 +319,7 @@ export const ProfileView: React.FC = () => {
 
         {/* Stats Grid - Bold and Larger Titles */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-12 hover:border-[#dc0014]/30 shadow-sm transition-all group">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 hover:border-[#dc0014]/30 shadow-sm transition-all group">
             <h3 className="text-gray-500 font-bold text-xl mb-6 group-hover:text-[#dc0014]">Coste Estimado</h3>
             <p className="text-5xl font-bold text-white tracking-tight">{metrics.costeEstimado.toLocaleString()}€</p>
             <div className="flex items-center gap-2 mt-6 text-sm text-gray-400 font-normal">
@@ -344,7 +344,7 @@ export const ProfileView: React.FC = () => {
         </div>
 
         {/* Expenses - Bold titles and regular details */}
-        <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-12 shadow-sm">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h3 className="text-3xl font-bold text-white mb-2">Gastos fijos anuales</h3>
@@ -356,7 +356,7 @@ export const ProfileView: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {(budget.expenses || []).map(exp => (
-              <div key={exp.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group relative">
+              <div key={exp.id} className="bg-neutral-950 p-8 rounded-[2.5rem] border border-neutral-800 group relative">
                 <div className="flex justify-between items-start mb-6">
                   <input value={exp.title} onChange={e => { const next = budget.expenses?.map(x => x.id === exp.id ? { ...x, title: e.target.value } : x); applyStateUpdate({ message: 'Act. gasto', budgetUpdate: { expenses: next } }); }} className="bg-transparent font-bold text-xl text-gray-200 outline-none w-full" />
                   <button onClick={() => { const next = budget.expenses?.filter(x => x.id !== exp.id); applyStateUpdate({ message: 'Borrar gasto', budgetUpdate: { expenses: next } }); }} className="text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><Trash2 size={18} /></button>
@@ -378,7 +378,7 @@ export const ProfileView: React.FC = () => {
         </div>
 
         {/* Documents (Single Module) */}
-        <div className="bg-white border border-gray-100 rounded-[3rem] p-10 md:p-12 shadow-sm">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-12 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
             <div>
               <h3 className="text-3xl font-bold text-white mb-2">Archivos de contexto</h3>
@@ -392,7 +392,7 @@ export const ProfileView: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {documents.map((doc, idx) => (
-              <div key={idx} className="bg-gray-50 border border-gray-100 p-8 rounded-[2.5rem] flex items-center gap-5 group hover:border-[#dc0014]/30 transition-all">
+              <div key={idx} className="bg-neutral-950 border border-neutral-800 p-8 rounded-[2.5rem] flex items-center gap-5 group hover:border-[#dc0014]/30 transition-all">
                 <div className="p-5 bg-neutral-800 rounded-2xl text-gray-400 group-hover:bg-[#dc0014] group-hover:text-white transition-all shadow-sm">
                   <FileText size={24} />
                 </div>
@@ -404,7 +404,7 @@ export const ProfileView: React.FC = () => {
               </div>
             ))}
             {documents.length === 0 && (
-              <div className="col-span-full flex flex-col items-center py-20 bg-gray-50/50 rounded-[2.5rem] border-2 border-dashed border-gray-200">
+              <div className="col-span-full flex flex-col items-center py-20 bg-neutral-950 rounded-[2.5rem] border-2 border-dashed border-neutral-800">
                 <Sparkles size={48} className="text-[#dc0014] opacity-20 mb-6" />
                 <p className="text-sm font-bold text-gray-400">Tu repositorio de contexto está vacío</p>
               </div>

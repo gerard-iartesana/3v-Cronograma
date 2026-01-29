@@ -742,27 +742,27 @@ export const ProjectListView: React.FC = () => {
         <div className="flex flex-wrap gap-2 justify-center bg-neutral-900 border border-neutral-800 p-1.5 rounded-[1.5rem] shadow-sm">
           <button
             onClick={() => setSortBy('alpha')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'alpha' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${sortBy === 'alpha' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
             Alfabético
           </button>
           <button
             onClick={() => setSortBy('tag')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'tag' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${sortBy === 'tag' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
-            Por Tag
+            TAG
           </button>
           <button
             onClick={() => setSortBy('percent')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'percent' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${sortBy === 'percent' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
-            Por %
+            %
           </button>
           <button
             onClick={() => setSortBy('deadline')}
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'deadline' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${sortBy === 'deadline' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-neutral-800'}`}
           >
-            Por Deadline
+            DEADLINE
           </button>
         </div>
       </div>

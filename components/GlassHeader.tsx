@@ -13,7 +13,6 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({ title, underlineColor 
         <h1 className="text-2xl md:text-5xl font-bold tracking-tighter text-white mb-1">
           {title}
         </h1>
-        <img src="/v-arrow.jpg" alt="Arrow" className="h-2.5 md:h-5 w-auto object-contain mt-1" />
       </div>
     </div>
   );

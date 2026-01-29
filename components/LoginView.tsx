@@ -32,10 +32,10 @@ export const LoginView: React.FC = () => {
 
                     <button
                         onClick={() => login()}
-                        className="w-full bg-[#dc0014] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-white hover:text-black transition-all active:scale-[0.98] shadow-lg shadow-red-900/40 group"
+                        className="w-full bg-white text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-[#dc0014] hover:text-white transition-all active:scale-[0.98] shadow-lg shadow-white/10 group"
                     >
-                        <LogIn size={20} className="group-hover:translate-x-1 transition-transform" />
-                        <span className="text-base tracking-tight">Iniciar sesión</span>
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                        <span className="text-base tracking-tight">Continuar con Google</span>
                     </button>
 
                     <div className="mt-12 text-center">
