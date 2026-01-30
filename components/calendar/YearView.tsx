@@ -68,20 +68,35 @@ export const YearView: React.FC<YearViewProps> = ({
                                         );
                                     }
 
-                                    const dayColors = dayEvents.map(e => getEventColor(e));
-                                    const mixedDayColor = mixColors(dayColors);
-                                    const opacityScale = Math.min(1, Math.max(0.3, totalHours / 8));
+                                    const { r, g, b } = dayEvents.reduce((acc, e) => {
+                                        const color = getEventColor(e);
+                                        const hours = parseDurationToHours(e.duration) || 1;
+                                        const h = color.startsWith('#') ? color.slice(1) : color;
+                                        const bigint = parseInt(h, 16);
+                                        return {
+                                            r: acc.r + ((bigint >> 16) & 255) * hours,
+                                            g: acc.g + ((bigint >> 8) & 255) * hours,
+                                            b: acc.b + (bigint & 255) * hours
+                                        };
+                                    }, { r: 0, g: 0, b: 0 });
+
+                                    const rw = Math.round(r / totalHours);
+                                    const gw = Math.round(g / totalHours);
+                                    const bw = Math.round(b / totalHours);
+                                    const mixedDayColor = `#${((1 << 24) + (rw << 16) + (gw << 8) + bw).toString(16).slice(1)}`;
+
+                                    const opacityScale = Math.min(1, Math.max(0.2, totalHours / 10));
                                     const opacityHex = Math.round(opacityScale * 255).toString(16).padStart(2, '0');
 
                                     return (
                                         <motion.div
                                             key={day}
-                                            whileHover={{ scale: 1.4, zIndex: 50 }}
-                                            className="aspect-square rounded-[6px] cursor-pointer transition-all border border-black/5 relative"
+                                            whileHover={{ scale: 1.4, zIndex: 50, borderRadius: '4px' }}
+                                            className="aspect-square rounded-[4px] cursor-pointer transition-all border border-white/5 relative"
                                             style={{
                                                 backgroundColor: `${mixedDayColor}${opacityHex}`,
-                                                borderColor: `${mixedDayColor}66`,
-                                                boxShadow: totalHours >= 4 ? `0 0 15px ${mixedDayColor}44` : 'none'
+                                                borderColor: `${mixedDayColor}33`,
+                                                boxShadow: totalHours >= 4 ? `0 0 20px ${mixedDayColor}22` : 'none'
                                             }}
                                             onMouseEnter={(e) => {
                                                 const rect = e.currentTarget.getBoundingClientRect();
