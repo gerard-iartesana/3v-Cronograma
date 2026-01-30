@@ -276,7 +276,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return false;
     }
     return false;
-  }, [messaging]);
+  }, [messaging, user]);
 
   const logActivity = useCallback((action: string, details: string) => {
     if (!user) return;
