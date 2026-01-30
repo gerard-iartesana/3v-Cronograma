@@ -717,7 +717,7 @@ export const ProjectListView: React.FC = () => {
                               <span className="text-[10px] font-bold text-gray-500 tracking-widest leading-none">Color</span>
                               <input
                                 type="color"
-                                value={tagColors?.[tag] || '#32FF7E'}
+                                value={tagColors?.[tag] || '#ffffff'}
                                 onChange={(e) => setTagColor(tag, e.target.value)}
                                 className="w-8 h-8 rounded-lg bg-transparent border-none cursor-pointer p-0"
                               />

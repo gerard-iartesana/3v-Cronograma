@@ -380,7 +380,7 @@ export const CalendarView: React.FC = () => {
                               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Color</span>
                               <input
                                 type="color"
-                                value={tagColors?.[tag] || '#00E5FF'}
+                                value={tagColors?.[tag] || '#ffffff'}
                                 onChange={(e) => setTagColor(tag, e.target.value)}
                                 className="w-8 h-8 rounded-lg bg-transparent border-none cursor-pointer p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-lg [&::-webkit-color-swatch]:border-none"
                               />

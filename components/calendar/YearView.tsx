@@ -30,7 +30,7 @@ export const YearView: React.FC<YearViewProps> = ({
     const getEventColor = (event: MarketingEvent) => {
         const colorTags = event.tags.filter(t => tagColors?.[t]);
         if (colorTags.length > 0) return mixColors(colorTags.map(t => tagColors![t]));
-        return event.completed ? '#32FF7E' : '#00E5FF';
+        return event.completed ? '#32FF7E' : '#ffffff';
     };
 
     return (
