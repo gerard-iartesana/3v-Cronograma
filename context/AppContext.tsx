@@ -211,41 +211,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     try {
       if ('serviceWorker' in navigator) {
+        // Force clean state: unregister existing service workers to avoid project mismatches
+        const existingRegs = await navigator.serviceWorker.getRegistrations();
+        for (const reg of existingRegs) {
+          console.log("Desregistrando Service Worker antiguo:", reg.scope);
+          await reg.unregister();
+        }
+
         const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        console.log('Service Worker registered with scope:', registration.scope);
+        console.log('Nuevo Service Worker registrado:', registration.scope);
 
         const permission = await Notification.requestPermission();
+        console.log("Permiso de notificación:", permission);
         if (permission !== "granted") {
-          alert("Necesitas dar permiso para recibir notificaciones.");
+          alert("Necesitas dar permiso para recibir notificaciones (Estado: " + permission + ")");
+          return false;
+        }
+
+        if (!messaging) {
+          console.error("ERROR: Firebase Messaging no inicializado.");
+          alert("Error: El servicio de mensajería no está disponible.");
           return false;
         }
 
         // Wait for service worker to be ready
+        console.log("Esperando que el Service Worker esté listo...");
         await navigator.serviceWorker.ready;
+        // Small extra delay for robustness
+        await new Promise(r => setTimeout(r, 1000));
 
         const currentVapidKey = 'BDOj_gUSjkY-cH76gf5GQZ-xxhqNZFAlUF7E_pFwS-zTEyE-4RnV_5vvYXuDXBfPw5PQXq7HYU2Jgrm-zHbbvJU';
         console.log("Solicitando Token FCM con VAPID:", currentVapidKey);
 
         try {
-          const token = await getToken(messaging!, {
+          const token = await getToken(messaging, {
             serviceWorkerRegistration: registration,
             vapidKey: currentVapidKey
           });
 
-          if (token && user) {
-            console.log("FCM Token obtenido:", token);
-            setFcmToken(token);
-            const userDoc = doc(db, "users", user.uid, "private_state", "data");
-            await setDoc(userDoc, { fcmToken: token }, { merge: true });
-            alert("¡Notificaciones vinculadas con éxito!");
-            return true;
+          if (token) {
+            console.log("✅ FCM Token obtenido:", token);
+            if (user) {
+              setFcmToken(token);
+              const userDoc = doc(db, "users", user.uid, "private_state", "data");
+              await setDoc(userDoc, { fcmToken: token }, { merge: true });
+              alert("¡Notificaciones vinculadas con éxito!");
+              return true;
+            } else {
+              console.error("Token obtenido pero no hay usuario autenticado.");
+              alert("Error: Sesión no encontrada.");
+            }
           } else {
-            console.warn("getToken retornó vacío o nulo.");
-            alert("No se pudo obtener el token. Asegúrate de que las Notificaciones estén permitidas en el navegador (candado en la URL).");
+            console.warn("⚠️ getToken retornó vacío o nulo.");
+            alert("El navegador no ha devuelto un token válido. Prueba a resetear los permisos del sitio desde el candado de la URL.");
           }
         } catch (tokenErr: any) {
-          console.error("Error específico al obtener token:", tokenErr);
-          alert("Fallo al obtener token: " + (tokenErr.message || tokenErr.toString()));
+          console.error("❌ Error profundo al obtener token:", tokenErr);
+          alert("Fallo crítico al obtener token: " + (tokenErr.message || tokenErr.toString()));
         }
       }
     } catch (err) {
