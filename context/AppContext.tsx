@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { AppState, AppSection, MarketingEvent, Project, Budget, ChatMessage, AIStateUpdate } from '../types';
 import { db, messaging, getToken, onMessage, functions } from '../services/firebase';
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, updateDoc, deleteField } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { expandRecurringEvents } from '../utils/recurrence';
 import { useAuth } from './AuthContext';
@@ -512,9 +512,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setTagColor = useCallback((tag: string, color: string) => {
     setTagColors(prev => {
       const next = { ...prev };
-      if (color) next[tag] = color;
-      else delete next[tag];
-      setTimeout(() => persistState({ tagColors: next }), 0);
+      if (color) {
+        next[tag] = color;
+        persistState({ tagColors: next });
+      } else {
+        delete next[tag];
+        // Handle physical deletion in Firestore
+        const stateDoc = doc(db, "marketing_hub", "global_state");
+        updateDoc(stateDoc, { [`tagColors.${tag}`]: deleteField() }).catch(e => console.error("Error deleting tag color:", e));
+        persistState({ tagColors: next }); // Still send the rest of the object to sync others if any, though not strictly necessary for deletion
+      }
       return next;
     });
   }, [persistState]);
@@ -522,12 +529,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setAssigneeColor = useCallback((assignee: string, color: string) => {
     setAssigneeColors(prev => {
       const next = { ...prev };
-      if (color) next[assignee] = color;
-      else delete next[assignee];
-      setTimeout(() => persistState({ assigneeColors: next }), 0);
+      if (color) {
+        next[assignee] = color;
+        persistState({ assigneeColors: next });
+      } else {
+        delete next[assignee];
+        // Handle physical deletion in Firestore for shared state
+        const stateDoc = doc(db, "marketing_hub", "global_state");
+        updateDoc(stateDoc, { [`assigneeColors.${assignee}`]: deleteField() }).catch(e => console.error("Error deleting assignee color:", e));
+        persistState({ assigneeColors: next });
+      }
       return next;
     });
-  }, [persistState]);
+  }, [persistState, user]);
 
   const debugState = async () => {
     try {
