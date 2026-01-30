@@ -223,23 +223,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // Wait for service worker to be ready
         await navigator.serviceWorker.ready;
 
-        console.log("Solicitando Token FCM...");
-        const token = await getToken(messaging, {
-          serviceWorkerRegistration: registration,
-          vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || 'BCGI4AbSz62vZCAJKeNiOl4314KdBGpha743NeODLAVlaSYvu7N3h2zetGna4w9wb94Qa0RlYjAVcqjbouXwZKs'
-        });
+        const currentVapidKey = 'BDOj_gUSjkY-cH76gf5GQZ-xxhqNZFAlUF7E_pFwS-zTEyE-4RnV_5vvYXuDXBfPw5PQXq7HYU2Jgrm-zHbbvJU';
+        console.log("Solicitando Token FCM con VAPID:", currentVapidKey);
 
-        if (token && user) {
-          console.log("FCM Token obtenido:", token);
-          setFcmToken(token);
-          // Explicit save to be sure
-          const userDoc = doc(db, "users", user.uid, "private_state", "data");
-          await setDoc(userDoc, { fcmToken: token }, { merge: true });
-          console.log("Token guardado en Firestore (privado)");
-          alert("¡Notificaciones vinculadas con éxito!");
-          return true;
-        } else {
-          alert("No se pudo obtener el token de notificación. Verifica la VAPID Key en Firebase Console.");
+        try {
+          const token = await getToken(messaging!, {
+            serviceWorkerRegistration: registration,
+            vapidKey: currentVapidKey
+          });
+
+          if (token && user) {
+            console.log("FCM Token obtenido:", token);
+            setFcmToken(token);
+            const userDoc = doc(db, "users", user.uid, "private_state", "data");
+            await setDoc(userDoc, { fcmToken: token }, { merge: true });
+            alert("¡Notificaciones vinculadas con éxito!");
+            return true;
+          } else {
+            console.warn("getToken retornó vacío o nulo.");
+            alert("No se pudo obtener el token. Asegúrate de que las Notificaciones estén permitidas en el navegador (candado en la URL).");
+          }
+        } catch (tokenErr: any) {
+          console.error("Error específico al obtener token:", tokenErr);
+          alert("Fallo al obtener token: " + (tokenErr.message || tokenErr.toString()));
         }
       }
     } catch (err) {
