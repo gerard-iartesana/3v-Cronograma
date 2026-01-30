@@ -250,11 +250,33 @@ export const ProfileView: React.FC = () => {
             </div>
           ))}
           {uncoloredTags.length > 0 && (
-            <button onClick={() => setShowAllTags(!showAllTags)} className="px-3 py-1.5 rounded-full border border-dashed text-xs text-gray-400 hover:text-black transition-all">
-              {showAllTags ? 'Menos' : `+${uncoloredTags.length}`}
+            <button onClick={() => setShowAllTags(!showAllTags)} className="px-3 py-1.5 rounded-full border border-dashed border-neutral-800 text-xs text-gray-400 hover:text-white hover:border-gray-600 transition-all">
+              {showAllTags ? 'Ocultar extras' : `+${uncoloredTags.length} más`}
             </button>
           )}
         </div>
+
+        {/* Uncolored Tags (Shown when toggled) */}
+        <AnimatePresence>
+          {showAllTags && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="flex flex-wrap gap-2 justify-center overflow-hidden"
+            >
+              {uncoloredTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.includes(tag) ? 'text-black bg-white border-white' : 'text-gray-500 bg-neutral-900/50 border-neutral-800'}`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="w-full mx-auto px-6 md:px-12 space-y-12 mt-10">
