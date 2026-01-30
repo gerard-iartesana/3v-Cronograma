@@ -511,7 +511,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const setTagColor = useCallback((tag: string, color: string) => {
     setTagColors(prev => {
-      const next = { ...prev, [tag]: color };
+      const next = { ...prev };
+      if (color) next[tag] = color;
+      else delete next[tag];
       setTimeout(() => persistState({ tagColors: next }), 0);
       return next;
     });
@@ -519,7 +521,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const setAssigneeColor = useCallback((assignee: string, color: string) => {
     setAssigneeColors(prev => {
-      const next = { ...prev, [assignee]: color };
+      const next = { ...prev };
+      if (color) next[assignee] = color;
+      else delete next[assignee];
       setTimeout(() => persistState({ assigneeColors: next }), 0);
       return next;
     });

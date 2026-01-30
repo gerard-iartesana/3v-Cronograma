@@ -239,14 +239,56 @@ export const ProfileView: React.FC = () => {
         <div className="flex flex-wrap gap-2 justify-center">
           <button onClick={() => setSelectedTags([])} className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.length === 0 ? 'bg-white text-black border-white' : 'bg-neutral-900 text-gray-400 border-neutral-800'}`}>Todos</button>
           {coloredTags.filter(t => t !== 'TODO').map(tag => (
-            <div key={tag} className="relative group">
-              <button
-                onClick={() => toggleTag(tag)}
-                className={`px-4 py-2 rounded-full border text-xs font-bold transition-all ${selectedTags.includes(tag) ? 'text-black bg-white border-white' : 'text-gray-400 bg-neutral-900 border-neutral-800'}`}
-                style={selectedTags.includes(tag) && tagColors?.[tag] ? { backgroundColor: tagColors[tag], borderColor: tagColors[tag], color: 'white' } : {}}
+            <div key={tag} className="relative group flex items-center">
+              <div
+                className={`flex items-center rounded-full border transition-all ${selectedTags.includes(tag) ? 'bg-white border-white shadow-md' : 'bg-neutral-900 border-neutral-800 hover:bg-neutral-800 text-gray-400 hover:text-white'}`}
+                style={selectedTags.includes(tag) && tagColors?.[tag] ? { backgroundColor: tagColors[tag], borderColor: tagColors[tag], color: 'white', boxShadow: `0 0 15px ${tagColors[tag]}44` } : {}}
               >
-                {tag}
-              </button>
+                <button
+                  onClick={() => toggleTag(tag)}
+                  className={`px-4 py-2 text-xs font-bold transition-all ${selectedTags.includes(tag) ? (tagColors?.[tag] ? 'text-white' : 'text-black') : 'text-gray-400'}`}
+                >
+                  {tag}
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setPaletteOpen(paletteOpen === tag ? null : tag); }}
+                  className={`pr-3 pl-1 py-2 flex items-center justify-center transition-all hover:scale-125 ${selectedTags.includes(tag) ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-white'}`}
+                >
+                  <Palette size={14} />
+                </button>
+              </div>
+
+              <AnimatePresence>
+                {paletteOpen === tag && (
+                  <>
+                    <div className="fixed inset-0 z-[120]" onClick={() => setPaletteOpen(null)} />
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex items-center gap-4 z-[130] shadow-2xl min-w-[150px]"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Color</span>
+                        <input
+                          type="color"
+                          value={tagColors?.[tag] || '#ffffff'}
+                          onChange={(e) => setTagColor(tag, e.target.value)}
+                          className="w-8 h-8 rounded-lg bg-transparent border-none cursor-pointer p-0"
+                        />
+                      </div>
+                      <div className="w-[1px] h-4 bg-neutral-800" />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setTagColor(tag, ''); setPaletteOpen(null); }}
+                        className="w-6 h-6 rounded-full border border-neutral-800 hover:bg-red-500/10 hover:border-red-500/50 hover:text-red-500 transition-all flex items-center justify-center text-gray-500"
+                        title="Eliminar color"
+                      >
+                        <X size={14} />
+                      </button>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
           ))}
           {uncoloredTags.length > 0 && (

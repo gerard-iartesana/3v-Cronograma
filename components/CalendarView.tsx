@@ -329,7 +329,8 @@ export const CalendarView: React.FC = () => {
                     >
                       <button
                         onClick={() => toggleFilter(tag)}
-                        className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${filter.includes(tag) ? 'text-black' : 'text-gray-400 group-hover:text-white'}`}
+                        className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-colors ${filter.includes(tag) ? 'text-black' : 'text-gray-400 group-hover:text-white'}`}
+                        style={filter.includes(tag) && tagColors?.[tag] ? { color: 'white' } : {}}
                       >
                         {tag}
                       </button>
@@ -341,9 +342,9 @@ export const CalendarView: React.FC = () => {
                             e.stopPropagation();
                             setPaletteOpen(paletteOpen === tag ? null : tag);
                           }}
-                          className={`pr-3 pl-1 py-1.5 transition-transform hover:scale-125 ${filter.includes(tag) ? 'text-white/80 hover:text-white' : 'text-gray-400 hover:text-white'}`}
+                          className={`pr-3 pl-1 py-2 flex items-center justify-center transition-transform hover:scale-125 ${filter.includes(tag) && tagColors?.[tag] ? 'text-white/80 hover:text-white' : 'text-gray-400 hover:text-white'}`}
                         >
-                          <Palette size={10} />
+                          <Palette size={14} />
                         </button>
                       )}
                     </div>
@@ -353,17 +354,17 @@ export const CalendarView: React.FC = () => {
                         <>
                           {/* Invisible backdrop to capture clicks outside */}
                           <div
-                            className="fixed inset-0 z-[90] cursor-default"
+                            className="fixed inset-0 z-[120] cursor-default"
                             onClick={() => setPaletteOpen(null)}
                           />
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                            className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-neutral-900 border border-neutral-800 p-2.5 rounded-2xl flex items-center gap-3 z-[100] shadow-2xl"
+                            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex items-center gap-4 z-[130] shadow-2xl min-w-[150px]"
                           >
                             <div className="flex items-center gap-2">
-                              <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Color RGB</span>
+                              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Color</span>
                               <input
                                 type="color"
                                 value={tagColors?.[tag] || '#00E5FF'}
@@ -378,9 +379,10 @@ export const CalendarView: React.FC = () => {
                                 setTagColor(tag, '');
                                 setPaletteOpen(null);
                               }}
-                              className="w-5 h-5 rounded-full border border-white/20 hover:scale-110 transition-transform flex items-center justify-center bg-transparent text-gray-400"
+                              className="w-6 h-6 rounded-full border border-neutral-800 hover:bg-red-500/10 hover:border-red-500/50 hover:text-red-500 transition-all flex items-center justify-center text-gray-500"
+                              title="Eliminar color"
                             >
-                              <X size={12} />
+                              <X size={14} />
                             </button>
                           </motion.div>
                         </>
