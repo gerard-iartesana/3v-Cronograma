@@ -47,22 +47,21 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif', color: '#9ca3af' }}
                 />
 
-                {/* Real: Stacked (BSC Colors: Orange & Yellow) */}
+                {/* Real: Separated Bars (BSC Colors: Orange & Yellow) */}
                 {/* Production: Orange */}
                 <Bar
                     name="Producción"
                     dataKey="RealProduction"
-                    stackId="real"
-                    barSize={displayMode === 'accumulated' ? 60 : 30}
+                    radius={[0, 0, 0, 0]}
+                    barSize={displayMode === 'accumulated' ? 40 : 20}
                     fill="#FF7D00"
                 />
                 {/* Time: Yellow */}
                 <Bar
                     name="Tiempo"
                     dataKey="RealTime"
-                    stackId="real"
                     radius={[0, 0, 0, 0]}
-                    barSize={displayMode === 'accumulated' ? 60 : 30}
+                    barSize={displayMode === 'accumulated' ? 40 : 20}
                     fill="#FFD000"
                 />
 
@@ -71,7 +70,7 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     name="Estimado"
                     dataKey="Estimado"
                     radius={[0, 0, 0, 0]}
-                    barSize={displayMode === 'accumulated' ? 60 : 30}
+                    barSize={displayMode === 'accumulated' ? 40 : 20}
                     fill="#6b7280"
                 />
             </BarChart>

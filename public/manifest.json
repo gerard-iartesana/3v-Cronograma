@@ -3,25 +3,25 @@
     "name": "BSC Cronograma",
     "icons": [
         {
-            "src": "/icon-mobile.png",
+            "src": "/pwa-icon.jpg",
             "sizes": "192x192",
-            "type": "image/png",
+            "type": "image/jpeg",
             "purpose": "any"
         },
         {
-            "src": "/icon-mobile.png",
+            "src": "/pwa-icon.jpg",
             "sizes": "192x192",
-            "type": "image/png",
+            "type": "image/jpeg",
             "purpose": "maskable"
         },
         {
-            "src": "/icon-desktop.png",
+            "src": "/favicon.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any"
         },
         {
-            "src": "/icon-desktop.png",
+            "src": "/favicon.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
