@@ -54,13 +54,15 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
             ) : (
                 processedEvents.map(event => {
                     if (event.type === 'holiday') {
+                        const style = getEventStyle(event);
+                        const hasCustomColor = !!tagColors?.['Festivo'];
                         return (
-                            <motion.div key={event.id} className="bg-neutral-900 border border-neutral-800 rounded-[1.25rem] p-4 flex items-center gap-4 opacity-75 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                            <motion.div key={event.id} className={`bg-neutral-900 border border-neutral-800 rounded-[1.25rem] p-4 flex items-center gap-4 transition-all hover:grayscale-0 hover:opacity-100 ${hasCustomColor ? 'opacity-100 grayscale-0' : 'opacity-75 grayscale'}`} style={hasCustomColor ? { borderColor: `${style.color}4d`, borderLeft: `4px solid ${style.color}` } : {}}>
                                 <div className="flex flex-col items-center justify-center min-w-[3rem] border-r border-neutral-800 pr-4">
-                                    <span className="text-xl font-bold text-gray-400 leading-none">{new Date(event.date).getDate()}</span>
+                                    <span className={`text-xl font-bold leading-none ${hasCustomColor ? 'text-white' : 'text-gray-400'}`}>{new Date(event.date).getDate()}</span>
                                     <span className="text-[8px] font-bold uppercase tracking-wider text-gray-500 mt-1">{daysOfWeek[new Date(event.date).getDay() === 0 ? 6 : new Date(event.date).getDay() - 1].substring(0, 3)}</span>
                                 </div>
-                                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide leading-tight">{event.title}</h3>
+                                <h3 className={`text-sm font-bold uppercase tracking-wide leading-tight ${hasCustomColor ? '' : 'text-gray-500'}`} style={hasCustomColor ? { color: style.color } : {}}>{event.title}</h3>
                             </motion.div>
                         );
                     }

@@ -200,7 +200,11 @@ export const CalendarView: React.FC = () => {
   };
 
   const getEventStyle = (event: MarketingEvent) => {
-    const colorTags = event.tags.filter(t => tagColors?.[t]);
+    const virtualTags = [...(event.tags || [])];
+    if (event.type === 'holiday' && !virtualTags.includes('Festivo')) virtualTags.push('Festivo');
+    if (event.type === 'campaign' && !virtualTags.includes('Campaña')) virtualTags.push('Campaña');
+
+    const colorTags = virtualTags.filter(t => tagColors?.[t]);
     let baseColor = '#ffffff';
     if (colorTags.length > 0) baseColor = mixColors(colorTags.map(t => tagColors![t]));
     return {

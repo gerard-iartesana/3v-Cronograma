@@ -28,7 +28,11 @@ export const YearView: React.FC<YearViewProps> = ({
         d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
 
     const getEventColor = (event: MarketingEvent) => {
-        const colorTags = event.tags.filter(t => tagColors?.[t]);
+        const virtualTags = [...(event.tags || [])];
+        if (event.type === 'holiday' && !virtualTags.includes('Festivo')) virtualTags.push('Festivo');
+        if (event.type === 'campaign' && !virtualTags.includes('Campaña')) virtualTags.push('Campaña');
+
+        const colorTags = virtualTags.filter(t => tagColors?.[t]);
         if (colorTags.length > 0) return mixColors(colorTags.map(t => tagColors![t]));
         return event.completed ? '#32FF7E' : '#ffffff';
     };
