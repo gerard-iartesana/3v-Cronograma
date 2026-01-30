@@ -16,7 +16,7 @@ const ContentSwitcher: React.FC = () => {
 
   if (authLoading || isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-white gap-4">
+      <div className="flex flex-col items-center justify-center h-full bg-black gap-4">
         <Loader2 className="animate-spin text-[#dc0014]" size={48} />
         <p className="text-gray-400 tracking-wider text-xs font-medium">
           {authLoading ? 'Verificando sesión...' : 'Sincronizando hub...'}
