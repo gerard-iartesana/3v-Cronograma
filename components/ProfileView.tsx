@@ -259,7 +259,7 @@ export const ProfileView: React.FC = () => {
 
       <div className="w-full mx-auto px-6 md:px-12 space-y-12 mt-10">
         {/* Module 1: Timeline & Chart Card (Premium Styling) */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-[3rem] p-10 md:p-14 shadow-sm relative overflow-visible">
+        <div className="bg-transparent p-10 md:p-14 relative overflow-visible">
           {/* Centered Year Selector & Timeline */}
           <div className="flex flex-col gap-10 relative overflow-visible mb-16">
             <div className="flex justify-center w-full">
@@ -319,7 +319,7 @@ export const ProfileView: React.FC = () => {
 
         {/* Stats Grid - Bold and Larger Titles */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div className="bg-neutral-900 border-l-[6px] border-neutral-600 p-10 md:p-12 hover:border-white/30 shadow-sm transition-all group">
+          <div className="bg-neutral-900 border-l-[6px] border-neutral-600 p-10 md:p-12 hover:border-white/30 shadow-sm transition-all group rounded-[2.5rem]">
             <h3 className="text-gray-500 font-bold text-xl mb-6 group-hover:text-white">Coste Estimado</h3>
             <p className="text-5xl font-bold text-neutral-500 tracking-tight">{metrics.costeEstimado.toLocaleString()}€</p>
             <div className="flex items-center gap-2 mt-6 text-sm text-gray-400 font-normal">
@@ -327,7 +327,7 @@ export const ProfileView: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-neutral-900 border-r-[6px] border-white p-10 md:p-12 shadow-sm group">
+          <div className="bg-neutral-900 border-r-[6px] border-white p-10 md:p-12 shadow-sm group rounded-[2.5rem]">
             <h3 className="text-white font-bold text-xl mb-6">Coste Real</h3>
             <p className="text-5xl font-bold text-white tracking-tight">{metrics.costeReal.toLocaleString()}€</p>
             <div className="flex gap-10 mt-8">
@@ -344,7 +344,7 @@ export const ProfileView: React.FC = () => {
         </div>
 
         {/* Expenses - Bold titles and regular details */}
-        <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm">
+        <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm rounded-[2.5rem]">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h3 className="text-3xl font-bold text-white mb-2">Gastos fijos anuales</h3>
@@ -378,7 +378,7 @@ export const ProfileView: React.FC = () => {
         </div>
 
         {/* Documents (Single Module) */}
-        <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm">
+        <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm rounded-[2.5rem]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
             <div>
               <h3 className="text-3xl font-bold text-white mb-2">Archivos de contexto</h3>
@@ -415,7 +415,7 @@ export const ProfileView: React.FC = () => {
         {/* Notifications & Data Management (Bottom refined) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Notifications */}
-          <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm overflow-hidden relative">
+          <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm overflow-hidden relative rounded-[2.5rem]">
             <div className="absolute top-0 right-0 p-10 opacity-[0.03]"><Bell size={120} /></div>
             <h3 className="text-2xl font-bold text-white mb-4">Alertas inteligentes</h3>
             <p className="text-gray-400 leading-relaxed mb-8 text-sm font-normal">Activa las notificaciones para que la IA de BSC te avise automáticamente de tus próximas actividades y fechas límite.</p>
@@ -425,7 +425,7 @@ export const ProfileView: React.FC = () => {
           </div>
 
           {/* Activity Log Link/Mini View */}
-          <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm overflow-hidden relative">
+          <div className="bg-neutral-900 border border-neutral-800 p-10 md:p-12 shadow-sm overflow-hidden relative rounded-[2.5rem]">
             <div className="absolute top-0 right-0 p-10 opacity-[0.03]"><Clock size={120} /></div>
             <h3 className="text-2xl font-bold text-white mb-4">Registro reciente</h3>
             <div className="space-y-4">
