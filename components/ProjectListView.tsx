@@ -183,13 +183,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     <motion.div
       layout
       onClick={(e) => { e.stopPropagation(); if (!isEditing) onToggle(); }}
-      className={`group relative border ${isExpanded ? 'border-white shadow-md' : isTemplate ? 'border-neutral-800' : 'border-neutral-800'} ${isTemplate ? 'bg-neutral-900 hover:bg-neutral-800' : 'bg-neutral-900 hover:bg-neutral-800'} rounded-[2rem] overflow-hidden transition-all ${isTemplate ? 'mb-1' : 'mb-2'} z-10 hover:z-20 ${isEditing ? '' : 'cursor-pointer'}`}
+      className={`group relative border ${isExpanded ? 'border-white shadow-md' : 'border-neutral-800'} bg-neutral-900 hover:bg-neutral-800 rounded-[2rem] overflow-hidden transition-all mb-2 z-10 hover:z-20 ${isEditing ? '' : 'cursor-pointer'}`}
     >
-      <div className={`${isTemplate ? 'px-4 py-3' : 'px-5 pt-2 pb-3'}`}>
-        <div className={`flex justify-between ${isTemplate ? 'items-center' : 'items-start'}`}>
+      <div className="px-5 pt-4 pb-3">
+        <div className="flex justify-between items-start">
           <div className="flex-1 flex flex-wrap items-center gap-x-4 gap-y-1">
             <h3
-              className={`text-[16px] font-bold ${isTemplate ? 'text-gray-500 hover:text-gray-300' : 'text-gray-200 hover:text-white'} transition-colors leading-tight`}
+              className="text-[17px] font-bold text-gray-200 hover:text-white transition-colors leading-tight"
             >
               {project.title}
             </h3>
@@ -217,19 +217,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               <span className="text-[10px] font-black text-white">
                 {new Date(project.deadline).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
               </span>
-            </div>
-          )}
-
-
-          {isTemplate && (
-            <div className="flex items-center h-8">
-              <button
-                onClick={handleCreateFromClone}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-gray-400 shadow-sm hover:border-white hover:text-white transition-all"
-                title="Crear Proyecto"
-              >
-                <Plus size={14} strokeWidth={3} />
-              </button>
             </div>
           )}
         </div>
@@ -538,21 +525,39 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   )}
 
                   {/* Move actions */}
-                  <div className="flex gap-2 pt-2 items-center">
+                  <div className="flex gap-3 pt-4 items-center border-t border-neutral-900 mt-4">
+                    {isTemplate && (
+                      <button
+                        onClick={(e) => handleStatusMove(e, 'ongoing')}
+                        className="flex-1 py-4 bg-white text-black text-sm font-black rounded-2xl shadow-lg hover:scale-[1.02] transition-all uppercase tracking-widest"
+                      >
+                        Empezar
+                      </button>
+                    )}
+
+                    {project.status === 'ongoing' && (
+                      <>
+                        <button
+                          onClick={(e) => handleStatusMove(e, 'template')}
+                          className="flex-1 py-4 bg-neutral-900 text-gray-400 text-sm font-black rounded-2xl shadow-sm border border-neutral-800 hover:text-white hover:border-gray-600 transition-all uppercase tracking-widest"
+                        >
+                          Propuesta
+                        </button>
+                        <button
+                          onClick={(e) => handleStatusMove(e, 'completed')}
+                          className="flex-1 py-4 bg-white text-black text-sm font-black rounded-2xl shadow-lg hover:scale-[1.02] transition-all uppercase tracking-widest"
+                        >
+                          Completar
+                        </button>
+                      </>
+                    )}
+
                     {project.status === 'completed' && (
                       <button
                         onClick={(e) => handleStatusMove(e, 'ongoing')}
-                        className="flex-1 py-3 bg-neutral-900 text-white text-[10px] font-black rounded-xl shadow-sm border border-neutral-800 hover:scale-[1.02] transition-all"
+                        className="flex-1 py-4 bg-neutral-900 text-white text-sm font-black rounded-2xl shadow-sm border border-neutral-800 hover:scale-[1.02] transition-all uppercase tracking-widest"
                       >
                         Reactivar Proyecto
-                      </button>
-                    )}
-                    {project.status === 'ongoing' && (
-                      <button
-                        onClick={(e) => handleStatusMove(e, 'completed')}
-                        className="flex-1 py-3 bg-white text-black text-[10px] font-black rounded-xl shadow-lg hover:scale-[1.02] transition-all"
-                      >
-                        Completar Proyecto
                       </button>
                     )}
 
@@ -802,7 +807,7 @@ export const ProjectListView: React.FC = () => {
               </span>
             </div>
 
-            <div className={`flex-1 ${col.status === 'template' ? 'space-y-1.5' : 'space-y-4'}`}>
+            <div className="flex-1 space-y-4">
               <AnimatePresence>
                 {sortedProjects.filter(p => p.status === col.status).map(p => (
                   <ProjectCard
