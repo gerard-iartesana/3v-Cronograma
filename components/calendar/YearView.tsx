@@ -59,48 +59,54 @@ export const YearView: React.FC<YearViewProps> = ({
                                 {Array.from({ length: daysInMonth }).map((_, i) => {
                                     const day = i + 1;
                                     const date = new Date(year, monthIdx, day);
-                                    const dayEvents = filteredEvents.filter(e => isSameDay(new Date(e.date), date));
-                                    const totalHours = dayEvents.reduce((acc, e) => acc + parseDurationToHours(e.duration), 0);
+                                    const isSameDayISO = (dISO: string, d2: Date) => {
+                                        const d1 = new Date(dISO);
+                                        return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+                                    };
+                                    const dayEvents = filteredEvents.filter(e => isSameDayISO(e.date, date));
+                                    const totalHours = dayEvents.reduce((acc, e) => acc + (parseDurationToHours(e.duration) || 0), 0);
 
                                     if (dayEvents.length === 0) {
                                         return (
                                             <div
                                                 key={day}
-                                                className="aspect-square rounded-[6px] bg-neutral-800 cursor-pointer hover:bg-neutral-700 transition-colors"
+                                                className="aspect-square rounded-[4px] bg-neutral-800/50 cursor-pointer hover:bg-neutral-700/80 transition-colors border border-white/5"
                                                 onClick={() => onSelectDate(date)}
                                             />
                                         );
                                     }
 
-                                    const { r, g, b } = dayEvents.reduce((acc, e) => {
+                                    const { r, g, b, totalWeight } = dayEvents.reduce((acc, e) => {
                                         const color = getEventColor(e);
-                                        const hours = parseDurationToHours(e.duration) || 1;
+                                        const weight = parseDurationToHours(e.duration) || 1;
                                         const h = color.startsWith('#') ? color.slice(1) : color;
                                         const bigint = parseInt(h, 16);
                                         return {
-                                            r: acc.r + ((bigint >> 16) & 255) * hours,
-                                            g: acc.g + ((bigint >> 8) & 255) * hours,
-                                            b: acc.b + (bigint & 255) * hours
+                                            r: acc.r + ((bigint >> 16) & 255) * weight,
+                                            g: acc.g + ((bigint >> 8) & 255) * weight,
+                                            b: acc.b + (bigint & 255) * weight,
+                                            totalWeight: acc.totalWeight + weight
                                         };
-                                    }, { r: 0, g: 0, b: 0 });
+                                    }, { r: 0, g: 0, b: 0, totalWeight: 0 });
 
-                                    const rw = Math.round(r / totalHours);
-                                    const gw = Math.round(g / totalHours);
-                                    const bw = Math.round(b / totalHours);
+                                    const rw = Math.round(r / totalWeight);
+                                    const gw = Math.round(g / totalWeight);
+                                    const bw = Math.round(b / totalWeight);
                                     const mixedDayColor = `#${((1 << 24) + (rw << 16) + (gw << 8) + bw).toString(16).slice(1)}`;
 
-                                    const opacityScale = Math.min(1, Math.max(0.2, totalHours / 10));
+                                    const intensityBasis = Math.max(totalHours, dayEvents.length > 0 ? 2 : 0);
+                                    const opacityScale = Math.min(1, Math.max(0.4, intensityBasis / 8));
                                     const opacityHex = Math.round(opacityScale * 255).toString(16).padStart(2, '0');
 
                                     return (
                                         <motion.div
                                             key={day}
                                             whileHover={{ scale: 1.4, zIndex: 50, borderRadius: '4px' }}
-                                            className="aspect-square rounded-[4px] cursor-pointer transition-all border border-white/5 relative"
+                                            className="aspect-square rounded-[4px] cursor-pointer transition-all relative z-10"
                                             style={{
                                                 backgroundColor: `${mixedDayColor}${opacityHex}`,
-                                                borderColor: `${mixedDayColor}33`,
-                                                boxShadow: totalHours >= 4 ? `0 0 20px ${mixedDayColor}22` : 'none'
+                                                border: `1px solid ${mixedDayColor}66`,
+                                                boxShadow: totalHours >= 2 ? `0 0 15px ${mixedDayColor}33` : 'none'
                                             }}
                                             onMouseEnter={(e) => {
                                                 const rect = e.currentTarget.getBoundingClientRect();
