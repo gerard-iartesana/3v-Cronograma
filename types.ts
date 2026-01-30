@@ -119,6 +119,7 @@ export interface AppState {
   fcmToken?: string;
   activityLog?: ActivityLogEntry[];
   knowledgeBase?: string;
+  knowledgeBaseDocs?: Record<string, string>; // Map of filename -> content
 }
 
 export interface AIStateUpdate {
@@ -131,6 +132,7 @@ export interface AIStateUpdate {
   deletedProjects?: string[]; // IDs of projects to delete
   budgetUpdate?: Partial<Budget>;
   knowledgeBaseUpdate?: string;
+  knowledgeBaseDocsUpdate?: Record<string, string>; // New/updated docs
   documents?: string[];
   deletedDocuments?: string[];
 }

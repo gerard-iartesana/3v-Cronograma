@@ -92,18 +92,23 @@ export async function processChatMessage(
   currentProjects: Project[],
   currentBudget: any,
   knowledgeBase?: string,
-  tempFiles?: { name: string, content: string, mimeType?: string, data?: string }[]
+  tempFiles?: { name: string, content: string, mimeType?: string, data?: string }[],
+  knowledgeBaseDocs?: Record<string, string>
 ): Promise<AIStateUpdate> {
   try {
     const now = new Date();
 
-    let textContext = knowledgeBase || 'No hay documentos permanentes.';
+    let textContext = knowledgeBase || '';
+    if (knowledgeBaseDocs && Object.keys(knowledgeBaseDocs).length > 0) {
+      textContext += "\n\n[DOCUMENTOS GUARDADOS EN REPOSITORIO]:\n" +
+        Object.entries(knowledgeBaseDocs).map(([name, content]) => `--- ${name} ---\n${content}`).join('\n');
+    }
 
     // Add temporary text-based files to context
     if (tempFiles) {
       const textFiles = tempFiles.filter(f => !f.data && f.content && f.content !== "[Archivo no legible como texto plano]");
       if (textFiles.length > 0) {
-        textContext += "\n\n[ARCHIVOS TEMPORALES TEXTUALES]:\n" +
+        textContext += "\n\n[ARCHIVOS DE SESIÓN (SIN GUARDAR)]:\n" +
           textFiles.map(f => `--- ${f.name} ---\n${f.content}`).join('\n');
       }
     }
@@ -114,16 +119,17 @@ export async function processChatMessage(
 [PROYECTOS ACTUALES]: ${JSON.stringify(currentProjects)}
 [PRESUPUESTO Y GASTOS]: ${JSON.stringify(currentBudget)}
 [EVENTOS CALENDARIO]: ${JSON.stringify(currentEvents)}
-[BASE DE CONOCIMIENTO]: ${textContext}
+[CONTEXTO DE EMPRESA Y REPOSITORIO]:
+${textContext || 'No hay documentos guardados.'}
     `;
 
     const model = ai.getGenerativeModel({
       model: "gemini-3-flash-preview", // Using Gemini 3 Flash Preview
       systemInstruction: SYSTEM_INSTRUCTION + `
-        REGLA MULTIMODAL:
-        - Si el usuario envía imágenes o PDFs, analízalos para responder. 
-        - Si es un PDF, trata de extraer la información relevante para la gestión de proyectos o calendario.
-        - Si el usuario pide guardar el contenido de un PDF o imagen permanentemente, extrae el texto/datos clave y añádelos a la BASE DE CONOCIMIENTO devolviendo 'knowledgeBaseUpdate'.
+        REGLA MULTIMODAL Y CONTEXTO:
+        - Si el usuario envía imágenes o PDFs, analízalos para responder basándote en ellos.
+        - Si el usuario pide guardar el contenido de un PDF, imagen o archivo de texto permanentemente, extrae el texto/datos clave y devuélvelo en 'knowledgeBaseDocsUpdate' como un objeto { "nombre_archivo.md": "contenido..." }.
+        - Utiliza SIEMPRE la información de [CONTEXTO DE EMPRESA Y DOCUMENTOS] para responder preguntas sobre la empresa, normas, guías o histórico.
       `,
     });
 

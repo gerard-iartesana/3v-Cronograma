@@ -7,7 +7,7 @@ import { processChatMessage } from '../services/gemini';
 import { GlassHeader } from './GlassHeader';
 
 export const ChatView: React.FC = () => {
-  const { chatHistory, addChatMessage, applyStateUpdate, clearChat, events, projects, budget, knowledgeBase, addDocument } = useApp();
+  const { chatHistory, addChatMessage, applyStateUpdate, clearChat, events, projects, budget, knowledgeBase, knowledgeBaseDocs, addDocument } = useApp();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [tempFiles, setTempFiles] = useState<{ name: string, content: string, data?: string, mimeType?: string }[]>([]);
@@ -112,7 +112,8 @@ export const ChatView: React.FC = () => {
         projects,
         budget,
         knowledgeBase,
-        currentTempFiles
+        currentTempFiles,
+        knowledgeBaseDocs
       );
 
       addChatMessage({
@@ -122,7 +123,7 @@ export const ChatView: React.FC = () => {
         timestamp: Date.now()
       });
 
-      if (result.newEvents || result.updatedEvents || result.deletedEvents || result.newProjects || result.updatedProjects || result.budgetUpdate || result.knowledgeBaseUpdate) {
+      if (result.newEvents || result.updatedEvents || result.deletedEvents || result.newProjects || result.updatedProjects || result.budgetUpdate || result.knowledgeBaseUpdate || result.knowledgeBaseDocsUpdate) {
         applyStateUpdate(result);
       }
     } catch (error) {

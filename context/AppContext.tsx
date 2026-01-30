@@ -45,7 +45,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [sentNotifications, setSentNotifications] = useState<Record<string, boolean>>({});
   const [fcmToken, setFcmToken] = useState<string | undefined>(undefined);
   const [activityLog, setActivityLog] = useState<any[]>([]);
-  const [knowledgeBase, setKnowledgeBase] = useState<string | undefined>(undefined);
+  const [knowledgeBase, setKnowledgeBase] = useState<string | undefined>(undefined); // Legacy single string
+  const [knowledgeBaseDocs, setKnowledgeBaseDocs] = useState<Record<string, string>>({}); // New map
   const [isLoading, setIsLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error'>('synced');
   const [lastError, setLastError] = useState<string | null>(null);
@@ -69,6 +70,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setAssigneeColors(data.assigneeColors || {});
         setActivityLog(data.activityLog || []);
         setKnowledgeBase(data.knowledgeBase);
+        setKnowledgeBaseDocs(data.knowledgeBaseDocs || {});
       } else {
         console.log("ℹ️ [SHARE] El documento global_state no existe todavía.");
       }
@@ -105,7 +107,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return;
     }
 
-    const sharedKeys: (keyof AppState)[] = ['events', 'projects', 'budget', 'documents', 'tagColors', 'assigneeColors', 'activityLog', 'knowledgeBase'];
+    const sharedKeys: (keyof AppState)[] = ['events', 'projects', 'budget', 'documents', 'tagColors', 'assigneeColors', 'activityLog', 'knowledgeBase', 'knowledgeBaseDocs'];
     const privateKeys: (keyof AppState)[] = ['chatHistory', 'sentNotifications', 'fcmToken'];
 
     const sharedUpdates: any = {};
@@ -331,10 +333,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       });
     }
 
-    if (update.knowledgeBaseUpdate) {
-      const kb = update.knowledgeBaseUpdate;
-      setKnowledgeBase(kb);
-      setTimeout(() => persistState({ knowledgeBase: kb }), 0);
+    if (update.knowledgeBaseDocsUpdate) {
+      setKnowledgeBaseDocs(prev => {
+        const next = { ...prev, ...update.knowledgeBaseDocsUpdate };
+        setTimeout(() => persistState({ knowledgeBaseDocs: next }), 0);
+        return next;
+      });
     }
 
     if (update.documents || update.deletedDocuments) {
@@ -344,6 +348,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (update.deletedDocuments) {
           const toDelete = new Set(update.deletedDocuments);
           next = next.filter(d => !toDelete.has(d));
+
+          // Also clean up from knowledgeBaseDocs
+          setKnowledgeBaseDocs(prevDocs => {
+            const nextDocs = { ...prevDocs };
+            update.deletedDocuments?.forEach(d => delete nextDocs[d]);
+            setTimeout(() => persistState({ knowledgeBaseDocs: nextDocs }), 0);
+            return nextDocs;
+          });
         }
         setTimeout(() => persistState({ documents: next }), 0);
         return next;
@@ -448,13 +460,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addDocument = useCallback((name: string, content?: string) => {
     setDocuments(prev => {
-      const next = [...prev, name];
+      const next = [...new Set([...prev, name])];
       const updates: Partial<AppState> = { documents: next };
+
       if (content) {
-        setKnowledgeBase(content);
-        updates.knowledgeBase = content;
+        setKnowledgeBaseDocs(prevDocs => {
+          const nextDocs = { ...prevDocs, [name]: content };
+          updates.knowledgeBaseDocs = nextDocs;
+          setTimeout(() => persistState(updates), 0);
+          return nextDocs;
+        });
+      } else {
+        setTimeout(() => persistState(updates), 0);
       }
-      setTimeout(() => persistState(updates), 0);
       return next;
     });
   }, [persistState]);
@@ -526,7 +544,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       currentSection, setCurrentSection,
       events, projects, budget, chatHistory, documents, tagColors, assigneeColors, sentNotifications, activityLog,
       addChatMessage, applyStateUpdate, toggleProjectItem, toggleEventTask, updateEvent, deleteEvent, updateProject, deleteProject, addProject, addDocument, setTagColor, setAssigneeColor, clearChat,
-      isLoading, enableNotifications, fcmToken, logActivity, knowledgeBase, syncStatus, lastError
+      isLoading, enableNotifications, fcmToken, logActivity, knowledgeBase, knowledgeBaseDocs, syncStatus, lastError
     }}>
       {children}
     </AppContext.Provider>
