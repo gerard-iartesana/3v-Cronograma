@@ -47,8 +47,15 @@ export const CalendarView: React.FC = () => {
   const [hideWeekends, setHideWeekends] = useState(false);
 
   const allTags = useMemo(() => {
-    return Array.from(new Set(events.flatMap(e => e.tags || []))).sort();
-  }, [events]);
+    const s = new Set<string>();
+    events.forEach(e => {
+      e.tags?.forEach(t => s.add(t));
+      if (e.type === 'holiday') s.add('Festivo');
+      if (e.type === 'campaign') s.add('Campaña');
+    });
+    projects.forEach(p => p.tags?.forEach(t => s.add(t)));
+    return Array.from(s).sort();
+  }, [events, projects]);
 
   const { coloredTags, uncoloredTags } = useMemo(() => {
     return {
@@ -108,7 +115,9 @@ export const CalendarView: React.FC = () => {
   const filteredEvents = useMemo(() => {
     const list = eventsInView.filter(e => {
       if (filter.includes('TODO')) return true;
-      const virtualTags = [...e.tags];
+      const project = e.projectId ? projects.find(p => p.id === e.projectId) : null;
+      const pTags = project?.tags || [];
+      const virtualTags = [...e.tags, ...pTags];
       if (e.type === 'holiday' && !virtualTags.includes('Festivo')) virtualTags.push('Festivo');
       if (e.type === 'campaign' && !virtualTags.includes('Campaña')) virtualTags.push('Campaña');
       return virtualTags.some(t => filter.includes(t));
@@ -116,7 +125,10 @@ export const CalendarView: React.FC = () => {
 
     const withAssignees = list.filter(e => {
       if (selectedAssignees.length === 0) return true;
-      return e.assignees?.some(a => selectedAssignees.includes(a));
+      const project = e.projectId ? projects.find(p => p.id === e.projectId) : null;
+      const pAsgs = project?.assignees || [];
+      const combinedAsgs = [...(e.assignees || []), ...pAsgs];
+      return combinedAsgs.some(a => selectedAssignees.includes(a));
     });
 
     return withAssignees.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -125,8 +137,9 @@ export const CalendarView: React.FC = () => {
   const allAssignees = useMemo(() => {
     const s = new Set<string>();
     events.forEach(e => e.assignees?.forEach(a => s.add(a)));
+    projects.forEach(p => p.assignees?.forEach(a => s.add(a)));
     return Array.from(s).sort();
-  }, [events]);
+  }, [events, projects]);
 
   const toggleFilter = (tag: string) => {
     if (tag === 'TODO') { setFilter(['TODO']); return; }

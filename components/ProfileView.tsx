@@ -26,9 +26,13 @@ export const ProfileView: React.FC = () => {
 
   const allTags = useMemo(() => {
     const s = new Set<string>();
-    events.forEach(e => e.tags.forEach(t => s.add(t)));
+    events.forEach(e => {
+      e.tags?.forEach(t => s.add(t));
+      if (e.type === 'holiday') s.add('Festivo');
+      if (e.type === 'campaign') s.add('Campaña');
+    });
     projects.forEach(p => p.tags?.forEach(t => s.add(t)));
-    return ['TODO', ...Array.from(s).sort()];
+    return Array.from(s).sort();
   }, [events, projects]);
 
   const { coloredTags, uncoloredTags } = useMemo(() => {
@@ -138,8 +142,15 @@ export const ProfileView: React.FC = () => {
     projects.forEach(p => {
       const { isInRange, factor } = getProjectFactor(p);
       if (isInRange) {
-        const tagMatch = selectedTags.length === 0 || p.tags?.some(t => selectedTags.includes(t));
-        const assigneeMatch = selectedAssignees.length === 0 || p.assignees?.some(a => selectedAssignees.includes(a));
+        const projectEvents = expandedEvents.filter(e => e.projectId === p.id);
+        const eventTags = projectEvents.flatMap(e => e.tags || []);
+        const allProjectTags = Array.from(new Set([...(p.tags || []), ...eventTags]));
+        const tagMatch = selectedTags.length === 0 || allProjectTags.some(t => selectedTags.includes(t));
+
+        const eventAsgs = projectEvents.flatMap(e => e.assignees || []);
+        const allProjectAsgs = Array.from(new Set([...(p.assignees || []), ...eventAsgs]));
+        const assigneeMatch = selectedAssignees.length === 0 || allProjectAsgs.some(a => selectedAssignees.includes(a));
+
         if (!tagMatch || !assigneeMatch) return;
 
         const rate = budget.hourlyRate || 80;

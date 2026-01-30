@@ -586,8 +586,15 @@ export const ProjectListView: React.FC = () => {
   const [sortBy, setSortBy] = useState<'alpha' | 'tag' | 'percent' | 'deadline'>('alpha');
 
   const allTags = useMemo(() => {
-    return Array.from(new Set(projects.flatMap(p => p.tags || []))).sort();
-  }, [projects]);
+    const s = new Set<string>();
+    projects.forEach(p => p.tags?.forEach(t => s.add(t)));
+    events.forEach(e => {
+      e.tags?.forEach(t => s.add(t));
+      if (e.type === 'holiday') s.add('Festivo');
+      if (e.type === 'campaign') s.add('Campaña');
+    });
+    return Array.from(s).sort();
+  }, [projects, events]);
 
   const { coloredTags, uncoloredTags } = useMemo(() => {
     return {
@@ -602,9 +609,16 @@ export const ProjectListView: React.FC = () => {
     { title: 'Completados', status: 'completed', icon: Check, color: '#ffffff' }
   ];
 
-  const filteredProjects = filter.includes('TODO')
-    ? projects
-    : projects.filter(p => p.tags?.some(tag => filter.includes(tag)));
+  const filteredProjects = useMemo(() => {
+    if (filter.includes('TODO')) return projects;
+    return projects.filter(p => {
+      const projectTags = p.tags || [];
+      const projectEvents = events.filter(e => e.projectId === p.id);
+      const eventTags = projectEvents.flatMap(e => e.tags || []);
+      const allProjectTags = Array.from(new Set([...projectTags, ...eventTags]));
+      return allProjectTags.some(tag => filter.includes(tag));
+    });
+  }, [projects, events, filter]);
 
   const sortedProjects = useMemo(() => {
     const list = [...filteredProjects];
