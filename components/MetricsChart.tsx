@@ -47,31 +47,31 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif', color: '#9ca3af' }}
                 />
 
-                {/* Real: Separated Bars (BSC Colors: Orange & Yellow) */}
-                {/* Production: Orange */}
-                <Bar
-                    name="Producción"
-                    dataKey="RealProduction"
-                    radius={[0, 0, 0, 0]}
-                    barSize={displayMode === 'accumulated' ? 40 : 20}
-                    fill="#FF7D00"
-                />
-                {/* Time: Yellow */}
-                <Bar
-                    name="Tiempo"
-                    dataKey="RealTime"
-                    radius={[0, 0, 0, 0]}
-                    barSize={displayMode === 'accumulated' ? 40 : 20}
-                    fill="#FFD000"
-                />
-
-                {/* Estimado: Gray */}
+                {/* 1. Estimado (BSC Gray) */}
                 <Bar
                     name="Estimado"
                     dataKey="Estimado"
-                    radius={[0, 0, 0, 0]}
-                    barSize={displayMode === 'accumulated' ? 40 : 20}
+                    radius={[4, 4, 0, 0]}
+                    barSize={displayMode === 'accumulated' ? 30 : 15}
                     fill="#6b7280"
+                />
+
+                {/* 2. Producción (BSC Orange) */}
+                <Bar
+                    name="Producción"
+                    dataKey="RealProduction"
+                    radius={[4, 4, 0, 0]}
+                    barSize={displayMode === 'accumulated' ? 30 : 15}
+                    fill="#FF7D00"
+                />
+
+                {/* 3. Tiempo (BSC Yellow) */}
+                <Bar
+                    name="Tiempo"
+                    dataKey="RealTime"
+                    radius={[4, 4, 0, 0]}
+                    barSize={displayMode === 'accumulated' ? 30 : 15}
+                    fill="#FFD000"
                 />
             </BarChart>
         </ResponsiveContainer>
