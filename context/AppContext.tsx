@@ -213,30 +213,34 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         console.log('Service Worker registered with scope:', registration.scope);
-      }
 
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        alert("Necesitas dar permiso para recibir notificaciones.");
-        return false;
-      }
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          alert("Necesitas dar permiso para recibir notificaciones.");
+          return false;
+        }
 
-      console.log("Solicitando Token FCM...");
-      const token = await getToken(messaging, {
-        vapidKey: 'BCGI4AbSz62vZCAJKeNiOl4314KdBGpha743NeODLAVlaSYvu7N3h2zetGna4w9wb94Qa0RlYjAVcqjbouXwZKs'
-      });
+        // Wait for service worker to be ready
+        await navigator.serviceWorker.ready;
 
-      if (token && user) {
-        console.log("FCM Token obtenido:", token);
-        setFcmToken(token);
-        // Explicit save to be sure
-        const userDoc = doc(db, "users", user.uid, "private_state", "data");
-        await setDoc(userDoc, { fcmToken: token }, { merge: true });
-        console.log("Token guardado en Firestore (privado)");
-        alert("¡Notificaciones vinculadas con éxito!");
-        return true;
-      } else {
-        alert("No se pudo obtener el token de notificación. Inténtalo de nuevo.");
+        console.log("Solicitando Token FCM...");
+        const token = await getToken(messaging, {
+          serviceWorkerRegistration: registration,
+          vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || 'BCGI4AbSz62vZCAJKeNiOl4314KdBGpha743NeODLAVlaSYvu7N3h2zetGna4w9wb94Qa0RlYjAVcqjbouXwZKs'
+        });
+
+        if (token && user) {
+          console.log("FCM Token obtenido:", token);
+          setFcmToken(token);
+          // Explicit save to be sure
+          const userDoc = doc(db, "users", user.uid, "private_state", "data");
+          await setDoc(userDoc, { fcmToken: token }, { merge: true });
+          console.log("Token guardado en Firestore (privado)");
+          alert("¡Notificaciones vinculadas con éxito!");
+          return true;
+        } else {
+          alert("No se pudo obtener el token de notificación. Verifica la VAPID Key en Firebase Console.");
+        }
       }
     } catch (err) {
       console.error("FCM Error:", err);
