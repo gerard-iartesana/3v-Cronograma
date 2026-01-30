@@ -211,7 +211,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             )}
           </div>
 
-          {!isTemplate && project.deadline && (
+          {project.deadline && (
             <div className="flex items-center gap-1.5 px-2 py-1 bg-neutral-800 rounded-lg border border-white/20">
               <Calendar size={12} className="text-white" />
               <span className="text-[10px] font-black text-white">
@@ -319,73 +319,71 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       />
                     </div>
                   </div>
-                  {!isTemplate && (
-                    <div className="space-y-4">
-                      <div className="space-y-3">
-                        {/* Bloque Estimado y Real Simplificado */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-3xl space-y-3">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Estimación</h4>
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      {/* Bloque Estimado y Real Simplificado */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-3xl space-y-3">
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Estimación</h4>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
+                            <NumberInput
+                              value={editForm.budgetedCost || 0}
+                              onChange={val => setEditForm({ ...editForm, budgetedCost: Math.max(0, val) })}
+                              step={10}
+                              suffix="€"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-3xl space-y-3">
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Realidad</h4>
+                          <div className="grid grid-cols-1 gap-2">
                             <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
+                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Producción (€)</label>
                               <NumberInput
-                                value={editForm.budgetedCost || 0}
-                                onChange={val => setEditForm({ ...editForm, budgetedCost: Math.max(0, val) })}
+                                value={editForm.realProductionCost || 0}
+                                onChange={val => setEditForm(prev => {
+                                  const nextProd = Math.max(0, val);
+                                  return { ...prev, realProductionCost: nextProd, realCost: nextProd + (prev.realTimeCost || 0) };
+                                })}
                                 step={10}
                                 suffix="€"
                               />
                             </div>
-                          </div>
-
-                          <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-3xl space-y-3">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Realidad</h4>
-                            <div className="grid grid-cols-1 gap-2">
-                              <div>
-                                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Producción (€)</label>
-                                <NumberInput
-                                  value={editForm.realProductionCost || 0}
-                                  onChange={val => setEditForm(prev => {
-                                    const nextProd = Math.max(0, val);
-                                    return { ...prev, realProductionCost: nextProd, realCost: nextProd + (prev.realTimeCost || 0) };
-                                  })}
-                                  step={10}
-                                  suffix="€"
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Tiempo (€)</label>
-                                <NumberInput
-                                  value={editForm.realTimeCost || 0}
-                                  onChange={val => setEditForm(prev => {
-                                    const nextTime = Math.max(0, val);
-                                    return { ...prev, realTimeCost: nextTime, realCost: (prev.realProductionCost || 0) + nextTime };
-                                  })}
-                                  step={10}
-                                  suffix="€"
-                                />
-                              </div>
-                              <div className="pt-2 border-t border-neutral-800 flex justify-between items-center">
-                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">Total Real:</span>
-                                <span className="text-sm font-black text-white">
-                                  {(editForm.realCost !== undefined ? editForm.realCost : ((editForm.realProductionCost || 0) + (editForm.realTimeCost || 0))).toLocaleString()}€
-                                </span>
-                              </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Tiempo (€)</label>
+                              <NumberInput
+                                value={editForm.realTimeCost || 0}
+                                onChange={val => setEditForm(prev => {
+                                  const nextTime = Math.max(0, val);
+                                  return { ...prev, realTimeCost: nextTime, realCost: (prev.realProductionCost || 0) + nextTime };
+                                })}
+                                step={10}
+                                suffix="€"
+                              />
+                            </div>
+                            <div className="pt-2 border-t border-neutral-800 flex justify-between items-center">
+                              <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">Total Real:</span>
+                              <span className="text-sm font-black text-white">
+                                {(editForm.realCost !== undefined ? editForm.realCost : ((editForm.realProductionCost || 0) + (editForm.realTimeCost || 0))).toLocaleString()}€
+                              </span>
                             </div>
                           </div>
                         </div>
                       </div>
-
-                      <div className="flex-1">
-                        <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Fecha Límite</label>
-                        <input
-                          type="date"
-                          value={editForm.deadline?.substring(0, 10) || ''}
-                          onChange={e => setEditForm({ ...editForm, deadline: e.target.value })}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-5 py-3 text-sm text-white outline-none focus:border-[#dc0014]"
-                        />
-                      </div>
                     </div>
-                  )}
+
+                    <div className="flex-1">
+                      <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Fecha Límite</label>
+                      <input
+                        type="date"
+                        value={editForm.deadline?.substring(0, 10) || ''}
+                        onChange={e => setEditForm({ ...editForm, deadline: e.target.value })}
+                        className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-5 py-3 text-sm text-white outline-none focus:border-[#dc0014]"
+                      />
+                    </div>
+                  </div>
                   <div className="space-y-2 pt-2 border-t border-neutral-800">
                     <div className="flex justify-between items-center mb-1">
                       <label className="text-[8px] uppercase tracking-widest text-gray-500 font-bold block">Hoja de Ruta (Checklist)</label>
@@ -442,28 +440,26 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     <p className="text-gray-400 text-xs leading-relaxed whitespace-pre-wrap">{project.description}</p>
                   </div>
 
-                  {!isTemplate && (
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
-                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <span className="text-white font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
+                    <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
+                      <span className="text-white font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
+                    </span>
+                    <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
+                      <span className="text-white font-bold">{(projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
+                    </span>
+                    {(project.realProductionCost !== undefined || project.realTimeCost !== undefined) && project.realProductionCost + project.realTimeCost > 0 && (
+                      <div className="flex gap-3 text-[9px] font-normal text-gray-400 uppercase tracking-tighter bg-neutral-800 px-3 py-1 rounded-full border border-neutral-700">
+                        <span>Prod: {project.realProductionCost || 0}€</span>
+                        <span>Time: {project.realTimeCost || 0}€</span>
+                      </div>
+                    )}
+                    {project.deadline && (
+                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none ml-auto">
+                        <Calendar size={14} className="text-red-500/50" />
+                        <span className="text-gray-200">{new Date(project.deadline).toLocaleDateString()}</span>
                       </span>
-                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <span className="text-white font-bold">{(projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
-                      </span>
-                      {(project.realProductionCost !== undefined || project.realTimeCost !== undefined) && project.realProductionCost + project.realTimeCost > 0 && (
-                        <div className="flex gap-3 text-[9px] font-normal text-gray-400 uppercase tracking-tighter bg-neutral-800 px-3 py-1 rounded-full border border-neutral-700">
-                          <span>Prod: {project.realProductionCost || 0}€</span>
-                          <span>Time: {project.realTimeCost || 0}€</span>
-                        </div>
-                      )}
-                      {project.deadline && (
-                        <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none ml-auto">
-                          <Calendar size={14} className="text-red-500/50" />
-                          <span className="text-gray-200">{new Date(project.deadline).toLocaleDateString()}</span>
-                        </span>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-3">
