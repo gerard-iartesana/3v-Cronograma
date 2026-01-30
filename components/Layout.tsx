@@ -126,7 +126,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     <div className="flex h-screen bg-black overflow-hidden">
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col w-20 border-r border-neutral-800 items-center py-8 bg-black z-50 shadow-md">
-        <img src={LOGO_URL} alt="Hub Logo" className="w-12 h-auto mb-12 opacity-90 hover:opacity-100 transition-opacity object-contain" />
+        <img src={LOGO_URL} alt="Hub Logo" className="w-14 h-auto mb-10 opacity-90 hover:opacity-100 transition-opacity object-contain" />
         <nav className="flex flex-col w-full gap-4 flex-1">
           {sections.map(s => (
             <SidebarIcon
