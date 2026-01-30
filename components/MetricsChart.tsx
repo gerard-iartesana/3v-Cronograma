@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 interface MetricsChartProps {
@@ -7,6 +7,17 @@ interface MetricsChartProps {
 }
 
 export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode }) => {
+    const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
+
+    const handleLegendClick = (e: any) => {
+        const { value } = e;
+        setHiddenSeries(prev =>
+            prev.includes(value)
+                ? prev.filter(s => s !== value)
+                : [...prev, value]
+        );
+    };
+
     return (
         <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -44,34 +55,41 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     verticalAlign="top"
                     height={36}
                     iconType="circle"
-                    wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif', color: '#9ca3af' }}
+                    wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif', color: '#9ca3af', cursor: 'pointer' }}
+                    onClick={handleLegendClick}
                 />
 
                 {/* 1. Estimado (BSC Gray) */}
                 <Bar
                     name="Estimado"
                     dataKey="Estimado"
+                    hide={hiddenSeries.includes('Estimado')}
                     radius={[4, 4, 0, 0]}
                     barSize={displayMode === 'accumulated' ? 30 : 15}
                     fill="#6b7280"
+                    animationDuration={300}
                 />
 
                 {/* 2. Producción (BSC Orange) */}
                 <Bar
                     name="Producción"
                     dataKey="RealProduction"
+                    hide={hiddenSeries.includes('Producción')}
                     radius={[4, 4, 0, 0]}
                     barSize={displayMode === 'accumulated' ? 30 : 15}
                     fill="#FF7D00"
+                    animationDuration={300}
                 />
 
                 {/* 3. Tiempo (BSC Yellow) */}
                 <Bar
                     name="Tiempo"
                     dataKey="RealTime"
+                    hide={hiddenSeries.includes('Tiempo')}
                     radius={[4, 4, 0, 0]}
                     barSize={displayMode === 'accumulated' ? 30 : 15}
                     fill="#FFD000"
+                    animationDuration={300}
                 />
             </BarChart>
         </ResponsiveContainer>
