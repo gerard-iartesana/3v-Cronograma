@@ -205,7 +205,7 @@ export const CalendarView: React.FC = () => {
     if (event.type === 'campaign' && !virtualTags.includes('Campaña')) virtualTags.push('Campaña');
 
     const colorTags = virtualTags.filter(t => tagColors?.[t]);
-    let baseColor = '#9ca3af';
+    let baseColor = '#dc0014'; // Default to Corporate Red for predefined tags
     if (colorTags.length > 0) baseColor = mixColors(colorTags.map(t => tagColors![t]));
     return {
       backgroundColor: `${baseColor}1a`,

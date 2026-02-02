@@ -34,7 +34,8 @@ export const YearView: React.FC<YearViewProps> = ({
 
         const colorTags = virtualTags.filter(t => tagColors?.[t]);
         if (colorTags.length > 0) return mixColors(colorTags.map(t => tagColors![t]));
-        return event.completed ? '#32FF7E' : '#ffffff';
+        if (event.completed) return '#32FF7E';
+        return '#dc0014'; // Corporate Red for non-customized tags
     };
 
     return (
@@ -70,7 +71,7 @@ export const YearView: React.FC<YearViewProps> = ({
                                         return (
                                             <div
                                                 key={day}
-                                                className="aspect-square rounded-[4px] bg-gray-300 cursor-pointer hover:bg-gray-400 transition-colors border border-gray-400"
+                                                className="aspect-square rounded-[4px] bg-gray-300 cursor-pointer hover:bg-gray-400 transition-colors"
                                                 onClick={() => onSelectDate(date)}
                                             />
                                         );
