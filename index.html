@@ -12,12 +12,29 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json?v=20260202_v1">
     <meta name="color-scheme" content="light">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#dc0014',
+                        brand: {
+                            red: '#dc0014',
+                            orange: '#FF7D00',
+                            yellow: '#FFD000',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <style>
         html,
         body {
-            background-color: #f9fafb;
+            background-color: #ffffff;
             color: #111111;
             font-family: 'Open Sans', sans-serif;
             margin: 0;
@@ -29,41 +46,21 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+            background: #f1f1f1;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #444;
+            background: #ccc;
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #666;
+            background: #999;
         }
 
-        /* Glow effects for dark mode */
-        .glow-brand {
-            filter: drop-shadow(0 0 12px rgba(220, 0, 20, 0.6));
-        }
 
-        .glow-yellow {
-            filter: drop-shadow(0 0 12px rgba(255, 199, 0, 0.6));
-        }
 
-        .glow-orange {
-            filter: drop-shadow(0 0 12px rgba(255, 107, 0, 0.6));
-        }
 
-        .box-glow-brand {
-            box-shadow: 0 0 25px rgba(220, 0, 20, 0.25);
-        }
-
-        /* Glassmorphism */
-        .glass {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
 
         @media (max-width: 640px) {
             html {

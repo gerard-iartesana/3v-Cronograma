@@ -194,11 +194,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               >
                 {project.title}
               </h3>
-              {isTemplate && (
-                <span className="px-1.5 py-0.5 rounded-md bg-gray-100 text-[8px] font-black text-gray-400 uppercase tracking-widest border border-gray-200">
-                  Propuesta
-                </span>
-              )}
+
             </div>
 
             {(project.tags && project.tags.length > 0) && (
@@ -612,7 +608,7 @@ export const ProjectListView: React.FC = () => {
   const columns = [
     { title: 'Propuestas', status: 'template', icon: Lightbulb, color: '#dc0014' },
     { title: 'En curso', status: 'ongoing', icon: RotateCw, color: '#dc0014' },
-    { title: 'Completados', status: 'completed', icon: Check, color: '#000000' }
+    { title: 'Completados', status: 'completed', icon: Check, color: '#16a34a' }
   ];
 
   const filteredProjects = filter.includes('TODO')
