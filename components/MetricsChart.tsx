@@ -1,15 +1,17 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
 
 interface MetricsChartProps {
     data: any[];
     displayMode: 'accumulated' | 'detailed';
+    tagColors?: Record<string, string>;
 }
 
-export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode }) => {
+export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode, tagColors }) => {
     return (
         <ResponsiveContainer width="100%" height="100%">
             <BarChart
+                key={displayMode} // Force re-render on mode change
                 data={data}
                 margin={{ top: 60, right: 30, left: 20, bottom: 20 }}
                 barGap={0}
@@ -53,8 +55,12 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     dataKey="Estimado"
                     stackId={displayMode === 'accumulated' ? 'main' : 'A'}
                     barSize={displayMode === 'accumulated' ? 100 : 25}
-                    fill="#9ca3af"
-                />
+                    fill="#9ca3af" // Default color for Legend
+                >
+                    {displayMode === 'detailed' && data.map((entry, index) => (
+                        <Cell key={`cell-est-${index}`} fill={tagColors?.[entry.name] || '#9ca3af'} fillOpacity={0.3} />
+                    ))}
+                </Bar>
 
                 {/* Real Stacked Bars */}
                 <Bar
@@ -62,15 +68,23 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     dataKey="RealProduction"
                     stackId={displayMode === 'accumulated' ? 'main' : 'B'}
                     barSize={displayMode === 'accumulated' ? 100 : 25}
-                    fill="#dc0014"
-                />
+                    fill="#dc0014" // Default color for Legend
+                >
+                    {displayMode === 'detailed' && data.map((entry, index) => (
+                        <Cell key={`cell-prod-${index}`} fill={tagColors?.[entry.name] || '#dc0014'} />
+                    ))}
+                </Bar>
                 <Bar
                     name="Tiempo"
                     dataKey="RealTime"
                     stackId={displayMode === 'accumulated' ? 'main' : 'C'}
                     barSize={displayMode === 'accumulated' ? 100 : 25}
-                    fill="#ff4d4d"
-                />
+                    fill="#ff4d4d" // Default color for Legend
+                >
+                    {displayMode === 'detailed' && data.map((entry, index) => (
+                        <Cell key={`cell-time-${index}`} fill={tagColors?.[entry.name] || '#ff4d4d'} fillOpacity={0.6} />
+                    ))}
+                </Bar>
             </BarChart>
         </ResponsiveContainer>
     );

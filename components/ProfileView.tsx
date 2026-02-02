@@ -449,7 +449,7 @@ export const ProfileView: React.FC = () => {
           </div>
 
           <div className="w-full h-[450px]">
-            <MetricsChart data={chartData} displayMode={displayMode} />
+            <MetricsChart data={chartData} displayMode={displayMode} tagColors={tagColors} />
           </div>
         </div>
 
