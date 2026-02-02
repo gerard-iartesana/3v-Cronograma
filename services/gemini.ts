@@ -13,7 +13,7 @@ if (!apiKey) {
 const ai = new GoogleGenerativeAI(apiKey || '');
 
 const SYSTEM_INSTRUCTION = `
-Eres el Asistente de 3villas para la gestión cronograma, ejecutando bajo el modelo Gemini 3 Flash Preview.
+Eres el Asistente de BSC para la gestión cronograma, ejecutando bajo el modelo Gemini 3 Flash Preview.
 Tu objetivo es gestionar ESTRATEGIAS basadas en "PROYECTOS".
 
 MODELO DE DATOS:
@@ -41,7 +41,10 @@ MODELO DE DATOS:
 OPERACIONES:
 - "newProjects", "updatedProjects", "deletedProjects": Para gestionar la cartera completa de proyectos (incluyendo plantillas).
 - "newEvents", "updatedEvents", "deletedEvents": Para planificar tiempo en el calendario.
-- "budgetUpdate": Para modificar el presupuesto o gastos (ej: { "expenses": [{ "id": "...", "title": "...", "amount": 100 }] }).
+- "budgetUpdate": Para modificar el presupuesto o gastos.
+- "knowledgeBaseUpdate": (OBLIGATORIO para guardar permanentemente) Cadena de texto con el contenido acumulado de la base de conocimiento.
+- "documents": (Opcional) Array de nombres de archivos guardados.
+- "deletedDocuments": (Opcional) Array de nombres de archivos a eliminar.
 
 - REGLAS CRÍTICAS: 
 - SIEMPRE debes incluir un campo "message" en tu JSON de respuesta con una confirmación amigable.
@@ -73,44 +76,102 @@ OPERACIONES:
 - ETIQUETAS AUTOMÁTICAS:
   - Para type="holiday", incluye SIEMPRE la etiqueta "Festivo".
   - Para type="campaign", incluye SIEMPRE la etiqueta "Campaña".
+- REGLA DE VISIÓN Y DOCUMENTOS:
+  - Eres capaz de analizar imágenes (JPG, PNG) y documentos PDF.
+  - Al recibir un documento, extrae automáticamente fechas, hitos, tareas y presupuestos relevantes para integrarlos en el cronograma si el usuario lo solicita.
+  - Puedes "leer" capturas de pantalla de otros calendarios, excels o notas manuscritas para digitalizarlas en el sistema BSC.
 - Tono profesional y ejecutivo.
 `;
 
+// ... (imports remain)
+
 export async function processChatMessage(
   userInput: string,
-  history: { role: 'user' | 'assistant', content: string }[],
+  history: { role: 'user' | 'assistant', content: string, attachments?: { name: string, mimeType: string, data: string }[] }[],
   currentEvents: MarketingEvent[],
   currentProjects: Project[],
   currentBudget: any,
-  knowledgeBase?: string
+  knowledgeBase?: string,
+  tempFiles?: { name: string, content: string, mimeType?: string, data?: string }[],
+  knowledgeBaseDocs?: Record<string, string>
 ): Promise<AIStateUpdate> {
   try {
     const now = new Date();
+
+    let textContext = knowledgeBase || '';
+    if (knowledgeBaseDocs && Object.keys(knowledgeBaseDocs).length > 0) {
+      textContext += "\n\n[DOCUMENTOS GUARDADOS EN REPOSITORIO]:\n" +
+        Object.entries(knowledgeBaseDocs).map(([name, content]) => `--- ${name} ---\n${content}`).join('\n');
+    }
+
+    // Add temporary text-based files to context
+    if (tempFiles) {
+      const textFiles = tempFiles.filter(f => !f.data && f.content && f.content !== "[Archivo no legible como texto plano]");
+      if (textFiles.length > 0) {
+        textContext += "\n\n[ARCHIVOS DE SESIÓN (SIN GUARDAR)]:\n" +
+          textFiles.map(f => `--- ${f.name} ---\n${f.content}`).join('\n');
+      }
+    }
+
     const stateContext = `
 [FECHA UTC: ${now.toISOString()}]
 [FECHA LOCAL ESPAÑA: ${now.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}]
-[IMPORTANTE: Interpreta las horas que diga el usuario como HORA LOCAL (CET/CEST). Si no especifica hora, pero sí habla de un momento del día (mañana, tarde, noche), intenta ser lógico.]
 [PROYECTOS ACTUALES]: ${JSON.stringify(currentProjects)}
 [PRESUPUESTO Y GASTOS]: ${JSON.stringify(currentBudget)}
 [EVENTOS CALENDARIO]: ${JSON.stringify(currentEvents)}
-[BASE DE CONOCIMIENTO EXTENDIDA (Contexto corporativo)]: ${knowledgeBase || 'No hay documentos adicionales subidos.'}
+[CONTEXTO DE EMPRESA Y REPOSITORIO]:
+${textContext || 'No hay documentos guardados.'}
     `;
 
     const model = ai.getGenerativeModel({
-      model: "gemini-3-flash-preview",
-      systemInstruction: SYSTEM_INSTRUCTION,
+      model: "gemini-3-flash-preview", // Using Gemini 3 Flash Preview
+      systemInstruction: SYSTEM_INSTRUCTION + `
+        REGLA MULTIMODAL Y CONTEXTO:
+        - Si el usuario envía imágenes o PDFs, analízalos para responder basándote en ellos.
+        - Si el usuario pide guardar el contenido de un PDF, imagen o archivo de texto permanentemente, extrae el texto/datos clave y devuélvelo en 'knowledgeBaseDocsUpdate' como un objeto { "nombre_archivo.md": "contenido..." }.
+        - Utiliza SIEMPRE la información de [CONTEXTO DE EMPRESA Y DOCUMENTOS] para responder preguntas sobre la empresa, normas, guías o histórico.
+      `,
     });
 
     console.log("🚀 Enviando solicitud a Gemini 3 Flash Preview...");
 
+    // Handle current user input parts (text + files)
+    const currentParts: any[] = [{ text: `${stateContext}\n\nUsuario: ${userInput}` }];
+
+    // Include current session's binary temp files if they haven't been sent in history
+    if (tempFiles) {
+      tempFiles.filter(f => f.data && f.mimeType).forEach(f => {
+        currentParts.push({
+          inlineData: {
+            mimeType: f.mimeType,
+            data: f.data
+          }
+        });
+      });
+    }
+
+    const contents = history.map(h => {
+      const parts: any[] = [{ text: h.content }];
+      if (h.attachments) {
+        h.attachments.forEach(a => {
+          parts.push({
+            inlineData: {
+              mimeType: a.mimeType,
+              data: a.data
+            }
+          });
+        });
+      }
+      return {
+        role: h.role === 'assistant' ? 'model' : 'user',
+        parts: parts
+      };
+    });
+
+    contents.push({ role: 'user', parts: currentParts });
+
     const aiResult = await model.generateContent({
-      contents: [
-        ...history.map(h => ({
-          role: h.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: h.content }]
-        })),
-        { role: 'user', parts: [{ text: `${stateContext}\n\nUsuario: ${userInput}` }] }
-      ],
+      contents,
       generationConfig: {
         responseMimeType: "application/json",
       }
@@ -135,7 +196,7 @@ export async function processChatMessage(
 
       result.message = hasChanges
         ? "Entendido, he procesado tus cambios en el cronograma."
-        : "¡Hola! Soy tu Asistente de 3villas. ¿Cómo puedo ayudarte hoy con tu cronograma?";
+        : "¡Hola! Soy tu Asistente de BSC. ¿Cómo puedo ayudarte hoy con tu cronograma?";
     }
 
     if (result.newProjects) {

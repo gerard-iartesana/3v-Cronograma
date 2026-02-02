@@ -87,11 +87,11 @@ export const DayView: React.FC<DayViewProps> = ({
     }, [filteredEvents]);
 
     return (
-        <div className="flex flex-col bg-white border border-gray-200 rounded-[1.5rem] overflow-hidden">
+        <div className="flex flex-col bg-neutral-900 border border-neutral-800 rounded-[1.5rem] overflow-hidden">
             <div className="relative h-[1200px] w-full overflow-y-auto custom-scrollbar">
                 {hours.map(h => (
-                    <div key={h} className="absolute w-full border-t border-gray-100 flex items-start" style={{ top: `${h * 50}px`, height: '50px' }}>
-                        <span className="text-[10px] font-bold text-gray-400 p-2 w-12 text-right">{h}:00</span>
+                    <div key={h} className="absolute w-full border-t border-neutral-800 flex items-start" style={{ top: `${h * 50}px`, height: '50px' }}>
+                        <span className="text-[10px] font-bold text-gray-500 p-2 w-12 text-right">{h}:00</span>
                     </div>
                 ))}
                 {layoutEvents.map(event => {
@@ -129,7 +129,7 @@ export const DayView: React.FC<DayViewProps> = ({
                             }}
                         >
                             <div
-                                className="absolute top-0 left-0 right-0 h-1.5 cursor-ns-resize z-30 flex items-center justify-center hover:bg-black/10 transition-colors"
+                                className="absolute top-0 left-0 right-0 h-1.5 cursor-ns-resize z-30 flex items-center justify-center hover:bg-white/10 transition-colors"
                                 onPointerDown={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -149,14 +149,14 @@ export const DayView: React.FC<DayViewProps> = ({
                                     dragControls.start(e);
                                 }}
                             >
-                                <h4 className="font-bold text-gray-700 text-[10px] lg:text-xs truncate leading-none cursor-pointer hover:text-gray-900 shrink-0">{event.title}</h4>
+                                <h4 className="font-bold text-white text-[10px] lg:text-xs truncate leading-none cursor-pointer hover:text-white shrink-0">{event.title}</h4>
                                 {duration >= 45 && totalColumns === 1 && event.description && (
-                                    <p className="text-[10px] text-gray-600 line-clamp-1 opacity-70 leading-none mt-0.5">{event.description}</p>
+                                    <p className="text-[10px] text-gray-400 line-clamp-1 opacity-70 leading-none mt-0.5">{event.description}</p>
                                 )}
                             </div>
 
                             <div
-                                className="absolute bottom-0 left-0 right-0 h-1.5 cursor-ns-resize z-30 flex items-center justify-center hover:bg-black/10 transition-colors"
+                                className="absolute bottom-0 left-0 right-0 h-1.5 cursor-ns-resize z-30 flex items-center justify-center hover:bg-white/10 transition-colors"
                                 onPointerDown={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();

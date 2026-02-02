@@ -68,6 +68,12 @@ export interface Project {
   deadline?: string;
   checklist: ChecklistItem[];
   status: 'ongoing' | 'template' | 'completed';
+  createdBy?: {
+    uid: string;
+    displayName: string;
+    photoURL?: string;
+  };
+  createdAt?: string;
 }
 
 export interface Budget {
@@ -82,6 +88,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  attachments?: { name: string; mimeType: string; data: string }[];
 }
 
 export interface ActivityLogEntry {
@@ -112,6 +119,7 @@ export interface AppState {
   fcmToken?: string;
   activityLog?: ActivityLogEntry[];
   knowledgeBase?: string;
+  knowledgeBaseDocs?: Record<string, string>; // Map of filename -> content
 }
 
 export interface AIStateUpdate {
@@ -124,6 +132,7 @@ export interface AIStateUpdate {
   deletedProjects?: string[]; // IDs of projects to delete
   budgetUpdate?: Partial<Budget>;
   knowledgeBaseUpdate?: string;
+  knowledgeBaseDocsUpdate?: Record<string, string>; // New/updated docs
   documents?: string[];
   deletedDocuments?: string[];
 }

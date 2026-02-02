@@ -4,20 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3villas Cronograma</title>
-    <link rel="icon" type="image/png" href="/icon-desktop.png">
-    <link rel="apple-touch-icon" href="/icon-mobile.png">
-    <meta name="apple-mobile-web-app-title" content="3villas">
+    <title>BSC Cronograma</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/pwa-icon.jpg">
+    <meta name="apple-mobile-web-app-title" content="BSC">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.json?v=20260127_v7">
+    <link rel="manifest" href="/manifest.json?v=20260130_v9">
+    <meta name="color-scheme" content="dark">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <style>
+        html,
         body {
-            background-color: #ffffff;
-            color: #000000;
+            background-color: #000000;
+            color: #ffffff;
             font-family: 'Open Sans', sans-serif;
             margin: 0;
             overflow-x: hidden;
@@ -28,52 +30,40 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #1a1a1a;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #444;
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #666;
         }
 
-        /* Glow effects adapted for light mode */
-        .glow-purple {
-            filter: drop-shadow(0 0 8px rgba(176, 102, 255, 0.4));
-        }
-
-        .glow-cyan {
-            filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.4));
-        }
-
-        .glow-lime {
-            filter: drop-shadow(0 0 8px rgba(50, 255, 126, 0.4));
-        }
-
+        /* Glow effects for dark mode */
         .glow-brand {
-            filter: drop-shadow(0 0 8px rgba(220, 0, 20, 0.4));
+            filter: drop-shadow(0 0 12px rgba(220, 0, 20, 0.6));
         }
 
-        .box-glow-purple {
-            box-shadow: 0 0 20px rgba(176, 102, 255, 0.1);
+        .glow-yellow {
+            filter: drop-shadow(0 0 12px rgba(255, 199, 0, 0.6));
         }
 
-        .box-glow-cyan {
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+        .glow-orange {
+            filter: drop-shadow(0 0 12px rgba(255, 107, 0, 0.6));
         }
 
         .box-glow-brand {
-            box-shadow: 0 0 20px rgba(220, 0, 20, 0.15);
+            box-shadow: 0 0 25px rgba(220, 0, 20, 0.25);
         }
 
-        /* Glassmorphism overrides for light mode */
+        /* Glassmorphism for dark mode */
         .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(14px);
+            border: none;
         }
 
         @media (max-width: 640px) {
@@ -88,7 +78,11 @@
                 extend: {
                     colors: {
                         primary: '#dc0014',
-                        brand: '#dc0014',
+                        brand: {
+                            red: '#dc0014',
+                            orange: '#FF7D00',
+                            yellow: '#FFD000',
+                        }
                     }
                 }
             }

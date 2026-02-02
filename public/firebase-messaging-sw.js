@@ -2,12 +2,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-    apiKey: "AIzaSyBPbqGLzR9uyVmvVKR7jiLWyKbaHW9ngww",
-    authDomain: "villas-cronograma.firebaseapp.com",
-    projectId: "villas-cronograma",
-    storageBucket: "villas-cronograma.firebasestorage.app",
-    messagingSenderId: "22451577171",
-    appId: "1:22451577171:web:4a0a0fe8fad335355941a6"
+    apiKey: "AIzaSyAXsmTrSdeIRqOLCemyITFSjvU4CEXqsT4",
+    authDomain: "bsc-cronograma.firebaseapp.com",
+    projectId: "bsc-cronograma",
+    storageBucket: "bsc-cronograma.firebasestorage.app",
+    messagingSenderId: "831432050912",
+    appId: "1:831432050912:web:3a55c576db6c2fe7672885"
 });
 
 const messaging = firebase.messaging();
@@ -17,7 +17,7 @@ messaging.onBackgroundMessage((payload) => {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: '/icon-mobile.png'
+        icon: '/pwa-icon.jpg'
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);

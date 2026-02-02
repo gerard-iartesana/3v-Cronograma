@@ -39,7 +39,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
         d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
 
     return (
-        <div className={`grid grid-cols-1 ${hideWeekends ? 'md:grid-cols-5' : 'md:grid-cols-7'} gap-px bg-gray-200 border border-gray-200 rounded-[2rem] overflow-hidden shadow-xl`}>
+        <div className={`grid grid-cols-1 ${hideWeekends ? 'md:grid-cols-5' : 'md:grid-cols-7'} gap-px bg-neutral-800 border border-neutral-800 rounded-[2rem] overflow-hidden shadow-xl`}>
             {weekDays.map((date, idx) => {
                 const dayEvents = filteredEvents.filter(e => isSameDay(new Date(e.date), date));
                 const isToday = isSameDay(new Date(), date);
@@ -48,10 +48,10 @@ export const WeekView: React.FC<WeekViewProps> = ({
                 // daysOfWeekList[0] is 'Lun', so it works.
 
                 return (
-                    <div key={idx} data-date={date.toISOString()} className="bg-white min-h-[500px] flex flex-col">
-                        <div className="p-5 border-b border-gray-100 bg-gray-50 text-center">
-                            <span className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-2">{daysOfWeekList[hideWeekends ? idx : idx]}</span>
-                            <span className={`text-xl font-black inline-flex items-center justify-center w-10 h-10 rounded-xl ${isToday ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400'}`}>{date.getDate()}</span>
+                    <div key={idx} data-date={date.toISOString()} className="bg-neutral-900 min-h-[500px] flex flex-col">
+                        <div className="p-5 border-b border-neutral-800 bg-neutral-950 text-center">
+                            <span className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 mb-2">{daysOfWeekList[hideWeekends ? idx : idx]}</span>
+                            <span className={`text-xl font-black inline-flex items-center justify-center w-10 h-10 rounded-xl ${isToday ? 'bg-white text-black border border-white shadow-md' : 'text-gray-500'}`}>{date.getDate()}</span>
                         </div>
                         <div className="flex-1 p-3 space-y-3">
                             {dayEvents.map(event => {
@@ -78,7 +78,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
                                                 updateEvent(event.id, { date: newDate.toISOString() });
                                             }
                                         }}
-                                        className="p-4 rounded-[1.5rem] border transition-all hover:shadow-lg z-10 hover:z-20 shadow-sm bg-white"
+                                        className="p-4 rounded-[1.5rem] border transition-all hover:shadow-lg z-10 hover:z-20 shadow-sm bg-neutral-900/50"
                                         style={getEventStyle(event)}
                                     >
                                         <div className="flex flex-wrap gap-1.5 mb-2.5">
@@ -87,7 +87,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
                                                 .map((tag, tIdx) => (
                                                     <span
                                                         key={tIdx}
-                                                        className="text-[8px] uppercase font-black px-2 py-0.5 rounded-full bg-black/5 text-black/70 border border-black/5"
+                                                        className="text-[8px] uppercase font-black px-2 py-0.5 rounded-full bg-white/5 text-white/70 border border-white/5"
                                                         style={tagColors?.[tag] ? { color: tagColors[tag], borderColor: `${tagColors[tag]}33`, backgroundColor: `${tagColors[tag]}1a` } : {}}
                                                     >
                                                         {tag}
@@ -95,7 +95,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
                                                 ))}
                                         </div>
                                         {event.type !== 'holiday' && (
-                                            <div className="text-[12px] font-normal text-gray-500 uppercase tracking-widest mb-1.5 leading-none">{timeStr}</div>
+                                            <div className="text-[12px] font-normal text-gray-400 uppercase tracking-widest mb-1.5 leading-none">{timeStr}</div>
                                         )}
                                         <div className="text-[15px] font-black leading-tight cursor-pointer hover:opacity-80 transition-colors" style={{ color: getEventStyle(event).color }} onClick={(e) => { e.stopPropagation(); onOpenEvent(event); }}>{event.title}</div>
                                     </motion.div>

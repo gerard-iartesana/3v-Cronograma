@@ -50,9 +50,9 @@ export const MonthView: React.FC<MonthViewProps> = ({
         d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
 
     return (
-        <div className="bg-white border border-gray-200 rounded-[1.5rem] overflow-hidden shadow-xl">
-            <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
-                {daysOfWeek.map(day => (<div key={day} className="py-2 text-center"> <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">{day}</span> </div>))}
+        <div className="bg-neutral-900 border border-neutral-800 rounded-[1.5rem] overflow-hidden shadow-xl">
+            <div className="grid grid-cols-7 border-b border-neutral-800 bg-neutral-950">
+                {daysOfWeek.map(day => (<div key={day} className="py-2 text-center"> <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">{day}</span> </div>))}
             </div>
             <div className="grid grid-cols-7">
                 {grid.map((dt, idx) => {
@@ -80,20 +80,20 @@ export const MonthView: React.FC<MonthViewProps> = ({
                         <div
                             key={idx}
                             data-date={dateObj.toISOString()}
-                            className={`min-h-[120px] p-2 border-r border-b border-gray-100 transition-all hover:bg-gray-50 ${!dt.currentMonth ? 'bg-gray-50/50' : ''} relative group`}
+                            className={`min-h-[120px] p-2 border-r border-b border-neutral-800 transition-all hover:bg-neutral-800 ${!dt.currentMonth ? 'bg-neutral-950/50' : ''} relative group`}
                         >
                             <div className="flex justify-between items-start mb-1">
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                    <span className={`text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-md ${isToday ? 'bg-[#dc0014] text-white shadow-md' : dt.currentMonth ? 'text-gray-900' : 'text-gray-300'}`}>{dt.day}</span>
+                                    <span className={`text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-md ${isToday ? 'bg-white text-black border border-white shadow-md' : dt.currentMonth ? 'text-white' : 'text-gray-600'}`}>{dt.day}</span>
                                     {holidays.map(h => (
-                                        <span key={h.id} title={h.title} className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-tight bg-gray-100/50 px-1 rounded-sm whitespace-normal text-center">
+                                        <span key={h.id} title={h.title} className="text-[8px] font-bold text-gray-500 uppercase tracking-tight leading-tight bg-white/5 px-1 rounded-sm whitespace-normal text-center">
                                             {h.title}
                                         </span>
                                     ))}
                                     {deadlines.map(p => (
-                                        <div key={p.id} title={p.title} className="flex items-start gap-1 bg-red-50 border border-red-100 px-1.5 py-1 rounded-md shadow-sm mt-0.5 w-full">
-                                            <AlertCircle size={10} className="text-red-500 flex-shrink-0 mt-0.5" />
-                                            <span className="text-[9px] font-black text-red-600 uppercase tracking-tight whitespace-normal leading-tight break-words">
+                                        <div key={p.id} title={p.title} className="flex items-start gap-1 bg-neutral-800 border border-white/20 px-1.5 py-1 rounded-md shadow-sm mt-0.5 w-full">
+                                            <AlertCircle size={10} className="text-white flex-shrink-0 mt-0.5" />
+                                            <span className="text-[9px] font-black text-white uppercase tracking-tight whitespace-normal leading-tight break-words">
                                                 {p.title}
                                             </span>
                                         </div>
@@ -165,7 +165,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
                                                 .map((tag, tIdx) => (
                                                     <span
                                                         key={tIdx}
-                                                        className="text-[6px] uppercase font-black px-1 rounded-[2px] bg-black/5 text-black/60 border border-black/5 whitespace-nowrap"
+                                                        className="text-[6px] uppercase font-black px-1 rounded-[2px] bg-white/5 text-white/60 border border-white/5 whitespace-nowrap"
                                                         style={tagColors?.[tag] ? { color: tagColors[tag], borderColor: `${tagColors[tag]}33`, backgroundColor: `${tagColors[tag]}1a` } : {}}
                                                     >
                                                         {tag}

@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Estado compartido para todo el equipo (Proyectos, Calendario, etc.)
+    match /marketing_hub/global_state {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Estado privado de cada usuario (Historial de Chat, Notificaciones personales)
+    match /users/{userId}/private_state/data {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Regla por defecto: denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

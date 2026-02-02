@@ -4,14 +4,25 @@ import { MessageSquare, LayoutGrid, Compass, User, Briefcase, Settings, HelpCirc
 import { useApp } from '../context/AppContext';
 import { AppSection } from '../types';
 
-const LOGO_URL = '/logo-3v.jpg';
+const LOGO_URL = '/bsc_logo.png';
 
 const getSectionColor = (section: AppSection) => {
-  return '#dc0014'; // All sections use the brand red
+  switch (section) {
+    case 'chat': return '#FFD000'; // Brand Yellow
+    case 'calendar': return '#FF7D00'; // Brand Orange
+    case 'projects': return '#dc0014'; // Brand Red
+    case 'profile': return '#ffffff';
+    default: return '#dc0014';
+  }
 };
 
 const getGlowClass = (section: AppSection) => {
-  return 'glow-brand'; // Unified glow for everything
+  switch (section) {
+    case 'chat': return 'glow-yellow';
+    case 'calendar': return 'glow-orange';
+    case 'projects': return 'glow-brand';
+    default: return 'glow-brand';
+  }
 };
 
 const SidebarIcon: React.FC<{ icon: React.ElementType, active: boolean, color: string, glowClass: string, onClick: () => void }> = ({ icon: Icon, active, color, glowClass, onClick }) => (
@@ -19,15 +30,15 @@ const SidebarIcon: React.FC<{ icon: React.ElementType, active: boolean, color: s
     <div className="flex items-center justify-center w-full">
       <Icon
         size={24}
-        className={`transition-all duration-300 ${!active ? 'group-hover:text-black/60' : ''}`}
-        style={{ color: active ? '#dc0014' : '#9ca3af' }}
+        className={`transition-all duration-300 ${!active ? 'group-hover:text-white/60' : ''}`}
+        style={{ color: active ? color : '#4b5563' }}
         strokeWidth={active ? 2.5 : 2}
       />
     </div>
     <div
       className="absolute right-0 h-8 w-[3px] rounded-l-full transition-all duration-500"
       style={{
-        backgroundColor: active ? '#dc0014' : 'transparent',
+        backgroundColor: active ? color : 'transparent',
         opacity: active ? 1 : 0,
         transform: active ? 'scaleY(1)' : 'scaleY(0.5)'
       }}
@@ -37,35 +48,35 @@ const SidebarIcon: React.FC<{ icon: React.ElementType, active: boolean, color: s
 
 const HelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
-    <div className="relative bg-white border border-gray-200 w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div className="p-8 border-b border-gray-100 flex items-center justify-between">
+    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+    <div className="relative bg-neutral-900 border border-neutral-800 w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="p-8 border-b border-neutral-800 flex items-center justify-between">
         <div>
-          <h2 className="text-gray-700 text-3xl font-bold tracking-tighter">Guía de Uso</h2>
-          <p className="text-gray-500 text-[10px] font-bold">Domina el Hub de 3V</p>
+          <h2 className="text-white text-3xl font-bold tracking-tighter">Guía de Uso</h2>
+          <p className="text-gray-400 text-[10px] font-bold">Domina el Hub de BSC</p>
         </div>
-        <button onClick={onClose} className="p-3 hover:bg-gray-100 rounded-2xl text-gray-400 hover:text-black transition-all">
+        <button onClick={onClose} className="p-3 hover:bg-neutral-800 rounded-2xl text-gray-400 hover:text-white transition-all">
           <X size={24} />
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-8 space-y-8 scroll-smooth">
         <section className="space-y-4">
-          <div className="flex items-center gap-3 text-[#dc0014]">
+          <div className="flex items-center gap-3 text-[#FFD000]">
             <MessageSquare size={20} />
             <h3 className="font-bold text-xs">Chat con IA</h3>
           </div>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Interacciona con la IA para crear proyectos, actividades o modificar cualquier dato. Puedes pedir cosas como <span className="text-black font-bold italic">"Crea un proyecto de Redes Sociales para Febrero"</span> o <span className="text-black font-bold italic">"Cambia el coste de la actividad X a 200€"</span>.
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Interacciona con la IA para crear proyectos, actividades o modificar cualquier dato. Puedes pedir cosas como <span className="text-white font-bold italic">"Crea un proyecto de Redes Sociales para Febrero"</span> o <span className="text-white font-bold italic">"Cambia el coste de la actividad X a 200€"</span>.
           </p>
         </section>
 
         <section className="space-y-4">
-          <div className="flex items-center gap-3 text-[#dc0014]">
+          <div className="flex items-center gap-3 text-[#FF7D00]">
             <LayoutGrid size={20} />
             <h3 className="font-bold text-xs">Calendario Estratégico</h3>
           </div>
-          <p className="text-gray-500 text-sm leading-relaxed">
+          <p className="text-gray-300 text-sm leading-relaxed">
             Visualiza tu cronograma en 5 modos: día, semana (con opción L-V), mes, año (trimestral) y agenda. Puedes arrastrar y soltar actividades para reprogramarlas cómodamente.
           </p>
         </section>
@@ -75,24 +86,24 @@ const HelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
             <Briefcase size={20} />
             <h3 className="font-bold text-xs">Gestión de Proyectos</h3>
           </div>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Organiza tus trabajos en tres columnas: <span className="text-black font-bold uppercase text-[10px]">Plantillas</span>, <span className="text-black font-bold uppercase text-[10px]">En curso</span> y <span className="text-black font-bold uppercase text-[10px]">Terminados</span>. Usa la ordenación dinámica para priorizar por deadline o progreso.
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Organiza tus trabajos en tres columnas: <span className="text-white font-bold uppercase text-[10px]">Plantillas</span>, <span className="text-white font-bold uppercase text-[10px]">En curso</span> y <span className="text-white font-bold uppercase text-[10px]">Terminados</span>. Usa la ordenación dinámica para priorizar por deadline o progreso.
           </p>
         </section>
 
         <section className="space-y-4">
-          <div className="flex items-center gap-3 text-black">
+          <div className="flex items-center gap-3 text-white">
             <TrendingUp size={20} />
             <h3 className="font-bold text-xs">Rendimiento Financiero</h3>
           </div>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Analiza la rentabilidad comparando el <span className="text-black font-bold">Valor Estimado</span> frente al <span className="text-black font-bold">Coste Real</span>. Gestiona tus gastos fijos anuales y ajusta tu tarifa horaria para ver el impacto en tiempo real.
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Analiza la rentabilidad comparando el <span className="text-white font-bold">Valor Estimado</span> frente al <span className="text-white font-bold">Coste Real</span>. Gestiona tus gastos fijos anuales y ajusta tu tarifa horaria para ver el impacto en tiempo real.
           </p>
         </section>
       </div>
 
-      <div className="p-8 bg-gray-50 border-t border-gray-100">
-        <button onClick={onClose} className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl">
+      <div className="p-8 bg-neutral-900 border-t border-neutral-800">
+        <button onClick={onClose} className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl">
           Entendido
         </button>
       </div>
@@ -112,10 +123,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   ];
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
+    <div className="flex h-screen bg-black overflow-hidden">
       {/* Sidebar Desktop */}
-      <aside className="hidden md:flex flex-col w-20 border-r border-gray-200 items-center py-8 bg-white z-50 shadow-md">
-        <img src={LOGO_URL} alt="Hub Logo" className="w-12 h-auto mb-12 opacity-90 hover:opacity-100 transition-opacity object-contain" />
+      <aside className="hidden md:flex flex-col w-20 border-r border-neutral-800 items-center py-8 bg-black z-50 shadow-md">
+        <img src={LOGO_URL} alt="Hub Logo" className="w-14 h-auto mb-10 opacity-90 hover:opacity-100 transition-opacity object-contain" />
         <nav className="flex flex-col w-full gap-4 flex-1">
           {sections.map(s => (
             <SidebarIcon
@@ -131,7 +142,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="w-full mt-auto mb-4 px-2 opacity-60 hover:opacity-100 transition-opacity">
           <button
             onClick={() => setShowHelp(true)}
-            className="w-full aspect-square flex items-center justify-center rounded-2xl hover:bg-black/5 text-gray-400 hover:text-black transition-all"
+            className="w-full aspect-square flex items-center justify-center rounded-2xl hover:bg-white/10 text-gray-400 hover:text-white transition-all"
           >
             <HelpCircle size={24} />
           </button>
@@ -139,9 +150,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col relative overflow-hidden bg-gray-50">
+      <div className="flex-1 flex flex-col relative overflow-hidden bg-neutral-950">
         {/* Mobile Header / Nav */}
-        <header className="md:hidden sticky top-0 z-[100] bg-white/90 backdrop-blur-xl border-b border-gray-200 h-14 flex items-center shadow-sm">
+        <header className="md:hidden sticky top-0 z-[100] bg-black/90 backdrop-blur-xl border-b border-neutral-800 h-14 flex items-center shadow-sm">
           <div className="flex w-full h-full">
             {sections.map(s => {
               const Icon = s.icon;
@@ -152,7 +163,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   key={s.id}
                   onClick={() => setCurrentSection(s.id)}
                   className="relative flex-1 flex flex-col items-center justify-center transition-all duration-300"
-                  style={{ color: active ? color : '#9ca3af' }}
+                  style={{ color: active ? color : '#4b5563' }}
                 >
                   <Icon size={20} />
                   {active && (
@@ -174,7 +185,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         {/* Help Button Mobile */}
         <button
           onClick={() => setShowHelp(true)}
-          className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-white backdrop-blur-xl border border-gray-200 rounded-full flex items-center justify-center text-black shadow-2xl z-[150] hover:scale-110 active:scale-95 transition-all"
+          className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-neutral-900 backdrop-blur-xl border border-neutral-800 rounded-full flex items-center justify-center text-white shadow-2xl z-[150] hover:scale-110 active:scale-95 transition-all"
         >
           <HelpCircle size={28} />
         </button>

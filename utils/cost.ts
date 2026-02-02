@@ -44,7 +44,7 @@ export const calculateReactiveCost = (durationStr: string | undefined, currentRa
 };
 
 export const mixColors = (colors: string[]): string => {
-    if (colors.length === 0) return '#00E5FF';
+    if (colors.length === 0) return '#ffffff';
     if (colors.length === 1) return colors[0];
     let r = 0, g = 0, b = 0;
     colors.forEach(hex => {
