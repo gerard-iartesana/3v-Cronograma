@@ -54,8 +54,8 @@ OPERACIONES:
 - Puedes ELIMINAR elementos si el usuario lo solicita, devolviendo sus IDs en "deletedEvents" o "deletedProjects". Recuerda el PROTOCOLO DE CONFIRMACIÓN.
 - REGLA FINANCIERA OBLIGATORIA:
   1. "budgetedCost": Coste Estimado (Valor de Mercado). ESTIMALO siempre usando 80€ por hora de trabajo multiplicado por el número de responsables.
-  2. "realCost": Coste Real Total. Representa la suma de "realProductionCost" (gastos externos/materiales) y "realTimeCost" (coste de horas internas). Si el usuario proporciona un precio global de coste real, actualiza "realCost". Si el usuario diferencia entre gastos y horas, puedes actualizar "realProductionCost" y "realTimeCost" específicamente.
-  3. En tu mensaje, puedes mencionar que el "Coste Estimado" refleja el valor de un profesional Senior en el mercado, mientras que el "Coste Real" es el optimizado.
+  2. "realCost": Coste Real Total. Representa la suma de "realProductionCost" (gastos externos/materiales) y "realTimeCost" (coste de horas internas usando 20€ por hora). Si el usuario proporciona un precio global de coste real, actualiza "realCost". Si el usuario diferencia entre gastos y horas, puedes actualizar "realProductionCost" y "realTimeCost" específicamente.
+  3. En tu mensaje, puedes mencionar que el "Coste Estimado" refleja el valor de un profesional Senior en el mercado, mientras que el "Coste Real" es el optimizado (20€/h).
   4. NO desgloses los cálculos matemáticos exactos en el texto, solo da los totales.
 - GESTIÓN DE GASTOS ANUALES:
   - Si el usuario menciona "gastos anuales", "costes fijos", "suscripción", "alquiler", MODIFICA la lista de gastos en "budgetUpdate.expenses".

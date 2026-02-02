@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { GlassHeader } from './GlassHeader';
-import { CheckCircle2, Circle, Layout, ClipboardList, Clock, Info, Banknote, Calendar, Plus, Trash2, Edit3, ArrowRight, ChevronRight, ChevronLeft, ChevronDown, Lightbulb, RotateCw, Check, Cog, Palette, X, TrendingUp, TrendingDown, Filter, Calculator, Sparkles, Download, Upload, Settings, Bell, Users, FileText, Edit, Save, Briefcase, Tag, AlertCircle, GripVertical } from 'lucide-react';
+import { CheckCircle2, Circle, Layout, ClipboardList, Clock, Info, Banknote, Calendar, Plus, Trash2, Edit3, ArrowRight, ChevronRight, ChevronLeft, ChevronDown, Lightbulb, RotateCw, Check, Cog, Palette, X, TrendingUp, TrendingDown, Filter, Calculator, Sparkles, Download, Upload, Settings, Bell, Users, FileText, Edit, Save, Briefcase, Tag, AlertCircle, GripVertical, Copy } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { Project, MarketingEvent } from '../types';
 import { expandRecurringEvents } from '../utils/recurrence';
@@ -183,16 +183,23 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     <motion.div
       layout
       onClick={(e) => { e.stopPropagation(); if (!isEditing) onToggle(); }}
-      className={`group relative border ${isExpanded ? 'border-[#dc0014] shadow-md' : isTemplate ? 'border-gray-200' : 'border-gray-200'} ${isTemplate ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'} rounded-[2rem] overflow-hidden transition-all ${isTemplate ? 'mb-1' : 'mb-2'} z-10 hover:z-20 ${isEditing ? '' : 'cursor-pointer'}`}
+      className={`group relative border ${isExpanded ? 'border-[#dc0014] shadow-md' : 'border-gray-200'} bg-white hover:bg-gray-50 rounded-[2rem] overflow-hidden transition-all mb-2 z-10 hover:z-20 ${isEditing ? '' : 'cursor-pointer'}`}
     >
-      <div className={`${isTemplate ? 'px-4 py-3' : 'px-5 pt-2 pb-3'}`}>
-        <div className={`flex justify-between ${isTemplate ? 'items-center' : 'items-start'}`}>
-          <div className="flex-1 flex flex-wrap items-center gap-x-4 gap-y-1">
-            <h3
-              className={`text-[16px] font-bold ${isTemplate ? 'text-gray-400 hover:text-gray-700' : 'text-gray-700 hover:text-[#dc0014]'} transition-colors leading-tight`}
-            >
-              {project.title}
-            </h3>
+      <div className={`px-5 ${isTemplate && !isExpanded ? 'py-2' : 'pt-2 pb-3'}`}>
+        <div className="flex justify-between items-start">
+          <div className="flex-1 flex flex-row items-center gap-4">
+            <div className="flex items-center gap-2">
+              <h3
+                className="text-[16px] font-bold text-gray-700 hover:text-[#dc0014] transition-colors leading-tight"
+              >
+                {project.title}
+              </h3>
+              {isTemplate && (
+                <span className="px-1.5 py-0.5 rounded-md bg-gray-100 text-[8px] font-black text-gray-400 uppercase tracking-widest border border-gray-200">
+                  Propuesta
+                </span>
+              )}
+            </div>
 
             {(project.tags && project.tags.length > 0) && (
               <div className="flex flex-wrap gap-1.5 pt-0.5">
@@ -211,14 +218,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             )}
           </div>
 
-          {!isTemplate && project.deadline && (
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50/50 rounded-lg border border-red-100">
-              <Calendar size={12} className="text-red-500" />
-              <span className="text-[10px] font-black text-red-600">
-                {new Date(project.deadline).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
-              </span>
-            </div>
-          )}
+          {!isTemplate && project.deadline && (() => {
+            const daysLeft = Math.ceil((new Date(project.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            const colorClass = daysLeft <= 1 ? 'bg-red-50 text-red-600 border-red-100' : daysLeft <= 7 ? 'bg-orange-50 text-orange-600 border-orange-100' : 'bg-gray-50 text-gray-500 border-gray-100';
+            const iconColor = daysLeft <= 1 ? 'text-red-500' : daysLeft <= 7 ? 'text-orange-500' : 'text-gray-400';
+            return (
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border ${colorClass}`}>
+                <Calendar size={12} className={iconColor} />
+                <span className="text-[10px] font-bold">
+                  {new Date(project.deadline).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                </span>
+              </div>
+            );
+          })()}
 
 
           {isTemplate && (
@@ -228,7 +240,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 shadow-sm hover:border-[#dc0014] hover:text-[#dc0014] transition-all"
                 title="Crear Proyecto"
               >
-                <Plus size={14} strokeWidth={3} />
+                <Copy size={12} strokeWidth={2.5} />
               </button>
             </div>
           )}
@@ -236,7 +248,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       </div>
 
       {/* Progress Bar for Preview (Bottom) */}
-      {project.checklist.length > 0 && (
+      {!isTemplate && project.checklist.length > 0 && (
         <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100">
           <motion.div
             initial={{ width: 0 }}
@@ -332,73 +344,71 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       />
                     </div>
                   </div>
-                  {!isTemplate && (
-                    <div className="space-y-4">
-                      <div className="space-y-3">
-                        {/* Bloque Estimado y Real Simplificado */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Estimación</h4>
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      {/* Bloque Estimado y Real Simplificado */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Estimación</h4>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
+                            <NumberInput
+                              value={editForm.budgetedCost || 0}
+                              onChange={val => setEditForm({ ...editForm, budgetedCost: Math.max(0, val) })}
+                              step={10}
+                              suffix="€"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Realidad</h4>
+                          <div className="grid grid-cols-1 gap-2">
                             <div>
-                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Coste Estimado (€)</label>
+                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Producción (€)</label>
                               <NumberInput
-                                value={editForm.budgetedCost || 0}
-                                onChange={val => setEditForm({ ...editForm, budgetedCost: Math.max(0, val) })}
+                                value={editForm.realProductionCost || 0}
+                                onChange={val => setEditForm(prev => {
+                                  const nextProd = Math.max(0, val);
+                                  return { ...prev, realProductionCost: nextProd, realCost: nextProd + (prev.realTimeCost || 0) };
+                                })}
                                 step={10}
                                 suffix="€"
                               />
                             </div>
-                          </div>
-
-                          <div className="p-4 bg-white border border-gray-200 rounded-3xl space-y-3">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#dc0014]">Realidad</h4>
-                            <div className="grid grid-cols-1 gap-2">
-                              <div>
-                                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Producción (€)</label>
-                                <NumberInput
-                                  value={editForm.realProductionCost || 0}
-                                  onChange={val => setEditForm(prev => {
-                                    const nextProd = Math.max(0, val);
-                                    return { ...prev, realProductionCost: nextProd, realCost: nextProd + (prev.realTimeCost || 0) };
-                                  })}
-                                  step={10}
-                                  suffix="€"
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Tiempo (€)</label>
-                                <NumberInput
-                                  value={editForm.realTimeCost || 0}
-                                  onChange={val => setEditForm(prev => {
-                                    const nextTime = Math.max(0, val);
-                                    return { ...prev, realTimeCost: nextTime, realCost: (prev.realProductionCost || 0) + nextTime };
-                                  })}
-                                  step={10}
-                                  suffix="€"
-                                />
-                              </div>
-                              <div className="pt-2 border-t border-gray-100 flex justify-between items-center">
-                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">Total Real:</span>
-                                <span className="text-sm font-black text-[#dc0014]">
-                                  {(editForm.realCost !== undefined ? editForm.realCost : ((editForm.realProductionCost || 0) + (editForm.realTimeCost || 0))).toLocaleString()}€
-                                </span>
-                              </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Tiempo (€)</label>
+                              <NumberInput
+                                value={editForm.realTimeCost || 0}
+                                onChange={val => setEditForm(prev => {
+                                  const nextTime = Math.max(0, val);
+                                  return { ...prev, realTimeCost: nextTime, realCost: (prev.realProductionCost || 0) + nextTime };
+                                })}
+                                step={10}
+                                suffix="€"
+                              />
+                            </div>
+                            <div className="pt-2 border-t border-gray-100 flex justify-between items-center">
+                              <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">Total Real:</span>
+                              <span className="text-sm font-black text-[#dc0014]">
+                                {(editForm.realCost !== undefined ? editForm.realCost : ((editForm.realProductionCost || 0) + (editForm.realTimeCost || 0))).toLocaleString()}€
+                              </span>
                             </div>
                           </div>
                         </div>
                       </div>
-
-                      <div className="flex-1">
-                        <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Fecha Límite</label>
-                        <input
-                          type="date"
-                          value={editForm.deadline?.substring(0, 10) || ''}
-                          onChange={e => setEditForm({ ...editForm, deadline: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm text-black outline-none focus:border-[#dc0014]"
-                        />
-                      </div>
                     </div>
-                  )}
+
+                    <div className="flex-1">
+                      <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1 block">Fecha Límite</label>
+                      <input
+                        type="date"
+                        value={editForm.deadline?.substring(0, 10) || ''}
+                        onChange={e => setEditForm({ ...editForm, deadline: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm text-black outline-none focus:border-[#dc0014]"
+                      />
+                    </div>
+                  </div>
                   <div className="space-y-2 pt-2 border-t border-gray-200">
                     <div className="flex justify-between items-center mb-1">
                       <label className="text-[8px] uppercase tracking-widest text-gray-500 font-bold block">Hoja de Ruta (Checklist)</label>
@@ -455,28 +465,26 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     <p className="text-gray-600 text-xs leading-relaxed whitespace-pre-wrap">{project.description}</p>
                   </div>
 
-                  {!isTemplate && (
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
-                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <span className="text-black font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
+                    <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
+                      <span className="text-black font-bold">{project.budgetedCost || 0}€</span> <span className="opacity-50">Est.</span>
+                    </span>
+                    <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
+                      <span className="text-[#dc0014] font-bold">{(projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
+                    </span>
+                    {(project.realProductionCost !== undefined || project.realTimeCost !== undefined) && project.realProductionCost + project.realTimeCost > 0 && (
+                      <div className="flex gap-3 text-[9px] font-normal text-gray-400 uppercase tracking-tighter bg-gray-100/50 px-3 py-1 rounded-full border border-gray-100">
+                        <span>Prod: {project.realProductionCost || 0}€</span>
+                        <span>Time: {project.realTimeCost || 0}€</span>
+                      </div>
+                    )}
+                    {project.deadline && (
+                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none ml-auto">
+                        <Calendar size={14} className="text-red-500/50" />
+                        <span className="text-black">{new Date(project.deadline).toLocaleDateString()}</span>
                       </span>
-                      <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none">
-                        <span className="text-[#dc0014] font-bold">{(projectCost.realCost || 0).toFixed(0)}€</span> <span className="opacity-50">Real</span>
-                      </span>
-                      {(project.realProductionCost !== undefined || project.realTimeCost !== undefined) && project.realProductionCost + project.realTimeCost > 0 && (
-                        <div className="flex gap-3 text-[9px] font-normal text-gray-400 uppercase tracking-tighter bg-gray-100/50 px-3 py-1 rounded-full border border-gray-100">
-                          <span>Prod: {project.realProductionCost || 0}€</span>
-                          <span>Time: {project.realTimeCost || 0}€</span>
-                        </div>
-                      )}
-                      {project.deadline && (
-                        <span className="flex items-center gap-2 text-[12px] font-normal text-gray-500 uppercase tracking-widest leading-none ml-auto">
-                          <Calendar size={14} className="text-red-500/50" />
-                          <span className="text-black">{new Date(project.deadline).toLocaleDateString()}</span>
-                        </span>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-3">
@@ -514,56 +522,61 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     )}
                   </div>
 
-                  {!isTemplate && (
-                    <div>
-                      <h4 className="text-gray-500 font-bold uppercase text-[8px] tracking-[0.3em] mb-3">Sesiones vinculadas</h4>
-                      <div className="flex flex-col gap-2">
-                        {dedicatedEvents.length > 0 ? dedicatedEvents.map(e => (
-                          <div key={e.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
-                            <span className="text-[10px] font-bold text-gray-500">
-                              {e.title} {e.recurrence ? '(Recurrente)' : ''} ({e.duration || '1h'})
-                            </span>
-                            <button
-                              onClick={(ev) => { ev.stopPropagation(); if (confirm('¿Eliminar actividad vinculada?')) deleteEvent(e.id); }}
-                              className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-                            >
-                              <Trash2 size={12} />
-                            </button>
-                          </div>
-                        )) : (
-                          <p className="text-gray-400 italic text-[10px]">Sin sesiones en el calendario.</p>
-                        )}
-                      </div>
+                  <div>
+                    <h4 className="text-gray-500 font-bold uppercase text-[8px] tracking-[0.3em] mb-3">Sesiones vinculadas</h4>
+                    <div className="flex flex-col gap-2">
+                      {dedicatedEvents.length > 0 ? dedicatedEvents.map(e => (
+                        <div key={e.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
+                          <span className="text-[10px] font-bold text-gray-500">
+                            {e.title} {e.recurrence ? '(Recurrente)' : ''} ({e.duration || '1h'})
+                          </span>
+                          <button
+                            onClick={(ev) => { ev.stopPropagation(); if (confirm('¿Eliminar actividad vinculada?')) deleteEvent(e.id); }}
+                            className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      )) : (
+                        <p className="text-gray-400 italic text-[10px]">Sin sesiones en el calendario.</p>
+                      )}
                     </div>
-                  )}
+                  </div>
 
                   {/* Move actions */}
                   <div className="flex gap-2 pt-2 items-center">
-                    {project.status === 'completed' && (
+                    {project.status === 'template' && (
                       <button
                         onClick={(e) => handleStatusMove(e, 'ongoing')}
-                        className="flex-1 py-3 bg-white text-black text-[10px] font-black rounded-xl shadow-sm border border-gray-200 hover:scale-[1.02] transition-all"
+                        className="flex-1 py-4 bg-[#dc0014] text-white text-[13px] font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all"
                       >
-                        Reactivar Proyecto
-                      </button>
-                    )}
-                    {project.status === 'ongoing' && (
-                      <button
-                        onClick={(e) => handleStatusMove(e, 'completed')}
-                        className="flex-1 py-3 bg-[#dc0014] text-white text-[10px] font-black rounded-xl shadow-lg hover:scale-[1.02] transition-all"
-                      >
-                        Completar Proyecto
+                        Empezar
                       </button>
                     )}
 
-                    {/* Delete Project Button - Bottom Right - Only in Edit Mode */}
-                    {isEditing && (
+                    {project.status === 'ongoing' && (
+                      <>
+                        <button
+                          onClick={(e) => handleStatusMove(e, 'template')}
+                          className="flex-1 py-4 bg-white text-black text-[13px] font-bold rounded-xl shadow-sm border border-gray-200 hover:scale-[1.02] transition-all"
+                        >
+                          Propuesta
+                        </button>
+                        <button
+                          onClick={(e) => handleStatusMove(e, 'completed')}
+                          className="flex-1 py-4 bg-[#dc0014] text-white text-[13px] font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-all"
+                        >
+                          Completo
+                        </button>
+                      </>
+                    )}
+
+                    {project.status === 'completed' && (
                       <button
-                        onClick={(e) => { e.stopPropagation(); if (confirm('¿Eliminar proyecto y sus datos?')) deleteProject(project.id); }}
-                        className="p-3 bg-white text-red-500 rounded-xl border border-red-200 hover:bg-red-500 hover:text-white transition-colors"
-                        title="Eliminar Proyecto"
+                        onClick={(e) => handleStatusMove(e, 'ongoing')}
+                        className="flex-1 py-4 bg-white text-black text-[13px] font-bold rounded-xl shadow-sm border border-gray-200 hover:scale-[1.02] transition-all"
                       >
-                        <Trash2 size={16} />
+                        Reactivar Proyecto
                       </button>
                     )}
                   </div>
@@ -744,25 +757,25 @@ export const ProjectListView: React.FC = () => {
             onClick={() => setSortBy('alpha')}
             className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'alpha' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
           >
-            Alfabético
+            ALFABÉTICO
           </button>
           <button
             onClick={() => setSortBy('tag')}
             className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'tag' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
           >
-            Por Tag
+            TAG
           </button>
           <button
             onClick={() => setSortBy('percent')}
             className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'percent' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
           >
-            Por %
+            %
           </button>
           <button
             onClick={() => setSortBy('deadline')}
             className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${sortBy === 'deadline' ? 'bg-[#dc0014] text-white shadow-md' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
           >
-            Por Deadline
+            DEADLINE
           </button>
         </div>
       </div>

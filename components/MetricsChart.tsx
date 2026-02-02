@@ -12,8 +12,8 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
             <BarChart
                 data={data}
                 margin={{ top: 60, right: 30, left: 20, bottom: 20 }}
-                barGap={10}
-                barCategoryGap="25%"
+                barGap={0}
+                barCategoryGap="15%"
             >
                 <XAxis
                     dataKey="name"
@@ -47,32 +47,29 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode })
                     wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif' }}
                 />
 
-                {/* Estimado: Red (Brand) */}
+                {/* Estimado Bar */}
                 <Bar
                     name="Estimado"
                     dataKey="Estimado"
-                    radius={[12, 12, 0, 0]}
-                    barSize={displayMode === 'accumulated' ? 60 : 30}
-                    fill="#dc0014"
+                    stackId={displayMode === 'accumulated' ? 'main' : 'A'}
+                    barSize={displayMode === 'accumulated' ? 100 : 25}
+                    fill="#9ca3af"
                 />
 
-                {/* Real: Stacked (Gray Shades as requested) */}
-                {/* Production: Dark Base */}
+                {/* Real Stacked Bars */}
                 <Bar
                     name="Producción"
                     dataKey="RealProduction"
-                    stackId="real"
-                    barSize={displayMode === 'accumulated' ? 60 : 30}
-                    fill="#4b5563" // Dark Gray
+                    stackId={displayMode === 'accumulated' ? 'main' : 'B'}
+                    barSize={displayMode === 'accumulated' ? 100 : 25}
+                    fill="#dc0014"
                 />
-                {/* Time: Light Top */}
                 <Bar
                     name="Tiempo"
                     dataKey="RealTime"
-                    stackId="real"
-                    radius={[12, 12, 0, 0]}
-                    barSize={displayMode === 'accumulated' ? 60 : 30}
-                    fill="#9ca3af" // Light Gray
+                    stackId={displayMode === 'accumulated' ? 'main' : 'C'}
+                    barSize={displayMode === 'accumulated' ? 100 : 25}
+                    fill="#ff4d4d"
                 />
             </BarChart>
         </ResponsiveContainer>

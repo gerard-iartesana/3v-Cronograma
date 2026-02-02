@@ -9,8 +9,6 @@ import { TrendingUp, Clock, ChevronLeft, ChevronRight, Upload, Trash2, Bell, Pal
 import { motion, AnimatePresence } from 'framer-motion';
 import { expandRecurringEvents } from '../utils/recurrence';
 import { parseDurationToHours, calculateReactiveCost } from '../utils/cost';
-
-
 export const ProfileView: React.FC = () => {
   const { user, logout } = useAuth();
   const { budget, documents, addDocument, events, applyStateUpdate, projects, tagColors, setTagColor, assigneeColors, setAssigneeColor, activityLog, fcmToken, enableNotifications } = useApp();
@@ -23,6 +21,9 @@ export const ProfileView: React.FC = () => {
   const [showAllTags, setShowAllTags] = useState(false);
   const [displayMode, setDisplayMode] = useState<'accumulated' | 'detailed'>('accumulated');
   const [breakdownMetric, setBreakdownMetric] = useState<'valor' | 'coste'>('valor');
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [includeProjects, setIncludeProjects] = useState(true);
+
 
   const allTags = useMemo(() => {
     const s = new Set<string>();
@@ -125,7 +126,7 @@ export const ProfileView: React.FC = () => {
       const isAnnual = p.tags?.some((t: string) => ['anual', 'mantenimiento', 'fee', 'rrss', 'social media', 'recurrente'].some(kw => t.toLowerCase().includes(kw)));
       if (isAnnual) {
         const d = p.deadline ? new Date(p.deadline) : null;
-        if (p.status === 'ongoing' || (d && !isNaN(d.getTime()) && d.getFullYear() === selectedYear)) return { isInRange: true, factor: monthsSelected / 12 };
+        if (p.status === 'ongoing' || p.status === 'template' || (d && !isNaN(d.getTime()) && d.getFullYear() === selectedYear)) return { isInRange: true, factor: monthsSelected / 12 };
         return { isInRange: false, factor: 0 };
       }
       if (p.deadline) {
@@ -152,7 +153,7 @@ export const ProfileView: React.FC = () => {
 
         p.tags?.forEach(t => { if (tagBreakdown[t]) { tagBreakdown[t].proyVal += (p.budgetedValue || p.globalValue || 0) * factor; tagBreakdown[t].proyCost += currentProjectedCost * factor; } });
 
-        if (p.status === 'completed' || p.status === 'ongoing') {
+        if (p.status === 'completed' || p.status === 'ongoing' || p.status === 'template') {
           const pProd = (p.realProductionCost || 0);
           const pTime = p.realCost !== undefined ? Math.max(0, p.realCost - pProd) : (p.realTimeCost || 0);
           const pCost = p.realCost !== undefined ? p.realCost : (pProd + pTime);
@@ -173,13 +174,135 @@ export const ProfileView: React.FC = () => {
     return { valorEstimado, costeEstimado, valorReal, costeReal, productionReal, timeReal, proratedExpenses, tagBreakdown };
   }, [filteredEvents, projects, timeRange, selectedYear, budget.hourlyRate, budget.expenses, selectedTags, allTags]);
 
+  const handleExportPDF = () => {
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const rangeText = months[timeRange.start] + ' - ' + months[timeRange.end] + ' ' + selectedYear;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    // Calculate max value for chart scaling
+    const breakdownValues = Object.values(metrics.tagBreakdown);
+    const maxValue = Math.max(
+      metrics.costeEstimado,
+      metrics.costeReal,
+      ...breakdownValues.map(d => d.proyCost),
+      ...breakdownValues.map(d => d.realCost)
+    ) || 1;
+
+    const globalChartHtml = '<div style="margin-bottom: 40px; background: #fff; padding: 25px; border-radius: 24px; border: 1px solid #eee;">' +
+      '<h2 style="font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 25px;">Evolución y Rendimiento Global</h2>' +
+      '<div style="margin-bottom: 25px;">' +
+      '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="font-size: 10px; font-weight: 800; color: #888;">INVERSIÓN ESTIMADA</span><span style="font-size: 12px; font-weight: 800;">' + metrics.costeEstimado.toLocaleString() + '€</span></div>' +
+      '<div style="width: 100%; height: 16px; background: #f5f5f5; border-radius: 8px; overflow: hidden;"><div style="height: 100%; background: #dc0014; width: ' + (metrics.costeEstimado / maxValue * 100) + '%;"></div></div>' +
+      '</div>' +
+      '<div>' +
+      '<div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="font-size: 10px; font-weight: 800; color: #888;">COSTO REAL TOTAL</span><span style="font-size: 12px; font-weight: 800;">' + metrics.costeReal.toLocaleString() + '€</span></div>' +
+      '<div style="width: 100%; height: 16px; background: #f5f5f5; border-radius: 8px; overflow: hidden; display: flex;">' +
+      '<div style="height: 100%; background: #111; width: ' + (metrics.productionReal / maxValue * 100) + '%;"></div>' +
+      '<div style="height: 100%; background: #ccc; width: ' + (metrics.timeReal / maxValue * 100) + '%;"></div>' +
+      '</div>' +
+      '<div style="display: flex; gap: 15px; margin-top: 10px;">' +
+      '<div style="display: flex; align-items: center; gap: 5px;"><div style="width: 8px; height: 8px; background: #111; border-radius: 2px;"></div><span style="font-size: 8px; font-weight: 800; color: #999;">PRODUCCIÓN</span></div>' +
+      '<div style="display: flex; align-items: center; gap: 5px;"><div style="width: 8px; height: 8px; background: #ccc; border-radius: 2px;"></div><span style="font-size: 8px; font-weight: 800; color: #999;">TIEMPO AI</span></div>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+
+    const breakdownChartHtml = Object.entries(metrics.tagBreakdown)
+      .filter(([tag, d]) => coloredTags.includes(tag) && (d.proyCost > 0 || d.realCost > 0))
+      .length > 0 ? '<div style="margin-bottom: 40px;">' +
+      '<h2 style="font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Desglose por Categorías Principales</h2>' +
+      Object.entries(metrics.tagBreakdown).filter(([tag, d]) => coloredTags.includes(tag) && (d.proyCost > 0 || d.realCost > 0)).map(([tag, d]) => {
+        return '<div style="margin-bottom: 25px; padding-left: 10px; border-left: 3px solid ' + (tagColors?.[tag] || '#eee') + ';">' +
+          '<div style="font-size: 12px; font-weight: 800; margin-bottom: 10px; color: #111; display: flex; justify-content: space-between;">' +
+          '<span>' + tag.toUpperCase() + '</span>' +
+          '<span style="font-size: 10px; color: #dc0014;">' + Math.round((d.realCost / (metrics.costeReal || 1)) * 100) + '% del total</span>' +
+          '</div>' +
+          '<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">' +
+          '<div style="width: 40px; font-size: 8px; font-weight: 800; color: #aaa;">EST.</div>' +
+          '<div style="flex: 1; height: 10px; background: #f8f8f8; border-radius: 5px; overflow: hidden;"><div style="height: 100%; background: #dc0014; opacity: 0.6; width: ' + (d.proyCost / maxValue * 100) + '%;"></div></div>' +
+          '<div style="width: 70px; font-size: 9px; font-weight: 800; text-align: right; color: #666;">' + d.proyCost.toLocaleString() + '€</div>' +
+          '</div>' +
+          '<div style="display: flex; gap: 8px; align-items: center;">' +
+          '<div style="width: 40px; font-size: 8px; font-weight: 800; color: #aaa;">REAL</div>' +
+          '<div style="flex: 1; height: 10px; background: #f8f8f8; border-radius: 5px; overflow: hidden; display: flex;">' +
+          '<div style="height: 100%; background: #111; width: ' + (d.realProd / maxValue * 100) + '%;"></div>' +
+          '<div style="height: 100%; background: #ccc; width: ' + (d.realTime / maxValue * 100) + '%;"></div>' +
+          '</div>' +
+          '<div style="width: 70px; font-size: 9px; font-weight: 800; text-align: right; color: #111;">' + d.realCost.toLocaleString() + '€</div>' +
+          '</div>' +
+          '</div>';
+      }).join('') +
+    '</div>' : '';
+
+    const projectRows = projects.filter(p => (p.budgetedCost || 0) > 0 || (p.realCost || 0) > 0).map(p => {
+      const pReal = (p.realProductionCost || 0) + (p.realTimeCost || 0) || p.realCost || 0;
+      return '<tr>' +
+        '<td style="padding: 12px; border-bottom: 1px solid #eee;">' + p.title + '</td>' +
+        '<td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">' + (p.budgetedCost || 0).toLocaleString() + '€</td>' +
+        '<td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right; color: #dc0014; font-weight: bold;">' + pReal.toLocaleString() + '€</td>' +
+        '<td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right; font-size: 10px; color: #888;">' + (p.realProductionCost || 0).toLocaleString() + '€ / ' + (p.realTimeCost || 0).toLocaleString() + '€</td>' +
+        '</tr>';
+    }).join('');
+
+    const projectTableHtml = projectRows ? '<div style="margin-bottom: 40px;">' +
+      '<h2 style="font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Listado de Proyectos</h2>' +
+      '<table style="width: 100%; border-collapse: collapse; border: 1px solid #eee; border-radius: 12px; overflow: hidden;">' +
+      '<thead><tr>' +
+      '<th style="text-align: left; padding: 15px; background: #f5f5f5; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #ddd; font-weight: 800;">Proyecto</th>' +
+      '<th style="text-align: right; padding: 15px; background: #f5f5f5; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #ddd; font-weight: 800;">Presupuesto</th>' +
+      '<th style="text-align: right; padding: 15px; background: #f5f5f5; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #ddd; font-weight: 800;">Inversión Real</th>' +
+      '<th style="text-align: right; padding: 15px; background: #f5f5f5; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #ddd; font-weight: 800;">Prod / Tiempo</th>' +
+      '</tr></thead>' +
+      '<tbody>' + projectRows + '</tbody>' +
+      '</table>' +
+      '</div>' : '';
+
+    const htmlContent = '<html><head><title>Informe 3V</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
+      'body { font-family: "Open Sans", sans-serif; color: #111; padding: 40px; margin: 0; background: #fff; }' +
+      '.header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #dc0014; padding-bottom: 20px; margin-bottom: 40px; }' +
+      '.logo { font-size: 32px; font-weight: 800; color: #111; letter-spacing: -1px; }' +
+      '.report-info { text-align: right; }' +
+      '.report-info h1 { margin: 0; font-size: 20px; color: #dc0014; text-transform: uppercase; letter-spacing: 0px; font-weight: 800; }' +
+      '.report-info p { margin: 5px 0 0; font-size: 14px; color: #666; font-weight: 600; }' +
+      '.metrics-grid { display: flex; gap: 20px; margin-bottom: 40px; }' +
+      '.metric-card { flex: 1; padding: 30px; border-radius: 24px; background: #fdfdfd; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }' +
+      '.metric-card.highlight { background: #dc0014; color: white; border: none; }' +
+      '.metric-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; opacity: 0.8; }' +
+      '.metric-value { font-size: 42px; font-weight: 800; }' +
+      '.footer { margin-top: 80px; font-size: 10px; color: #aaa; text-align: center; border-top: 1px solid #eee; padding-top: 30px; }' +
+      '</style></head><body>' +
+      '<div class="header"><div class="logo">3V VILLAS</div><div class="report-info"><h1>ÁNÁLISIS Y PREVISIÓN. Marketing 3villas</h1><p>' + rangeText + '</p></div></div>' +
+      globalChartHtml +
+      '<div class="metrics-grid">' +
+      '<div class="metric-card"><div class="metric-label">Inversión Estimada</div><div class="metric-value">' + metrics.costeEstimado.toLocaleString() + '€</div></div>' +
+      '<div class="metric-card highlight"><div class="metric-label">Gasto Real Total</div><div class="metric-value">' + metrics.costeReal.toLocaleString() + '€</div></div>' +
+      '</div>' +
+      breakdownChartHtml +
+      projectTableHtml +
+      '<div class="footer">3V VILLAS CRONOGRAMA &copy; ' + new Date().getFullYear() + ' - Generado el ' + new Date().toLocaleString() + '</div>' +
+      '<script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };</script>' +
+      '</body></html>';
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    setShowExportDialog(false);
+  };
+
   const chartData = useMemo(() => {
     if (displayMode === 'accumulated') {
-      return [{ name: 'Total', Estimado: metrics.costeEstimado, RealProduction: metrics.productionReal, RealTime: metrics.timeReal }];
+      return [
+        { name: 'Estimado', Estimado: metrics.costeEstimado, isEstimado: true },
+        { name: 'Real', RealProduction: metrics.productionReal, RealTime: metrics.timeReal, isReal: true }
+      ];
     } else {
       return Object.entries(metrics.tagBreakdown).map(([tag, data]) => ({
         name: tag,
-        Estimado: data.proyCost, // Simplified for performance, was causing confusion
+        Estimado: data.proyCost,
         RealProduction: data.realProd,
         RealTime: data.realTime,
       })).filter(d => d.Estimado > 0 || d.RealProduction > 0 || d.RealTime > 0);
@@ -251,7 +374,7 @@ export const ProfileView: React.FC = () => {
           ))}
           {uncoloredTags.length > 0 && (
             <button onClick={() => setShowAllTags(!showAllTags)} className="px-3 py-1.5 rounded-full border border-dashed text-xs text-gray-400 hover:text-black transition-all">
-              {showAllTags ? 'Menos' : `+${uncoloredTags.length}`}
+              {showAllTags ? 'Menos' : `+ ${uncoloredTags.length}`}
             </button>
           )}
         </div>
@@ -272,7 +395,7 @@ export const ProfileView: React.FC = () => {
 
             <div className="relative h-10">
               <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 h-1 bg-gray-200 rounded-full touch-none" ref={sliderRef}>
-                <div className="absolute h-full bg-[#dc0014] rounded-full" style={{ left: `${(visualRange.start / 11) * 100}%`, width: `${((visualRange.end - visualRange.start) / 11) * 100}%` }} />
+                <div className="absolute h-full bg-[#dc0014] rounded-full" style={{ left: `${(visualRange.start / 11) * 100}% `, width: `${((visualRange.end - visualRange.start) / 11) * 100}% ` }} />
                 {months.map((m, i) => (
                   <div key={m} className="absolute top-1/2 flex flex-col items-center pointer-events-none" style={{ left: `${(i / 11) * 100}%`, transform: 'translateX(-50%)' }}>
                     <div className={`w-0.5 h-1 rounded-full mb-4 ${i >= visualRange.start && i <= visualRange.end ? 'bg-black/40' : 'bg-gray-300'}`} />
@@ -304,12 +427,25 @@ export const ProfileView: React.FC = () => {
                 Global
               </button>
               <button
-                onClick={() => setDisplayMode('detailed')}
+                onClick={() => {
+                  setDisplayMode('detailed');
+                  if (selectedTags.length === 0) {
+                    setSelectedTags(coloredTags.filter(t => t !== 'TODO'));
+                  }
+                }}
                 className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${displayMode === 'detailed' ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
               >
                 Desglose
               </button>
             </div>
+
+            <button
+              onClick={() => setShowExportDialog(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-black text-white text-xs font-bold rounded-2xl hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+            >
+              <Download size={14} />
+              Exportar Informe
+            </button>
           </div>
 
           <div className="w-full h-[450px]">
@@ -441,6 +577,58 @@ export const ProfileView: React.FC = () => {
         </div>
 
       </div>
+      <AnimatePresence>
+        {showExportDialog && (
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowExportDialog(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl p-10 overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-2 bg-[#dc0014]" />
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">Configurar Informe</h3>
+
+              <div className="space-y-6 mb-10">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-gray-700">Listado de proyectos</span>
+                    <span className="text-[10px] text-gray-400">Incluye el detalle individual de cada proyecto</span>
+                  </div>
+                  <button
+                    onClick={() => setIncludeProjects(!includeProjects)}
+                    className={`w-12 h-6 rounded-full transition-all relative ${includeProjects ? 'bg-[#dc0014]' : 'bg-gray-300'}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${includeProjects ? 'left-7' : 'left-1'}`} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setShowExportDialog(false)}
+                  className="flex-1 py-4 bg-gray-100 text-gray-500 font-bold rounded-2xl text-xs hover:bg-gray-200 transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleExportPDF}
+                  className="flex-1 py-4 bg-[#dc0014] text-white font-bold rounded-2xl text-xs shadow-lg hover:shadow-red-500/20 hover:scale-[1.02] transition-all"
+                >
+                  Descargar PDF
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
