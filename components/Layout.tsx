@@ -4,14 +4,14 @@ import { MessageSquare, LayoutGrid, Compass, User, Briefcase, Settings, HelpCirc
 import { useApp } from '../context/AppContext';
 import { AppSection } from '../types';
 
-const LOGO_URL = '/bsc_logo.png';
+const LOGO_URL = '/logo-3v.png';
 
 const getSectionColor = (section: AppSection) => {
   switch (section) {
-    case 'chat': return '#FFD000'; // Brand Yellow
-    case 'calendar': return '#FF7D00'; // Brand Orange
+    case 'chat': return '#dc0014'; // Brand Red
+    case 'calendar': return '#dc0014'; // Brand Red
     case 'projects': return '#dc0014'; // Brand Red
-    case 'profile': return '#ffffff';
+    case 'profile': return '#dc0014'; // Brand Red
     default: return '#dc0014';
   }
 };
@@ -31,7 +31,7 @@ const SidebarIcon: React.FC<{ icon: React.ElementType, active: boolean, color: s
       <Icon
         size={24}
         className={`transition-all duration-300 ${!active ? 'group-hover:text-white/60' : ''}`}
-        style={{ color: active ? color : '#4b5563' }}
+        style={{ color: active ? color : '#9ca3af' }}
         strokeWidth={active ? 2.5 : 2}
       />
     </div>
@@ -123,9 +123,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   ];
 
   return (
-    <div className="flex h-screen bg-black overflow-hidden">
+    <div className="flex h-screen bg-white overflow-hidden">
       {/* Sidebar Desktop */}
-      <aside className="hidden md:flex flex-col w-20 border-r border-neutral-800 items-center py-8 bg-black z-50 shadow-md">
+      <aside className="hidden md:flex flex-col w-20 border-r border-gray-200 items-center py-8 bg-white z-50 shadow-md">
         <img src={LOGO_URL} alt="Hub Logo" className="w-14 h-auto mb-10 opacity-90 hover:opacity-100 transition-opacity object-contain" />
         <nav className="flex flex-col w-full gap-4 flex-1">
           {sections.map(s => (
@@ -150,9 +150,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col relative overflow-hidden bg-neutral-950">
+      <div className="flex-1 flex flex-col relative overflow-hidden bg-gray-50">
         {/* Mobile Header / Nav */}
-        <header className="md:hidden sticky top-0 z-[100] bg-black/90 backdrop-blur-xl border-b border-neutral-800 h-14 flex items-center shadow-sm">
+        <header className="md:hidden sticky top-0 z-[100] bg-white/90 backdrop-blur-xl border-b border-gray-200 h-14 flex items-center shadow-sm">
           <div className="flex w-full h-full">
             {sections.map(s => {
               const Icon = s.icon;
@@ -163,7 +163,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   key={s.id}
                   onClick={() => setCurrentSection(s.id)}
                   className="relative flex-1 flex flex-col items-center justify-center transition-all duration-300"
-                  style={{ color: active ? color : '#4b5563' }}
+                  style={{ color: active ? color : '#9ca3af' }}
                 >
                   <Icon size={20} />
                   {active && (

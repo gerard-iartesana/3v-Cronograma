@@ -8,6 +8,17 @@ interface MetricsChartProps {
 }
 
 export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode, tagColors }) => {
+    const [hiddenSeries, setHiddenSeries] = React.useState<string[]>([]);
+
+    const handleLegendClick = (e: any) => {
+        const { dataKey } = e;
+        setHiddenSeries(prev =>
+            prev.includes(dataKey)
+                ? prev.filter(key => key !== dataKey)
+                : [...prev, dataKey]
+        );
+    };
+
     return (
         <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -46,16 +57,23 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode, t
                     verticalAlign="top"
                     height={36}
                     iconType="circle"
-                    wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif' }}
+                    wrapperStyle={{ fontSize: '11px', fontWeight: 600, fontFamily: 'Open Sans, sans-serif', cursor: 'pointer' }}
+                    onClick={handleLegendClick}
+                    formatter={(value, entry: any) => {
+                        const { dataKey } = entry;
+                        const isHidden = hiddenSeries.includes(dataKey);
+                        return <span style={{ color: value, opacity: isHidden ? 0.3 : 1 }}>{value}</span>;
+                    }}
                 />
 
                 {/* Estimado Bar */}
                 <Bar
                     name="Estimado"
                     dataKey="Estimado"
-                    stackId={displayMode === 'accumulated' ? 'main' : 'A'}
-                    barSize={displayMode === 'accumulated' ? 100 : 25}
+                    stackId="A"
+                    barSize={displayMode === 'accumulated' ? 60 : 25}
                     fill="#9ca3af" // Default color for Legend
+                    hide={hiddenSeries.includes('Estimado')}
                 >
                     {displayMode === 'detailed' && data.map((entry, index) => (
                         <Cell key={`cell-est-${index}`} fill={tagColors?.[entry.name] || '#9ca3af'} fillOpacity={0.3} />
@@ -66,9 +84,10 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode, t
                 <Bar
                     name="Producción"
                     dataKey="RealProduction"
-                    stackId={displayMode === 'accumulated' ? 'main' : 'B'}
-                    barSize={displayMode === 'accumulated' ? 100 : 25}
+                    stackId="B"
+                    barSize={displayMode === 'accumulated' ? 60 : 25}
                     fill="#dc0014" // Default color for Legend
+                    hide={hiddenSeries.includes('RealProduction')}
                 >
                     {displayMode === 'detailed' && data.map((entry, index) => (
                         <Cell key={`cell-prod-${index}`} fill={tagColors?.[entry.name] || '#dc0014'} />
@@ -77,9 +96,10 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data, displayMode, t
                 <Bar
                     name="Tiempo"
                     dataKey="RealTime"
-                    stackId={displayMode === 'accumulated' ? 'main' : 'C'}
-                    barSize={displayMode === 'accumulated' ? 100 : 25}
+                    stackId="C"
+                    barSize={displayMode === 'accumulated' ? 60 : 25}
                     fill="#ff4d4d" // Default color for Legend
+                    hide={hiddenSeries.includes('RealTime')}
                 >
                     {displayMode === 'detailed' && data.map((entry, index) => (
                         <Cell key={`cell-time-${index}`} fill={tagColors?.[entry.name] || '#ff4d4d'} fillOpacity={0.6} />

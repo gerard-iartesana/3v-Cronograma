@@ -145,12 +145,12 @@ export const ChatView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-black relative">
+    <div className="flex flex-col h-full bg-gray-50 relative">
       <div className="relative">
-        <GlassHeader title="¿Te ayudo?" underlineColor="#FFD000" />
+        <GlassHeader title="¿Te ayudo?" underlineColor="#dc0014" />
         <button
           onClick={onClearChat}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-[110] flex items-center justify-center bg-neutral-900 border border-neutral-800 w-10 h-10 rounded-full text-gray-400 hover:text-[#FFD000] transition-all"
+          className="absolute right-6 top-1/2 -translate-y-1/2 z-[110] flex items-center justify-center bg-gray-50 border border-gray-200 w-10 h-10 rounded-full text-gray-400 hover:text-[#dc0014] transition-all"
           title="Reiniciar chat"
         >
           <RotateCcw size={18} />
@@ -162,7 +162,7 @@ export const ChatView: React.FC = () => {
           <div className="h-full flex flex-col items-center justify-center p-4">
             <div className="max-w-md w-full space-y-4">
               <div className="text-center mb-8">
-                <h3 className="text-xl font-bold text-gray-200">Asistente de BSC para la gestión cronograma</h3>
+                <h3 className="text-xl font-bold text-gray-800">Asistente de 3villas</h3>
                 <p className="text-gray-500 text-sm mt-2">Prueba una de estas frases para ver de qué es capaz la IA de BSC</p>
               </div>
 
@@ -173,7 +173,7 @@ export const ChatView: React.FC = () => {
               ].map((phrase, i) => (
                 <button
                   key={i}
-                  className="w-full bg-neutral-900 border border-neutral-800 hover:border-[#FFD000]/30 hover:bg-[#FFD000]/5 p-4 rounded-2xl text-center transition-all group shadow-sm"
+                  className="w-full bg-gray-50 border border-gray-200 hover:border-[#dc0014]/30 hover:bg-[#dc0014]/5 p-4 rounded-2xl text-center transition-all group shadow-sm"
                   onClick={() => {
                     setInput(phrase);
                     setTimeout(() => {
@@ -182,7 +182,7 @@ export const ChatView: React.FC = () => {
                     }, 100);
                   }}
                 >
-                  <p className="text-sm text-gray-400 group-hover:text-white leading-relaxed text-center">{phrase}</p>
+                  <p className="text-sm text-gray-600 group-hover:text-black leading-relaxed text-center">{phrase}</p>
                 </button>
               ))}
             </div>
@@ -192,15 +192,15 @@ export const ChatView: React.FC = () => {
             <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[90%] md:max-w-[75%] rounded-2xl p-3 md:p-5 text-sm md:text-base leading-relaxed shadow-sm
                 ${msg.role === 'user'
-                  ? 'bg-[#FFD000] text-black rounded-br-none'
-                  : 'bg-neutral-900 border border-neutral-800 text-gray-300 rounded-bl-none'}`}>
+                  ? 'bg-[#dc0014] text-white rounded-br-none'
+                  : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'}`}>
                 <ReactMarkdown
                   components={{
                     p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                    ul: ({ children }) => <ul className="list-disc ml-4 mb-2 marker:text-[#FFD000]">{children}</ul>,
-                    ol: ({ children }) => <ol className="list-decimal ml-4 mb-2 marker:text-[#FFD000]">{children}</ol>,
+                    ul: ({ children }) => <ul className="list-disc ml-4 mb-2 marker:text-[#dc0014]">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal ml-4 mb-2 marker:text-[#dc0014]">{children}</ol>,
                     li: ({ children }) => <li className="mb-1">{children}</li>,
-                    strong: ({ children }) => <strong className="font-bold text-[#FFD000]">{children}</strong>
+                    strong: ({ children }) => <strong className="font-bold text-[#dc0014]">{children}</strong>
                   }}
                 >
                   {msg.content}
@@ -225,8 +225,8 @@ export const ChatView: React.FC = () => {
         )}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3 flex items-center gap-2 shadow-sm">
-              <Loader2 className="animate-spin text-[#FFD000]" size={16} />
+            <div className="bg-white border border-gray-200 rounded-2xl p-3 flex items-center gap-2 shadow-sm">
+              <Loader2 className="animate-spin text-[#dc0014]" size={16} />
               <span className="text-gray-500 text-xs font-semibold tracking-widest">Analizando...</span>
             </div>
           </div>
@@ -266,11 +266,11 @@ export const ChatView: React.FC = () => {
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             onPaste={handlePaste}
             placeholder="Escribe aquí..."
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 px-12 text-white text-sm md:text-base focus:outline-none focus:border-[#FFD000] transition-all placeholder:text-neutral-500 shadow-sm"
+            className="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 px-12 text-gray-900 text-sm md:text-base focus:outline-none focus:border-[#dc0014] transition-all placeholder:text-gray-400 shadow-sm"
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#FFD000] transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#dc0014] transition-colors"
           >
             <Plus size={20} />
           </button>
@@ -278,7 +278,7 @@ export const ChatView: React.FC = () => {
             id="chat-send-button"
             onClick={handleSend}
             disabled={isTyping}
-            className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#FFD000] p-2 rounded-xl text-black hover:scale-105 active:scale-95 transition-all disabled:opacity-50 hover:bg-yellow-500 shadow-md"
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#dc0014] p-2 rounded-xl text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-50 hover:bg-red-700 shadow-md"
           >
             <Send size={18} />
           </button>
