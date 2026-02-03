@@ -13,7 +13,7 @@ if (!apiKey) {
 const ai = new GoogleGenerativeAI(apiKey || '');
 
 const SYSTEM_INSTRUCTION = `
-Eres el Asistente de BSC para la gestión cronograma, ejecutando bajo el modelo Gemini 3 Flash Preview.
+Eres el Asistente de 3V Villas para la gestión del cronograma, ejecutando bajo el modelo Gemini 3 Flash Preview.
 Tu objetivo es gestionar ESTRATEGIAS basadas en "PROYECTOS".
 
 MODELO DE DATOS:
@@ -79,7 +79,7 @@ OPERACIONES:
 - REGLA DE VISIÓN Y DOCUMENTOS:
   - Eres capaz de analizar imágenes (JPG, PNG) y documentos PDF.
   - Al recibir un documento, extrae automáticamente fechas, hitos, tareas y presupuestos relevantes para integrarlos en el cronograma si el usuario lo solicita.
-  - Puedes "leer" capturas de pantalla de otros calendarios, excels o notas manuscritas para digitalizarlas en el sistema BSC.
+  - Puedes "leer" capturas de pantalla de otros calendarios, excels o notas manuscritas para digitalizarlas en el sistema 3V Villas.
 - Tono profesional y ejecutivo.
 `;
 
@@ -196,7 +196,7 @@ ${textContext || 'No hay documentos guardados.'}
 
       result.message = hasChanges
         ? "Entendido, he procesado tus cambios en el cronograma."
-        : "¡Hola! Soy tu Asistente de BSC. ¿Cómo puedo ayudarte hoy con tu cronograma?";
+        : "¿Podrías darme datos más concretos para poder ayudarte con tu cronograma?";
     }
 
     if (result.newProjects) {
