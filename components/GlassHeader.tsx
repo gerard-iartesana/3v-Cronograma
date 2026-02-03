@@ -14,11 +14,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({ title, underlineColor 
         <h1 className="text-2xl md:text-5xl font-bold tracking-tighter text-gray-900 mb-1">
           {title}
         </h1>
-<<<<<<< HEAD
-        <ChevronDown className="text-white/20 mt-1 md:mt-2" size={28} strokeWidth={3} />
-=======
-        <img src="/app-icon.png" alt="" className="h-4 md:h-6 w-auto object-contain mt-1" />
->>>>>>> e3d3233d508d64c130abe7294ddf758613bff2aa
+        <ChevronDown className="text-gray-200 mt-1 md:mt-2" size={28} strokeWidth={3} />
       </div>
     </div>
   );
