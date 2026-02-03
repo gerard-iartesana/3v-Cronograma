@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { ChevronDown } from 'lucide-react';
 
 interface GlassHeaderProps {
   title: string;
@@ -13,6 +14,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({ title, underlineColor 
         <h1 className="text-2xl md:text-5xl font-bold tracking-tighter text-white mb-1">
           {title}
         </h1>
+        <ChevronDown className="text-white/20 mt-1 md:mt-2" size={28} strokeWidth={3} />
       </div>
     </div>
   );
